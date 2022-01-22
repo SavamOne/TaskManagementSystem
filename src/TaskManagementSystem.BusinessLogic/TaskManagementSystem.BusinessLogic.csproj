@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\TaskManagementSystem.Shared.Models.csproj" />
+      <ProjectReference Include="..\TaskManagementSystem.BusinessLogic.Models\TaskManagementSystem.BusinessLogic.Models.csproj" />
+      <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
+    </ItemGroup>
+
+</Project>
