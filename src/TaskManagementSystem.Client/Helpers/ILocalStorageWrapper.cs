@@ -6,9 +6,9 @@ public interface ILocalStorageWrapper
 
     Task SetStringAsync(string key, string value);
 
-    Task<T> GetAsync<T>(string key);
+    Task<T?> GetAsync<T>(string key);
 
-    Task<string> GetStringAsync(string key);
+    Task<string?> GetStringAsync(string key);
 
     Task RemoveAsync(string key);
 }

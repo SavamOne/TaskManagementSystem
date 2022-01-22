@@ -1,5 +1,6 @@
 ﻿using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
@@ -12,13 +13,16 @@ public class UserService : IUserService
 
     public async Task<Result<User>> RegisterUserAsync(RegisterData data)
     {
+        data.AssertNotNull();
+
         //TODO: DataAccess
-        User existedUser = users.Find(x => string.Equals(x.Username, data.Username, StringComparison.InvariantCultureIgnoreCase));
+        User? existedUser = users.Find(x =>
+            string.Equals(x.Username, data.Username, StringComparison.InvariantCultureIgnoreCase));
         if (existedUser is not null)
         {
             return Result<User>.Error($"User with name {data.Username} already exists");
         }
-        
+
         User user = new(data.Username, data.Email, DateTimeOffset.UtcNow, PasswordHelper.GetHash(data.Password));
         users.Add(user);
 
@@ -27,8 +31,11 @@ public class UserService : IUserService
 
     public async Task<Result<User>> CheckUserCredentialsAsync(LoginData data)
     {
+        data.AssertNotNull();
+
         //TODO: DataAccess
-        User existedUser = users.Find(x => string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
+        User? existedUser =
+            users.Find(x => string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
         if (existedUser is null)
         {
             return Result<User>.Error("Wrong username or password");

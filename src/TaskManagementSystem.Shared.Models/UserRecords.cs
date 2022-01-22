@@ -11,5 +11,5 @@ public record RefreshTokensResponse(bool IsSuccess, Tokens? Tokens, string? Erro
 public record LoginResponse(bool IsSuccess, Tokens? Tokens, string? ErrorDescription)
     : RefreshTokensResponse(IsSuccess, Tokens, ErrorDescription);
 
-public record RegisterResponse(bool IsSuccess, Tokens? Tokens, string? ErrorDescription) 
+public record RegisterResponse(bool IsSuccess, Tokens? Tokens, string? ErrorDescription)
     : LoginResponse(IsSuccess, Tokens, ErrorDescription);

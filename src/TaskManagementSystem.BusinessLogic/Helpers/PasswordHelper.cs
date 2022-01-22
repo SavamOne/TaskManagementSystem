@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Helpers;
 
@@ -9,6 +10,8 @@ public static class PasswordHelper
 
     public static byte[] GetHash(string password)
     {
+        password.AssertNotNullOrWhiteSpace();
+
         SHA512 hashAlgorithm = new SHA512CryptoServiceProvider();
         byte[] passwordBytes = PasswordEncoding.GetBytes(password);
         return hashAlgorithm.ComputeHash(passwordBytes);

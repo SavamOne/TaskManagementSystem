@@ -10,48 +10,48 @@ public class LocalStorageWrapper : ILocalStorageWrapper
 
     public LocalStorageWrapper(IJSRuntime jsRuntime)
     {
-        this.jsRuntime = jsRuntime;
+        this.jsRuntime = jsRuntime.AssertNotNull();
     }
 
     public async Task SetStringAsync(string key, string value)
     {
-        key.AssertNotNullOrWhiteSpace(nameof(key));
-        value.AssertNotNullOrWhiteSpace(nameof(value));
-        
+        key.AssertNotNullOrWhiteSpace();
+        value.AssertNotNullOrWhiteSpace();
+
         await jsRuntime.InvokeVoidAsync("set", key, value);
     }
-    
+
     public async Task SetAsync<T>(string key, T item)
     {
-        item.AssertNotNull(nameof(item));
-        
+        item.AssertNotNull();
+
         string data = JsonSerializer.Serialize(item);
         await SetStringAsync(key, data);
     }
 
     public async Task<string?> GetStringAsync(string key)
     {
-        key.AssertNotNullOrWhiteSpace(nameof(key));
-        
+        key.AssertNotNullOrWhiteSpace();
+
         return await jsRuntime.InvokeAsync<string>("get", key);
     }
-    
+
     public async Task<T?> GetAsync<T>(string key)
     {
         string? data = await GetStringAsync(key);
-        
+
         if (string.IsNullOrEmpty(data))
         {
             return default;
         }
-        
+
         return JsonSerializer.Deserialize<T>(data)!;
     }
 
     public async Task RemoveAsync(string key)
     {
-        key.AssertNotNullOrWhiteSpace(nameof(key));
-        
+        key.AssertNotNullOrWhiteSpace();
+
         await jsRuntime.InvokeAsync<string>("remove", key);
     }
 }

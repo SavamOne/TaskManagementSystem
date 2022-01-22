@@ -6,13 +6,9 @@ public class RegisterData
 {
     public RegisterData(string username, string email, string password)
     {
-        username.AssertNotNullOrWhiteSpace(nameof(username));
-        email.AssertNotNullOrWhiteSpace(nameof(email));
-        password.AssertNotNullOrWhiteSpace(nameof(password));
-        
-        Username = username;
-        Email = email;
-        Password = password;
+        Username = username.AssertNotNullOrWhiteSpace();
+        Email = email.AssertNotNullOrWhiteSpace();
+        Password = password.AssertNotNullOrWhiteSpace();
     }
 
     public string Username { get; }

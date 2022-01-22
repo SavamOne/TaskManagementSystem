@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using TaskManagementSystem.Client.Services;
+using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Client.Proxies;
 
@@ -13,8 +14,8 @@ public abstract class BaseProxy
 
     protected BaseProxy(HttpClient httpClient, ILocalStorageService storageService)
     {
-        StorageService = storageService;
-        this.httpClient = httpClient;
+        StorageService = storageService.AssertNotNull();
+        this.httpClient = httpClient.AssertNotNull();
     }
 
     protected ILocalStorageService StorageService { get; }
@@ -36,6 +37,7 @@ public abstract class BaseProxy
 
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
+                // TODO: Конкретный тип исключения.
                 throw new Exception(await response.Content.ReadAsStringAsync());
             }
 
@@ -49,7 +51,9 @@ public abstract class BaseProxy
         }
     }
 
-    protected async Task<TResponse> SendRequestAsync<TRequest, TResponse>(string url, HttpMethod method,
+    protected async Task<TResponse> SendRequestAsync<TRequest, TResponse>(
+        string url,
+        HttpMethod method,
         TRequest request)
     {
         bool isFirstTry = true;
@@ -90,7 +94,9 @@ public abstract class BaseProxy
         throw new Exception(await response.Content.ReadAsStringAsync());
     }
 
-    protected async Task<TResponse> SendAnonymousRequestAsync<TRequest, TResponse>(string url, HttpMethod method,
+    protected async Task<TResponse> SendAnonymousRequestAsync<TRequest, TResponse>(
+        string url,
+        HttpMethod method,
         TRequest request)
     {
         using HttpResponseMessage response = await SendRequestCoreAsync(url, method, request, false);
@@ -103,7 +109,9 @@ public abstract class BaseProxy
         throw new Exception(await response.Content.ReadAsStringAsync());
     }
 
-    private async Task<HttpResponseMessage> SendRequestCoreAsync(string url, HttpMethod httpMethod,
+    private async Task<HttpResponseMessage> SendRequestCoreAsync(
+        string url,
+        HttpMethod httpMethod,
         bool addAuthorization)
     {
         using HttpRequestMessage requestMessage = new(httpMethod, url);
@@ -119,8 +127,11 @@ public abstract class BaseProxy
         return response;
     }
 
-    private async Task<HttpResponseMessage> SendRequestCoreAsync<TRequest>(string url, HttpMethod httpMethod,
-        TRequest content, bool addAuthorization)
+    private async Task<HttpResponseMessage> SendRequestCoreAsync<TRequest>(
+        string url,
+        HttpMethod httpMethod,
+        TRequest content,
+        bool addAuthorization)
     {
         using HttpRequestMessage requestMessage = new(httpMethod, url)
         {

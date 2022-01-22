@@ -18,7 +18,7 @@ builder.Services.AddScoped<ServerProxy>();
 
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>(provider =>
-    provider.GetService<JwtAuthenticationStateProvider>());
+    provider.GetService<JwtAuthenticationStateProvider>()!);
 
 builder.Services.AddScoped<ILocalStorageWrapper, LocalStorageWrapper>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();

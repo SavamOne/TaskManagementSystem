@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Providers;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Contracts;
+using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.Proxies;
@@ -11,14 +12,17 @@ public class ServerProxy : BaseProxy
     private readonly NavigationManager navigationManager;
     private readonly JwtAuthenticationStateProvider stateProvider;
 
-    public ServerProxy(HttpClient httpClient, ILocalStorageService storageService, NavigationManager navigationManager,
+    public ServerProxy(
+        HttpClient httpClient,
+        ILocalStorageService storageService,
+        NavigationManager navigationManager,
         JwtAuthenticationStateProvider stateProvider)
         : base(httpClient, storageService)
     {
-        this.navigationManager = navigationManager;
-        this.stateProvider = stateProvider;
+        this.navigationManager = navigationManager.AssertNotNull();
+        this.stateProvider = stateProvider.AssertNotNull();
     }
-    
+
     public async Task<WeatherForecast[]> Get()
     {
         return await SendRequestAsync<WeatherForecast[]>("WeatherForecast", HttpMethod.Get);
@@ -28,7 +32,7 @@ public class ServerProxy : BaseProxy
     {
         RegisterResponse result =
             await SendAnonymousRequestAsync<RegisterRequest, RegisterResponse>("Api/V1/User/Register", HttpMethod.Post,
-                request);
+            request);
 
         ProcessRefreshTokensResponse(result);
 
@@ -52,7 +56,7 @@ public class ServerProxy : BaseProxy
 
         RefreshTokensResponse result =
             await SendAnonymousRequestAsync<RefreshTokensRequest, RefreshTokensResponse>(
-                "Api/V1/User/Refresh", HttpMethod.Post, request);
+            "Api/V1/User/Refresh", HttpMethod.Post, request);
 
         ProcessRefreshTokensResponse(result);
     }
@@ -61,7 +65,7 @@ public class ServerProxy : BaseProxy
     {
         if (response.IsSuccess)
         {
-            StorageService.SetAccessAndRefreshTokenAsync(response.Tokens.AccessToken, response.Tokens.RefreshToken);
+            StorageService.SetAccessAndRefreshTokenAsync(response.Tokens!.AccessToken, response.Tokens!.RefreshToken);
             stateProvider.ChangeAuthenticationState(true);
             return;
         }

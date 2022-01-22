@@ -1,4 +1,5 @@
 using TaskManagementSystem.Client.Helpers;
+using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Client.Services.Implementations;
 
@@ -11,7 +12,7 @@ public class LocalStorageService : ILocalStorageService
 
     public LocalStorageService(ILocalStorageWrapper wrapper)
     {
-        this.wrapper = wrapper;
+        this.wrapper = wrapper.AssertNotNull();
     }
 
     public async Task<string> GetAccessTokenAsync()

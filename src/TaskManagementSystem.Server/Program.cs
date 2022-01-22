@@ -74,14 +74,14 @@ JwtOptions ConfigureJwtOptions(WebApplicationBuilder builder)
 {
     IConfigurationSection? jwtSection = builder.Configuration.GetSection(nameof(JwtOptions));
     jwtSection.AssertNotNull(nameof(jwtSection));
-    
+
     JwtOptions jwtOptions = new();
     jwtSection.Bind(jwtOptions);
-    
-    jwtOptions.Audience.AssertNotNullOrWhiteSpace(nameof(jwtOptions.Audience));
-    jwtOptions.Issuer.AssertNotNullOrWhiteSpace(nameof(jwtOptions.Audience));
-    jwtOptions.AccessTokenSecretKey.AssertNotNullOrWhiteSpace(nameof(jwtOptions.AccessTokenSecretKey));
-    jwtOptions.RefreshTokenSecretKey.AssertNotNullOrWhiteSpace(nameof(jwtOptions.RefreshTokenSecretKey));
+
+    jwtOptions.Audience.AssertNotNullOrWhiteSpace();
+    jwtOptions.Issuer.AssertNotNullOrWhiteSpace();
+    jwtOptions.AccessTokenSecretKey.AssertNotNullOrWhiteSpace();
+    jwtOptions.RefreshTokenSecretKey.AssertNotNullOrWhiteSpace();
 
     builder.Services.Configure<JwtOptions>(jwtSection);
 

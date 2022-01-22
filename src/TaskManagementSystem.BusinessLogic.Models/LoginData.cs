@@ -6,11 +6,8 @@ public class LoginData
 {
     public LoginData(string email, string password)
     {
-        email.AssertNotNullOrWhiteSpace(nameof(email));
-        password.AssertNotNullOrWhiteSpace(nameof(password));
-        
-        Email = email;
-        Password = password;
+        Email = email.AssertNotNullOrWhiteSpace();
+        Password = password.AssertNotNullOrWhiteSpace();
     }
 
     public string Email { get; }
