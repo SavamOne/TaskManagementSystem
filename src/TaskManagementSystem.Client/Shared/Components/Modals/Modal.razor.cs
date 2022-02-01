@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared.Modals;
+namespace TaskManagementSystem.Client.Shared.Components.Modals;
 
 public partial class Modal
 {

@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -6,14 +8,25 @@ using TaskManagementSystem.Server.Options;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Server.Services.Implementations;
 using TaskManagementSystem.Shared.Helpers;
+using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 JwtOptions jwtOptions = ConfigureJwtOptions(builder);
+builder.Services.AddSingleton<CalendarService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Encoder = ApplicationJsonOptions.Encoder;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = ApplicationJsonOptions.DefaultIgnoreCondition;
+        options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
+        options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
+    });
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddAuthorization();
@@ -25,7 +38,6 @@ builder.Services.AddAuthentication(options =>
     .AddJwtBearer(options =>
     {
         options.SaveToken = true;
-        //options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

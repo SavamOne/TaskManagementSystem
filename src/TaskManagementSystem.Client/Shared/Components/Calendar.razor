@@ -1,0 +1,84 @@
+@using System.Globalization
+@using TaskManagementSystem.Client.Shared.Components.Modals
+
+@* <div class="dropdown"> *@
+@*     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> *@
+@*         Первый день недели *@
+@*     </button> *@
+@*     @{ *@
+@*         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> *@
+@*             @foreach (DayOfWeek day in DayOfWeekValues) *@
+@*             { *@
+@*                 <button class="dropdown-item" type="button" *@
+@*                         @onclick="() => ChangeFirstDayOfWeek(day)"> *@
+@*                     @GetDayName(day) *@
+@*                 </button> *@
+@*             } *@
+@*         </div> *@
+@*     } *@
+@* </div> *@
+
+<!-- Calendar -->
+<div class="calendar">
+    <div class="d-flex justify-content-between w-100">
+        <button class="btn btn-outline-primary text-uppercase"
+                @onclick="RemoveMonth">
+            Previous month
+        </button>
+        <h2 class="month font-weight-bold mb-0 text-uppercase">@Month @Year</h2>
+        <button class="btn btn-outline-primary text-uppercase"
+                @onclick="AppendMonth">
+            Next month
+        </button>
+    </div>
+
+    @if (IsLoaded)
+    {
+        <div class="day-names">
+            @foreach (string day in DayOfWeekNamesWithFirstDay)
+            {
+                <div class="value day-name">@day</div>
+            }
+        </div>
+        <div class="days">
+            @{
+                foreach (DayViewModel dayNum in PreviousMonthDaysEnumerable.Union(MonthDaysEnumerable).Union(NextMonthDaysEnumerable))
+                {
+                    <div class="day-num @(dayNum.IsWeekEndDay? "weekend" : string.Empty)">
+                        <div class="day-container">
+                            <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
+                            @{
+                                foreach (var ev in dayNum.Events)
+                                {
+                                    <div class="event all-day end bg-success" @onclick="() => EventClicked(ev)">@ev.Name</div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;"></div>
+        <p>Loading...</p>
+    }
+</div>
+
+<Modal @ref="Modal">
+    <Title>Event editing</Title>
+    <Body>
+    <EditForm Model="@SelectedEvent">
+        <p class="m-0">Name:</p>
+        <InputText @bind-Value="SelectedEvent.Name" type="text" class="mb-2"/>
+        <p class="m-0">Start datetime:</p>
+        <InputText @bind-Value="SelectedEvent.StartDateStr" type="datetime-local" class="mb-2"/>
+        <p class="m-0">End datetime:</p>
+        <InputText @bind-Value="SelectedEvent.EndDateStr" type="datetime-local" class="mb-2"/>
+    </EditForm>
+    </Body>
+    <Footer>
+        <
+    </Footer>
+</Modal>

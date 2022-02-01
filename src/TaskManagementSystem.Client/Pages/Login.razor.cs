@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components.Forms;
-using TaskManagementSystem.Client.Shared.Modals;
+using TaskManagementSystem.Client.Shared.Components.Modals;
 using TaskManagementSystem.Client.ViewModels;
 
 namespace TaskManagementSystem.Client.Pages;
