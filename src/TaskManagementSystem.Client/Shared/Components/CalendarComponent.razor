@@ -43,9 +43,9 @@
             @{
                 foreach (DayViewModel dayNum in DateRangeViewModel!.Days)
                 {
-                    <div class="day-num @(dayNum.IsWeekEndDay? "weekend" : string.Empty)">
+                    <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
                         <div class="day-container">
-                            <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
+                            <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay ? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
                             @{
                                 foreach (EventViewModel ev in dayNum.Events)
                                 {

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -14,7 +13,7 @@ public class UserController : ControllerBase
 {
     private readonly ITokenService tokenService;
     private readonly IUserService userService;
-    
+
     public UserController(
         IUserService userService,
         ITokenService tokenService)
@@ -71,7 +70,7 @@ public class UserController : ControllerBase
 
         return Ok(new LoginResponse(true, tokenResult.Value, null));
     }
-    
+
     [HttpPost("Refresh")]
     public async Task<IActionResult> Refresh(RefreshTokensRequest request)
     {

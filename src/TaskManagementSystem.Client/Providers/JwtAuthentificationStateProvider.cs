@@ -11,7 +11,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     private static readonly AuthenticationState AuthorizedState = new(new ClaimsPrincipal(new ClaimsIdentity("Token")));
 
     private readonly ILocalStorageService storageService;
-    
+
     public JwtAuthenticationStateProvider(ILocalStorageService storageService)
     {
         this.storageService = storageService.AssertNotNull();
@@ -25,7 +25,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 
         return CurrentState = !string.IsNullOrWhiteSpace(token) ? AuthorizedState : AnonymousState;
     }
-    
+
     public void ChangeAuthenticationState(bool isAuthenticated)
     {
         CurrentState = isAuthenticated ? AuthorizedState : AnonymousState;

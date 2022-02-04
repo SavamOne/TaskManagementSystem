@@ -14,6 +14,7 @@ public class DateRangeViewModel
         this.serverProxy = serverProxy;
         Days = days;
     }
+
     public IEnumerable<DayViewModel> Days { get; }
 
     public DayViewModel FirstDay => Days.First();
@@ -23,7 +24,7 @@ public class DateRangeViewModel
     public async Task GetEventsAsync()
     {
         CalendarResponse result = await serverProxy.GetEventsForMonth(new CalendarGetEventsRequest(FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
-        
+
         Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
 
         if (!result.IsSuccess)

@@ -8,14 +8,14 @@ public static class DateRangeHelper
                || eventEndTime >= calendarStartTime && eventEndTime <= calendarEndTime
                || eventStartTime <= calendarStartTime && eventEndTime >= calendarEndTime;
     }
-    
+
     public static bool IsEventInCalendarRange(DateTime eventStartTime, DateTime eventEndTime, DateTime calendarStartTime, DateTime calendarEndTime)
     {
         return eventStartTime >= calendarStartTime && eventStartTime <= calendarEndTime
                || eventEndTime >= calendarStartTime && eventEndTime <= calendarEndTime
                || eventStartTime <= calendarStartTime && eventEndTime >= calendarEndTime;
     }
-    
+
     public static bool IsEventInCalendarDay(DateTimeOffset eventStartTime, DateTimeOffset eventEndTime, DateOnly calendarDay)
     {
         DateTimeOffset startTime = calendarDay.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);

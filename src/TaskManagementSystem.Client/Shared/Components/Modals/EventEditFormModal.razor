@@ -1,17 +1,18 @@
-<EditFormModal @ref="Modal" Item="Event" Submit="x=> Submit(x)" Title="Event editing">
+<EditFormModal @ref="Modal" Item="Event" Submit="x => Submit(x)" Title="Event editing">
     <Body>
-        <p class="m-0">Name:</p>
-        <InputText @bind-Value="Event.Name" type="text" class="mb-2"/>
+    <p class="m-0">Name:</p>
+    <InputText @bind-Value="Event.Name" type="text" class="mb-2"/>
 
-        <p class="m-0">Start datetime:</p>
-        <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2"/>
+    <p class="m-0">Start datetime:</p>
+    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2"/>
 
-        <p class="m-0">End datetime:</p>
-        <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2"/>
+    <p class="m-0">End datetime:</p>
+    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2"/>
     </Body>
 </EditFormModal>
 
 @code {
+
     private EditFormModal<EventViewModel> Modal { get; set; } = new();
 
     private EventViewModel Event { get; set; } = new();

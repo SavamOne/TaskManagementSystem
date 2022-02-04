@@ -6,7 +6,7 @@ namespace TaskManagementSystem.Client.ViewModels;
 public class DayViewModel
 {
     private static readonly DateTimeFormatInfo DateTimeFormat = CultureInfo.CurrentUICulture.DateTimeFormat.Clone() as DateTimeFormatInfo;
-    
+
     public DayViewModel(DateOnly date, bool isHidden)
     {
         Date = date;
@@ -16,11 +16,11 @@ public class DayViewModel
     public DateOnly Date { get; }
 
     public DateTimeOffset DateTimeOffset => Date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
-    
-    public int Day => Date.Day; 
+
+    public int Day => Date.Day;
 
     public DayOfWeek DayOfWeek => Date.DayOfWeek;
-    
+
     public bool IsHidden { get; }
 
     public bool IsWeekEndDay => DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;

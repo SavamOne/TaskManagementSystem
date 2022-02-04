@@ -16,7 +16,7 @@
 }
 
 .day-name {
-    width: calc(100%/7);
+    width: calc(100% / 7);
     display: flex;
     /* align-items: center; */
 }
@@ -28,7 +28,7 @@
 }
 
 .day-num {
-    width: calc(100%/7);
+    width: calc(100% / 7);
     display: flex;
     /*padding-top: 0.5rem;*/
     /* align-items: center; */
@@ -59,7 +59,7 @@
 }
 
 .outside {
-    color: #99999c; 
+    color: #99999c;
 }
 
 .loader {

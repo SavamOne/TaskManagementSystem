@@ -100,7 +100,7 @@ public abstract class BaseProxy
         TRequest request)
     {
         using HttpResponseMessage response = await SendRequestCoreAsync(url, method, request, false);
-        
+
         if (response.IsSuccessStatusCode)
         {
             return await response.Content.ReadFromJsonAsync<TResponse>();

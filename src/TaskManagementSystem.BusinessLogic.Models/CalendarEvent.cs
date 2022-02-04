@@ -4,7 +4,7 @@ namespace TaskManagementSystem.BusinessLogic.Models;
 
 public record CalendarEvent
 {
-    public CalendarEvent(Guid eventId, string name, string description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime)
+    public CalendarEvent(Guid eventId, string name, string? description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime)
     {
         EventId = eventId;
         Name = name.AssertNotNullOrWhiteSpace();
@@ -15,7 +15,7 @@ public record CalendarEvent
         RecurrentSettings = null;
     }
 
-    public CalendarEvent(Guid eventId, string name, string description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime, RecurrentEventSettings recurrentSettings)
+    public CalendarEvent(Guid eventId, string name, string? description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime, RecurrentEventSettings recurrentSettings)
     {
         EventId = eventId;
         Name = name.AssertNotNullOrWhiteSpace();
@@ -30,7 +30,7 @@ public record CalendarEvent
 
     public string Name { get; }
 
-    public string Description { get; }
+    public string? Description { get; }
 
     public DateTime UtcStartTime { get; init; }
 

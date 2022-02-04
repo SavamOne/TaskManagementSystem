@@ -17,7 +17,7 @@ public partial class EditFormModal<TItem>
 
     [Parameter]
     public TItem Item { get; set; }
-    
+
     [Parameter]
     public Action<TItem>? Submit { get; set; }
 
@@ -42,5 +42,7 @@ public partial class EditFormModal<TItem>
     private void OnValidSubmit()
     {
         Submit?.Invoke(Item);
+
+        Close();
     }
 }

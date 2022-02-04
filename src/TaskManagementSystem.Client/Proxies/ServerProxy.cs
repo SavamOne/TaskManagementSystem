@@ -48,12 +48,12 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<CalendarResponse> GetEventsForMonth(CalendarGetEventsRequest request)
     {
         CalendarResponse result =
-            await SendRequestAsync<CalendarGetEventsRequest, CalendarResponse>("Api/V1/Calendar/GetEventsForMonth", HttpMethod.Post, request);
-        
+            await SendRequestAsync<CalendarGetEventsRequest, CalendarResponse>("Api/V1/CalendarEvents/GetEvents", HttpMethod.Post, request);
+
         return result;
     }
 

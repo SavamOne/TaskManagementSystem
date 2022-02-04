@@ -1,5 +1,3 @@
-using System.Text.Encodings.Web;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -13,7 +11,7 @@ using TaskManagementSystem.Shared.Models.Options;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 JwtOptions jwtOptions = ConfigureJwtOptions(builder);
-builder.Services.AddSingleton<CalendarService>();
+builder.Services.AddSingleton<CalendarEventsService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
