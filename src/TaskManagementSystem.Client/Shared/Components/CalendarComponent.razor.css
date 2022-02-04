@@ -1,11 +1,3 @@
-/*
-*
-* ==========================================
-* CUSTOM UTIL CLASSES
-* ==========================================
-*
-*/
-
 .calendar {
     display: flex;
     flex-direction: column;
@@ -66,14 +58,15 @@
     margin-bottom: 1px;
 }
 
-/*.calendar .days li:nth-child(n+29) {*/
-/*    border-bottom: none;*/
-/*}*/
-
-/*.calendar .days li.outside .date {*/
-/*    color: #ddd;*/
-/*}*/
-
 .outside {
     color: #99999c; 
+}
+
+.loader {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+
 }

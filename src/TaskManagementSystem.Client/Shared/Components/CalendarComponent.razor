@@ -1,6 +1,3 @@
-@using System.Globalization
-@using TaskManagementSystem.Client.Shared.Components.Modals
-
 @* <div class="dropdown"> *@
 @*     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> *@
 @*         Первый день недели *@
@@ -17,6 +14,8 @@
 @*         </div> *@
 @*     } *@
 @* </div> *@
+
+<EventEditFormModal @ref="EditEventModal"/>
 
 <!-- Calendar -->
 <div class="calendar">
@@ -42,15 +41,15 @@
         </div>
         <div class="days">
             @{
-                foreach (DayViewModel dayNum in PreviousMonthDaysEnumerable.Union(MonthDaysEnumerable).Union(NextMonthDaysEnumerable))
+                foreach (DayViewModel dayNum in DateRangeViewModel!.Days)
                 {
                     <div class="day-num @(dayNum.IsWeekEndDay? "weekend" : string.Empty)">
                         <div class="day-container">
                             <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
                             @{
-                                foreach (var ev in dayNum.Events)
+                                foreach (EventViewModel ev in dayNum.Events)
                                 {
-                                    <div class="event all-day end bg-success" @onclick="() => EventClicked(ev)">@ev.Name</div>
+                                    <div class="event all-day end bg-success" @onclick="() => EditEventModal.Open(ev)">@ev.Name</div>
                                 }
                             }
                         </div>
@@ -61,24 +60,9 @@
     }
     else
     {
-        <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;"></div>
-        <p>Loading...</p>
+        <div class="loader">
+            <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;"></div>
+            <p class="mt-4">Loading...</p>
+        </div>
     }
 </div>
-
-<Modal @ref="Modal">
-    <Title>Event editing</Title>
-    <Body>
-    <EditForm Model="@SelectedEvent">
-        <p class="m-0">Name:</p>
-        <InputText @bind-Value="SelectedEvent.Name" type="text" class="mb-2"/>
-        <p class="m-0">Start datetime:</p>
-        <InputText @bind-Value="SelectedEvent.StartDateStr" type="datetime-local" class="mb-2"/>
-        <p class="m-0">End datetime:</p>
-        <InputText @bind-Value="SelectedEvent.EndDateStr" type="datetime-local" class="mb-2"/>
-    </EditForm>
-    </Body>
-    <Footer>
-        <
-    </Footer>
-</Modal>

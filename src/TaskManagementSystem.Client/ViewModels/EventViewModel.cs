@@ -1,6 +1,6 @@
 namespace TaskManagementSystem.Client.ViewModels;
 
-public class EventViewModel
+public record EventViewModel
 {
     public string Name { get; set; }
     

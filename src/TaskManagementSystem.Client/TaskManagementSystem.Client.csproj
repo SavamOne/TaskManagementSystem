@@ -16,12 +16,4 @@
         <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <AdditionalFiles Include="Shared\Components\Modals\Modal.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="Shared\Components\Calendar.razor.css" />
-    </ItemGroup>
-
 </Project>

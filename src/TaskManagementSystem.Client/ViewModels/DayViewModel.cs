@@ -33,4 +33,9 @@ public class DayViewModel
     {
         Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartDate, x.EndDate, Date)).ToList();
     }
+
+    public void ClearEvents()
+    {
+        Events = Enumerable.Empty<EventViewModel>();
+    }
 }

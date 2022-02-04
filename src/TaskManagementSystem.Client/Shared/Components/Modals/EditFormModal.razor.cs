@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace TaskManagementSystem.Client.Shared.Components.Modals;
 
-public partial class Modal
+public partial class EditFormModal<TItem>
 {
     private string modalClass = "";
 
@@ -10,13 +10,16 @@ public partial class Modal
     private bool showBackdrop = false;
 
     [Parameter]
-    public string? Title { get; set; }
+    public string Title { get; set; }
 
     [Parameter]
     public RenderFragment Body { get; set; }
 
     [Parameter]
-    public RenderFragment Footer { get; set; }
+    public TItem Item { get; set; }
+    
+    [Parameter]
+    public Action<TItem>? Submit { get; set; }
 
     public void Open()
     {
@@ -34,5 +37,10 @@ public partial class Modal
         showBackdrop = false;
 
         StateHasChanged();
+    }
+
+    private void OnValidSubmit()
+    {
+        Submit?.Invoke(Item);
     }
 }
