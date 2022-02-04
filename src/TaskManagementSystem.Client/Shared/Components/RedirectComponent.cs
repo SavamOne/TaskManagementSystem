@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared;
+namespace TaskManagementSystem.Client.Shared.Components;
 
 public class RedirectComponent : ComponentBase
 {
     [Inject]
-    public NavigationManager NavigationManager { get; set; }
+    public NavigationManager NavigationManager { get; set; } = null!;
 
     [Parameter]
     public string Uri { get; set; } = "Login";

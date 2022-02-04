@@ -1,35 +1,4 @@
 @page "/Login"
 @layout LoginLayout
-@inject ServerProxy serverProxy
-@inject NavigationManager navigationManager;
 
-<main class="form-signin">
-    <EditForm Model="@loginViewModel" OnValidSubmit="Callback">
-        <DataAnnotationsValidator/>
-
-        <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="57">
-        <h3 class="mb-4 fw-normal">Sign in</h3>
-
-        <div class="mb-1 form-floating">
-            <InputText @bind-Value="loginViewModel.Email" type="email" class="form-control email-input" id="floatingInput" placeholder="name@example.com"/>
-            <label for="floatingInput">Email</label>
-        </div>
-        <div class="form-floating">
-            <InputText @bind-Value="loginViewModel.Password" type="password" class="form-control password-input" id="floatingPassword" placeholder="Password"/>
-            <label for="floatingPassword">Password</label>
-        </div>
-
-        <div class="mb-4 checkbox">
-            <label>
-                <InputCheckbox @bind-Value="loginViewModel.RememberMe"/> Remember me
-            </label>
-        </div>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
-        <p class="mt-5 mb-4 text-muted">&copy; TaskManagementSystem @DateTime.UtcNow.Year</p>
-    </EditForm>
-</main>
-
-<Modal @ref="Modal">
-    <Title>Error </Title>
-    <Body> @ErrorText</Body>
-</Modal>
+<LoginComponent/>

@@ -12,8 +12,6 @@ public class LoginViewModel
     [Required]
     public string? Password { get; set; }
 
-    public bool RememberMe { get; set; }
-
     public LoginRequest GetData()
     {
         return new LoginRequest(Email!, Password!);

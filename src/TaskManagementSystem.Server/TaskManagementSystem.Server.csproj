@@ -18,5 +18,11 @@
         <ProjectReference Include="..\TaskManagementSystem.BusinessLogic\TaskManagementSystem.BusinessLogic.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Watch Include="../TaskManagementSystem.Client/**/*.cs"/>
+        <Watch Include="../TaskManagementSystem.Client/**/*.css"/>
+        <Watch Include="../TaskManagementSystem.Client/**/*.razor"/>
+    </ItemGroup>
+
 
 </Project>

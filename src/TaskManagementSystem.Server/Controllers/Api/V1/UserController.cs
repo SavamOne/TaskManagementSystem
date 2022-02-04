@@ -25,21 +25,29 @@ public class UserController : ControllerBase
     [HttpPost("Register")]
     public async Task<IActionResult> RegisterUser(RegisterRequest request)
     {
-        var registerResult = await userService.RegisterUserAsync(new RegisterData(request.Username, request.Email, request.Password));
-
-        if (!registerResult.IsSuccess)
+        try
         {
-            return Ok(new RegisterResponse(false, null, registerResult.ErrorDescription));
+            var registerResult = await userService.RegisterUserAsync(new RegisterData(request.Username, request.Email, request.Password));
+
+            if (!registerResult.IsSuccess)
+            {
+                return Ok(new RegisterResponse(false, null, registerResult.ErrorDescription));
+            }
+
+            var tokenResult = tokenService.GenerateAccessAndRefreshTokens(registerResult.Value!);
+
+            if (!tokenResult.IsSuccess)
+            {
+                return Ok(new RegisterResponse(false, null, tokenResult.ErrorDescription));
+            }
+
+            return Ok(new RegisterResponse(true, tokenResult.Value, null));
         }
-
-        var tokenResult = tokenService.GenerateAccessAndRefreshTokens(registerResult.Value!);
-
-        if (!tokenResult.IsSuccess)
+        catch (Exception e)
         {
-            return Ok(new RegisterResponse(false, null, tokenResult.ErrorDescription));
+            Console.WriteLine(e);
+            throw;
         }
-
-        return Ok(new RegisterResponse(true, tokenResult.Value, null));
     }
 
     [HttpPost("Login")]

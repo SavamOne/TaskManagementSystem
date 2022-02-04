@@ -2,10 +2,12 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 main {
     flex: 1;
+    height: 100%;
 }
 
 .sidebar {
@@ -57,7 +59,6 @@ main {
 
     .sidebar {
         width: 250px;
-        height: 100vh;
         position: sticky;
         top: 0;
     }

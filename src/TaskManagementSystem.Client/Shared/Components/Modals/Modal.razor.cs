@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared.Modals;
+namespace TaskManagementSystem.Client.Shared.Components.Modals;
 
 public partial class Modal
 {
@@ -10,7 +10,7 @@ public partial class Modal
     private bool showBackdrop = false;
 
     [Parameter]
-    public RenderFragment Title { get; set; }
+    public string? Title { get; set; }
 
     [Parameter]
     public RenderFragment Body { get; set; }
