@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -9,6 +10,9 @@ using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5000/");
+
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 JwtOptions jwtOptions = ConfigureJwtOptions(builder);
 builder.Services.AddSingleton<CalendarEventsService>();

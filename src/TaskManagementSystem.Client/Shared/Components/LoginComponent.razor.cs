@@ -19,7 +19,7 @@ public partial class LoginComponent
 
     private async void OnLogin()
     {
-        ( bool isSuccess, _, string? errorDescription ) = await ServerProxy!.LoginUserAsync(loginViewModel.GetData());
+        ( bool isSuccess, _, string? errorDescription ) = await ServerProxy!.LoginAsync(loginViewModel.GetData());
 
         if (isSuccess)
         {

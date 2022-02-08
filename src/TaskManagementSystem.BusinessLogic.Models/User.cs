@@ -4,17 +4,20 @@ namespace TaskManagementSystem.BusinessLogic.Models;
 
 public class User
 {
-    public User(string username, string email, DateTimeOffset dateJoined, byte[] passwordHash)
+    public User(Guid id, string name, string email, DateTimeOffset dateJoined, byte[] passwordHash)
     {
-        Username = username.AssertNotNullOrWhiteSpace();
+        Name = name.AssertNotNullOrWhiteSpace();
         Email = email.AssertNotNullOrWhiteSpace();
+        Id = id;
         DateJoined = dateJoined;
         PasswordHash = passwordHash.AssertNotNull();
     }
 
-    public string Username { get; }
+    public string Name { get; }
 
     public string Email { get; }
+
+    public Guid Id { get; }
 
     public DateTimeOffset DateJoined { get; }
 

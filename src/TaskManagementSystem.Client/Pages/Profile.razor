@@ -1,0 +1,30 @@
+@page "/Profile"
+
+<h3>My profile</h3>
+
+<div class="row">
+    <div class="col">
+        <UserInfoComponent/>
+    </div>
+    <div class="col">
+        <ChangePasswordComponent/>
+    </div>
+</div>
+<div class="row">
+    <div class="col"></div>
+    <div class="d-flex justify-content-end col">
+        <button class="w-50 btn-danger btn" @onclick="Logout">Logout</button>
+    </div>
+</div>
+
+
+@code {
+
+    [Inject]
+    public ServerProxy ServerProxy { get; set; }
+
+    private async Task Logout()
+    {
+        await ServerProxy.LogoutAsync();
+    }
+}
