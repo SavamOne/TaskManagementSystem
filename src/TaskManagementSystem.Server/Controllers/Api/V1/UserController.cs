@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -23,11 +24,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Register")]
-    public async Task<IActionResult> RegisterUser(RegisterRequest request)
+    public async Task<IActionResult> RegisterUserAsync(RegisterRequest request)
     {
         try
         {
-            var registerResult = await userService.RegisterUserAsync(new RegisterData(request.Username, request.Email, request.Password));
+            var registerResult = await userService.RegisterUserAsync(new RegisterData(request.Name, request.Email, request.Password));
 
             if (!registerResult.IsSuccess)
             {
@@ -51,7 +52,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<IActionResult> LoginAsync(LoginRequest request)
     {
         var checkResult = await userService.CheckUserCredentialsAsync(new LoginData(request.Email, request.Password));
 
@@ -59,7 +60,6 @@ public class UserController : ControllerBase
         {
             return Ok(new LoginResponse(false, null, checkResult.ErrorDescription));
         }
-
 
         var tokenResult = tokenService.GenerateAccessAndRefreshTokens(checkResult.Value!);
 
@@ -72,7 +72,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Refresh")]
-    public async Task<IActionResult> Refresh(RefreshTokensRequest request)
+    public IActionResult Refresh(RefreshTokensRequest request)
     {
         var tokenResult = tokenService.RefreshAccessToken(request.RefreshToken);
 
@@ -82,5 +82,79 @@ public class UserController : ControllerBase
         }
 
         return Ok(new RefreshTokensResponse(true, tokenResult.Value, null));
+    }
+
+    [Authorize]
+    [HttpPost("GetInfo")]
+    public async Task<IActionResult> GetInfoAsync()
+    {
+        var idResult = tokenService.GetUserIdFromClaims(User);
+
+        if (!idResult.IsSuccess)
+        {
+            return Ok(new GetUserInfoResponse(false, null, idResult.ErrorDescription));
+        }
+
+        var userResult = await userService.GetUserAsync(idResult.Value);
+
+        if (!userResult.IsSuccess)
+        {
+            return Ok(new GetUserInfoResponse(false, null, userResult.ErrorDescription));
+        }
+
+        UserInfo userInfo = new(userResult.Value!.Name, userResult.Value.Email, userResult.Value.DateJoined);
+
+        return Ok(new GetUserInfoResponse(true, userInfo, null));
+    }
+    
+    [Authorize]
+    [HttpPost("ChangePassword")]
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request)
+    {
+        request.AssertNotNull();
+        
+        var idResult = tokenService.GetUserIdFromClaims(User);
+
+        if (!idResult.IsSuccess)
+        {
+            return Ok(new ChangePasswordResponse(false, null, idResult.ErrorDescription));
+        }
+
+        var userResult = await userService.ChangePasswordAsync(new ChangePasswordData(idResult.Value!, request.OldPassword, request.NewPassword));
+
+        if (!userResult.IsSuccess)
+        {
+            return Ok(new ChangePasswordResponse(false, null, userResult.ErrorDescription));
+        }
+        
+        UserInfo userInfo = new(userResult.Value!.Name, userResult.Value.Email, userResult.Value.DateJoined);
+        
+        return Ok(new ChangePasswordResponse(true, userInfo, null));
+    }
+    
+        
+    [Authorize]
+    [HttpPost("ChangeInfo")]
+    public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)
+    {
+        request.AssertNotNull();
+        
+        var idResult = tokenService.GetUserIdFromClaims(User);
+
+        if (!idResult.IsSuccess)
+        {
+            return Ok(new ChangeUserInfoResponse(false, null, idResult.ErrorDescription));
+        }
+
+        var userResult = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(idResult.Value!, request.Name, request.Email));
+
+        if (!userResult.IsSuccess)
+        {
+            return Ok(new ChangeUserInfoResponse(false, null, userResult.ErrorDescription));
+        }
+        
+        UserInfo userInfo = new(userResult.Value!.Name, userResult.Value.Email, userResult.Value.DateJoined);
+        
+        return Ok(new ChangeUserInfoResponse(true, userInfo, null));
     }
 }

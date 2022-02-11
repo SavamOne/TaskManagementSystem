@@ -34,17 +34,48 @@ public class ServerProxy : BaseProxy
             await SendAnonymousRequestAsync<RegisterRequest, RegisterResponse>("Api/V1/User/Register", HttpMethod.Post,
             request);
 
-        ProcessRefreshTokensResponse(result);
+        await ProcessRefreshTokensResponse(result);
 
         return result;
     }
 
-    public async Task<LoginResponse> LoginUserAsync(LoginRequest request)
+    public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
         LoginResponse result =
             await SendAnonymousRequestAsync<LoginRequest, LoginResponse>("Api/V1/User/Login", HttpMethod.Post, request);
 
-        ProcessRefreshTokensResponse(result);
+        await ProcessRefreshTokensResponse(result);
+
+        return result;
+    }
+
+    public async Task LogoutAsync()
+    {
+        await StorageService.ClearTokens();
+        navigationManager.NavigateTo("Login");
+        stateProvider.ChangeAuthenticationState(false);
+    }
+    
+    public async Task<GetUserInfoResponse> GetUserInfoAsync()
+    {
+        GetUserInfoResponse result =
+            await SendRequestAsync<GetUserInfoResponse>("Api/V1/User/GetInfo", HttpMethod.Post);
+
+        return result;
+    }
+    
+    public async Task<ChangePasswordResponse> ChangeUserPasswordAsync(ChangePasswordRequest request)
+    {
+        ChangePasswordResponse result =
+            await SendRequestAsync<ChangePasswordRequest, ChangePasswordResponse>("Api/V1/User/ChangePassword", HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<ChangeUserInfoResponse> ChangeUserInfoAsync(ChangeUserInfoRequest request)
+    {
+        ChangeUserInfoResponse result =
+            await SendRequestAsync<ChangeUserInfoRequest, ChangeUserInfoResponse>("Api/V1/User/ChangeInfo", HttpMethod.Post, request);
 
         return result;
     }
@@ -66,21 +97,18 @@ public class ServerProxy : BaseProxy
             await SendAnonymousRequestAsync<RefreshTokensRequest, RefreshTokensResponse>(
             "Api/V1/User/Refresh", HttpMethod.Post, request);
 
-        ProcessRefreshTokensResponse(result);
+        await ProcessRefreshTokensResponse(result);
     }
 
-    private void ProcessRefreshTokensResponse(RefreshTokensResponse response)
+    private async Task ProcessRefreshTokensResponse(RefreshTokensResponse response)
     {
         if (response.IsSuccess)
         {
-            StorageService.SetAccessAndRefreshTokenAsync(response.Tokens!.AccessToken, response.Tokens!.RefreshToken);
+            await StorageService.SetAccessAndRefreshTokenAsync(response.Tokens!.AccessToken, response.Tokens!.RefreshToken);
             stateProvider.ChangeAuthenticationState(true);
             return;
         }
 
-        StorageService.ClearTokens();
-        navigationManager.NavigateTo("Login");
-        stateProvider.ChangeAuthenticationState(false);
-        throw new Exception(response.ErrorDescription);
+        await LogoutAsync();
     }
 }

@@ -14,7 +14,7 @@ public partial class CalendarComponent
     public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
 
     [Parameter]
-    public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Sunday;
+    public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Monday;
 
     [Parameter]
     public EventEditFormModal EditEventModal { get; set; } = new();
