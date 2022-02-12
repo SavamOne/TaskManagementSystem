@@ -6,17 +6,17 @@ namespace TaskManagementSystem.Client.ViewModels;
 public class UpdateUserPasswordViewModel
 {
     [MinLength(5)]
-    public string OldPassword { get; set; }
+    public string? OldPassword { get; set; }
 
     [MinLength(5)]
-    public string NewPassword { get; set; }
-    
+    public string? NewPassword { get; set; }
+
     [MinLength(5)]
     [Compare(nameof(NewPassword))]
-    public string NewPasswordRepeat { get; set; }
-    
+    public string? NewPasswordRepeat { get; set; }
+
     public ChangePasswordRequest GetRequest()
     {
-        return new ChangePasswordRequest(OldPassword, NewPassword);
+        return new ChangePasswordRequest(OldPassword!, NewPassword!);
     }
 }

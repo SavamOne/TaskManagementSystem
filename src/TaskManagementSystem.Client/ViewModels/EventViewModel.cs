@@ -1,8 +1,19 @@
+using TaskManagementSystem.Shared.Models;
+
 namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
-    public string Name { get; set; }
+    public EventViewModel() {}
+
+    public EventViewModel(CalendarEventInfo eventInfo)
+    {
+        Name = eventInfo.Name;
+        StartDate = eventInfo.StartTime;
+        EndDate = eventInfo.EndTime;
+    }
+
+    public string? Name { get; set; }
 
     public DateTimeOffset StartDate { get; set; }
 

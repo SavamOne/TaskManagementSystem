@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Helpers;
+using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.Proxies;
 
@@ -22,7 +23,7 @@ public abstract class BaseProxy
 
     protected abstract Task RefreshTokens();
 
-    protected async Task<TResponse> SendRequestAsync<TResponse>(string url, HttpMethod method)
+    protected async Task<Result<TResponse>> SendRequestAsync<TResponse>(string url, HttpMethod method)
     {
         bool isFirstTry = true;
 
@@ -32,18 +33,25 @@ public abstract class BaseProxy
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<TResponse>();
+                TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+                return Result<TResponse>.Success(value!);
             }
-
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+                return Result<TResponse>.Error(error.Error);
+            }
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                return Result<TResponse>.Error("Internal server error");
+            }
+            if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Result<TResponse>.Error($"You don't have access to this page {url}");
+            }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
-                // TODO: Конкретный тип исключения.
-                throw new Exception(await response.Content.ReadAsStringAsync());
-            }
-
-            if (!isFirstTry)
-            {
-                throw new UnauthorizedAccessException($"You don't have access to this page {url}");
+                return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
             }
 
             await RefreshTokens();
@@ -51,7 +59,7 @@ public abstract class BaseProxy
         }
     }
 
-    protected async Task<TResponse> SendRequestAsync<TRequest, TResponse>(
+    protected async Task<Result<TResponse>> SendRequestAsync<TRequest, TResponse>(
         string url,
         HttpMethod method,
         TRequest request)
@@ -64,17 +72,25 @@ public abstract class BaseProxy
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<TResponse>();
+                TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+                return Result<TResponse>.Success(value!);
             }
-
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+                return Result<TResponse>.Error(error.Error);
+            }
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                return Result<TResponse>.Error("Internal server error");
+            }
+            if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Result<TResponse>.Error($"You don't have access to this page {url}");
+            }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
-                throw new Exception(await response.Content.ReadAsStringAsync());
-            }
-
-            if (!isFirstTry)
-            {
-                throw new UnauthorizedAccessException($"You don't have access to this page {url}");
+                return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
             }
 
             await RefreshTokens();
@@ -82,19 +98,29 @@ public abstract class BaseProxy
         }
     }
 
-    protected async Task<TResponse> SendAnonymousRequestAsync<TResponse>(string url, HttpMethod method)
+    protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TResponse>(string url, HttpMethod method)
     {
         using HttpResponseMessage response = await SendRequestCoreAsync(url, method, false);
 
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+            return Result<TResponse>.Success(value!);
+        }
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+            return Result<TResponse>.Error(error.Error);
+        }
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            return Result<TResponse>.Error("Internal server error");
         }
 
-        throw new Exception(await response.Content.ReadAsStringAsync());
+        return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
     }
 
-    protected async Task<TResponse> SendAnonymousRequestAsync<TRequest, TResponse>(
+    protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TRequest, TResponse>(
         string url,
         HttpMethod method,
         TRequest request)
@@ -103,10 +129,20 @@ public abstract class BaseProxy
 
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+            return Result<TResponse>.Success(value!);
+        }
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+            return Result<TResponse>.Error(error!.Error);
+        }
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            return Result<TResponse>.Error("Internal server error");
         }
 
-        throw new Exception(await response.Content.ReadAsStringAsync());
+        return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
     }
 
     private async Task<HttpResponseMessage> SendRequestCoreAsync(

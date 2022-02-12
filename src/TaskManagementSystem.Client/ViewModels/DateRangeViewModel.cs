@@ -23,21 +23,17 @@ public class DateRangeViewModel
 
     public async Task GetEventsAsync()
     {
-        CalendarResponse result = await serverProxy.GetEventsForMonth(new CalendarGetEventsRequest(FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
+        var result = await serverProxy.GetEventsForMonth(new CalendarGetEventsRequest(FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
         Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
 
         if (!result.IsSuccess)
         {
+            //TODO: Не бросать исключение.
             throw new Exception(result.ErrorDescription);
         }
 
-        var events = result.Events!.Select(x => new EventViewModel
-        {
-            Name = x.Name,
-            StartDate = x.StartTime,
-            EndDate = x.EndTime
-        }).ToList();
+        var events = result.Value!.Select(x => new EventViewModel(x)).ToList();
 
         foreach (DayViewModel dayViewModel in Days)
         {

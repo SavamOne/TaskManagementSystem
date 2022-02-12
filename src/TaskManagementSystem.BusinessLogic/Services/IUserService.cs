@@ -4,13 +4,13 @@ namespace TaskManagementSystem.BusinessLogic.Services;
 
 public interface IUserService
 {
-    Task<Result<User>> RegisterUserAsync(RegisterData data);
+    Task<User> RegisterUserAsync(RegisterData data);
 
-    Task<Result<User>> CheckUserCredentialsAsync(LoginData data);
-    
-    Task<Result<User>> GetUserAsync(Guid userId);
-    
-    Task<Result<User>> ChangeUserInfoAsync(ChangeUserInfoData data);
-    
-    Task<Result<User>> ChangePasswordAsync(ChangePasswordData data);
+    Task<User> CheckUserCredentialsAsync(LoginData data);
+
+    Task<User> GetUserAsync(Guid userId);
+
+    Task<User> ChangeUserInfoAsync(ChangeUserInfoData data);
+
+    Task<User> ChangePasswordAsync(ChangePasswordData data);
 }

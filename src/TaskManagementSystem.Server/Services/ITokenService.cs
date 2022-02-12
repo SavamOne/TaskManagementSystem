@@ -6,9 +6,9 @@ namespace TaskManagementSystem.Server.Services;
 
 public interface ITokenService
 {
-    Result<Tokens> GenerateAccessAndRefreshTokens(User? user);
+    Tokens GenerateAccessAndRefreshTokens(User user);
 
-    Result<Tokens> RefreshAccessToken(string? refreshToken);
+    Tokens RefreshAccessToken(string refreshToken);
 
-    Result<Guid> GetUserIdFromClaims(ClaimsPrincipal? principal);
+    Guid GetUserIdFromClaims(ClaimsPrincipal principal);
 }

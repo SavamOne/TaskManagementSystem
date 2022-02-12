@@ -22,6 +22,6 @@ public static class ApplicationJsonOptions
         AllowTrailingCommas = AllowTrailingCommas,
         PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
         PropertyNamingPolicy = PropertyNamingPolicy,
-        DefaultIgnoreCondition = DefaultIgnoreCondition,
+        DefaultIgnoreCondition = DefaultIgnoreCondition
     };
 }
