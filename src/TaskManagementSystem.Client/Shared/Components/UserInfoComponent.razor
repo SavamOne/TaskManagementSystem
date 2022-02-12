@@ -1,9 +1,5 @@
 <h5>About me</h5>
 
-<Modal @ref="modal" Title="Info change">
-    <Body>@Result</Body>
-</Modal>
-
 <EditForm Model="userInfoViewModel" OnValidSubmit="ChangeInfo">
     <DataAnnotationsValidator/>
     <ValidationSummary/>
@@ -35,35 +31,3 @@
         </div>
     </div>
 </EditForm>
-
-@code {
-    private UserInfoViewModel userInfoViewModel = new();
-
-    private string? Result { get; set; }
-
-    private Modal modal = new();
-
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await ServerProxy!.GetUserInfoAsync();
-
-        if (!result.IsSuccess)
-        {
-            Console.WriteLine($"Error: {result.ErrorDescription}");
-            return;
-        }
-
-        userInfoViewModel.SetInfo(result.Value!);
-    }
-    private async Task ChangeInfo()
-    {
-        var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetRequest());
-
-        Result = result.IsSuccess ? "About changed successfully" : result.ErrorDescription!;
-
-        modal.Open();
-    }
-}

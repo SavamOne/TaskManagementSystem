@@ -2,7 +2,7 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Shared.Models;
 
-public struct ErrorObject
+public class ErrorObject
 {
     public ErrorObject(string error)
     {

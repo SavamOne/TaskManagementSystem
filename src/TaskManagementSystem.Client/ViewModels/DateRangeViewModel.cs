@@ -1,5 +1,6 @@
 using System.Text.Json;
 using TaskManagementSystem.Client.Proxies;
+using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Models;
 using TaskManagementSystem.Shared.Models.Options;
 
@@ -8,10 +9,12 @@ namespace TaskManagementSystem.Client.ViewModels;
 public class DateRangeViewModel
 {
     private readonly ServerProxy serverProxy;
+    private readonly IToastService toastService;
 
-    public DateRangeViewModel(ServerProxy serverProxy, IEnumerable<DayViewModel> days)
+    public DateRangeViewModel(ServerProxy serverProxy, IToastService toastService, IEnumerable<DayViewModel> days)
     {
         this.serverProxy = serverProxy;
+        this.toastService = toastService;
         Days = days;
     }
 
@@ -29,8 +32,7 @@ public class DateRangeViewModel
 
         if (!result.IsSuccess)
         {
-            //TODO: Не бросать исключение.
-            throw new Exception(result.ErrorDescription);
+            toastService.AddSystemErrorToast(result.ErrorDescription!);
         }
 
         var events = result.Value!.Select(x => new EventViewModel(x)).ToList();
