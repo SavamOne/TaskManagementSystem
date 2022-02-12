@@ -15,9 +15,10 @@ public class ServerProxy : BaseProxy
     public ServerProxy(
         HttpClient httpClient,
         ILocalStorageService storageService,
+        IToastService toastService,
         NavigationManager navigationManager,
         JwtAuthenticationStateProvider stateProvider)
-        : base(httpClient, storageService)
+        : base(httpClient, storageService, toastService)
     {
         this.navigationManager = navigationManager.AssertNotNull();
         this.stateProvider = stateProvider.AssertNotNull();
@@ -89,14 +90,19 @@ public class ServerProxy : BaseProxy
 
     protected override async Task RefreshTokens()
     {
-        string refreshToken = await StorageService.GetRefreshTokenAsync();
-        RefreshTokensRequest request = new(refreshToken);
+        string? refreshToken = await StorageService.GetRefreshTokenAsync();
+        RefreshTokensRequest request = new(refreshToken!);
 
         var result =
             await SendAnonymousRequestAsync<RefreshTokensRequest, Tokens>(
             "Api/V1/User/Refresh", HttpMethod.Post, request);
 
         await ProcessRefreshTokensResponse(result);
+
+        if (!result.IsSuccess)
+        {
+            ToastService.AddSystemErrorToast(result.ErrorDescription!);
+        }
     }
 
     private async Task ProcessRefreshTokensResponse(Result<Tokens> response)
@@ -107,7 +113,7 @@ public class ServerProxy : BaseProxy
             stateProvider.ChangeAuthenticationState(true);
             return;
         }
-
+        
         await LogoutAsync();
     }
 }

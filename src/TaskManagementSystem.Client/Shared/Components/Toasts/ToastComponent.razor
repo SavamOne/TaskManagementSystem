@@ -1,0 +1,17 @@
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 200">
+    <div class="toast-container">
+        @foreach (ToastViewModel toast in toasts)
+        {
+            <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">@toast.Author</strong>
+                    <small class="text-muted">@toast.Description</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" @onclick="toast.Remove"></button>
+                </div>
+                <div class="toast-body">
+                    @toast.Text
+                </div>
+            </div>    
+        }
+    </div>
+</div>

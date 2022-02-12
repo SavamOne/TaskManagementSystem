@@ -1,30 +1,29 @@
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
-using TaskManagementSystem.Client.Shared.Components.Modals;
 using TaskManagementSystem.Client.ViewModels;
 
 namespace TaskManagementSystem.Client.Shared.Components;
 
-public partial class LoginComponent
+public partial class ChangePasswordComponent
 {
-    private readonly LoginViewModel loginViewModel = new();
-
+    private readonly UpdateUserPasswordViewModel passwordViewModel = new();
+    
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
     
     [Inject]
     public IToastService? ToastService { get; set; }
-
-    private async void OnLogin()
+    
+    private async Task ChangePassword()
     {
-        var result = await ServerProxy!.LoginAsync(loginViewModel.GetData());
-
+        var result = await ServerProxy!.ChangeUserPasswordAsync(passwordViewModel.GetRequest());
         if (result.IsSuccess)
         {
+            ToastService!.AddSystemToast("Password change", "Password successfully changed");
             return;
         }
-
+        
         ToastService!.AddSystemErrorToast(result.ErrorDescription!);
     }
 }

@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Proxies;
+using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.Shared.Components.Modals;
 using TaskManagementSystem.Client.ViewModels;
 
@@ -21,6 +22,9 @@ public partial class CalendarComponent
 
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
+    
+    [Inject]
+    public IToastService? ToastService { get; set; }
 
     private DateRangeViewModel? DateRangeViewModel { get; set; }
 
@@ -107,7 +111,7 @@ public partial class CalendarComponent
             .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
             .ToList();
 
-        DateRangeViewModel = new DateRangeViewModel(ServerProxy!, previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList());
+        DateRangeViewModel = new DateRangeViewModel(ServerProxy!, ToastService!, previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList());
         await DateRangeViewModel.GetEventsAsync();
     }
 

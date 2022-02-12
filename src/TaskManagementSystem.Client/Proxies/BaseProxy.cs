@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
+using TaskManagementSystem.Shared.Models.Options;
 
 namespace TaskManagementSystem.Client.Proxies;
 
@@ -13,11 +14,14 @@ public abstract class BaseProxy
 
     private readonly HttpClient httpClient;
 
-    protected BaseProxy(HttpClient httpClient, ILocalStorageService storageService)
+    protected BaseProxy(HttpClient httpClient, ILocalStorageService storageService, IToastService toastService)
     {
+        ToastService = toastService;
         StorageService = storageService.AssertNotNull();
         this.httpClient = httpClient.AssertNotNull();
     }
+    
+    protected IToastService ToastService { get; }
 
     protected ILocalStorageService StorageService { get; }
 
@@ -38,8 +42,8 @@ public abstract class BaseProxy
             }
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
-                return Result<TResponse>.Error(error.Error);
+                ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+                return Result<TResponse>.Error(error!.Error);
             }
             if (response.StatusCode == HttpStatusCode.InternalServerError)
             {
@@ -77,8 +81,8 @@ public abstract class BaseProxy
             }
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
-                return Result<TResponse>.Error(error.Error);
+                ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+                return Result<TResponse>.Error(error!.Error);
             }
             if (response.StatusCode == HttpStatusCode.InternalServerError)
             {
@@ -109,8 +113,8 @@ public abstract class BaseProxy
         }
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
-            return Result<TResponse>.Error(error.Error);
+            ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+            return Result<TResponse>.Error(error!.Error);
         }
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
@@ -125,16 +129,16 @@ public abstract class BaseProxy
         HttpMethod method,
         TRequest request)
     {
-        using HttpResponseMessage response = await SendRequestCoreAsync(url, method, request, false);
+        HttpResponseMessage response = await SendRequestCoreAsync(url, method, request, false);
 
-        if (response.IsSuccessStatusCode)
+        if (response!.IsSuccessStatusCode)
         {
-            TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+            TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>(ApplicationJsonOptions.Options);
             return Result<TResponse>.Success(value!);
         }
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            ErrorObject error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+            ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject>(ApplicationJsonOptions.Options);
             return Result<TResponse>.Error(error!.Error);
         }
         if (response.StatusCode == HttpStatusCode.InternalServerError)
@@ -154,7 +158,7 @@ public abstract class BaseProxy
 
         if (addAuthorization)
         {
-            string token = await StorageService.GetAccessTokenAsync();
+            string? token = await StorageService.GetAccessTokenAsync();
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
@@ -176,7 +180,7 @@ public abstract class BaseProxy
 
         if (addAuthorization)
         {
-            string token = await StorageService.GetAccessTokenAsync();
+            string? token = await StorageService.GetAccessTokenAsync();
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 

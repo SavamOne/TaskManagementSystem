@@ -25,6 +25,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStatePr
 
 builder.Services.AddScoped<ILocalStorageWrapper, LocalStorageWrapper>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddSingleton<IToastService, ToastService>();
 
 builder.Services.AddAuthorizationCore();
 

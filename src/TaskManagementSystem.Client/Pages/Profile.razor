@@ -16,15 +16,3 @@
         <button class="w-50 btn-danger btn" @onclick="Logout">Logout</button>
     </div>
 </div>
-
-
-@code {
-
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
-
-    private async Task Logout()
-    {
-        await ServerProxy!.LogoutAsync();
-    }
-}
