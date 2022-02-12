@@ -21,7 +21,7 @@ public class JwtOptions
 
     public int RefreshTokenExpirationMinutes { get; set; }
 
-    public SymmetricSecurityKey SymmetricAccessKey => symmetricAccessKey ??= new SymmetricSecurityKey(encoding.GetBytes(AccessTokenSecretKey));
+    public SymmetricSecurityKey SymmetricAccessKey => symmetricAccessKey ??= new SymmetricSecurityKey(encoding.GetBytes(AccessTokenSecretKey!));
 
-    public SymmetricSecurityKey SymmetricRefreshKey => symmetricRefreshKey ??= new SymmetricSecurityKey(encoding.GetBytes(RefreshTokenSecretKey));
+    public SymmetricSecurityKey SymmetricRefreshKey => symmetricRefreshKey ??= new SymmetricSecurityKey(encoding.GetBytes(RefreshTokenSecretKey!));
 }

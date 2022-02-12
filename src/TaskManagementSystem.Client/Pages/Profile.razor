@@ -21,10 +21,10 @@
 @code {
 
     [Inject]
-    public ServerProxy ServerProxy { get; set; }
+    public ServerProxy? ServerProxy { get; set; }
 
     private async Task Logout()
     {
-        await ServerProxy.LogoutAsync();
+        await ServerProxy!.LogoutAsync();
     }
 }

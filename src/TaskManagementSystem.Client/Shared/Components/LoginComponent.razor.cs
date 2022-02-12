@@ -19,14 +19,14 @@ public partial class LoginComponent
 
     private async void OnLogin()
     {
-        ( bool isSuccess, _, string? errorDescription ) = await ServerProxy!.LoginAsync(loginViewModel.GetData());
+        var result = await ServerProxy!.LoginAsync(loginViewModel.GetData());
 
-        if (isSuccess)
+        if (result.IsSuccess)
         {
             return;
         }
 
-        ErrorText = errorDescription!;
+        ErrorText = result.ErrorDescription!;
         Modal.Open();
     }
 }

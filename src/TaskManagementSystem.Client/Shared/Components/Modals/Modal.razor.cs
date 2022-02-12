@@ -13,10 +13,10 @@ public partial class Modal
     public string? Title { get; set; }
 
     [Parameter]
-    public RenderFragment Body { get; set; }
+    public RenderFragment? Body { get; set; }
 
     [Parameter]
-    public RenderFragment Footer { get; set; }
+    public RenderFragment? Footer { get; set; }
 
     public void Open()
     {

@@ -5,50 +5,50 @@
 </Modal>
 
 <EditForm Model="userInfoViewModel" OnValidSubmit="ChangeInfo">
-            <DataAnnotationsValidator/>
-            <ValidationSummary />
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
 
-            <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">Name</label>
-                <div class="col-sm-8">
-                    <InputText @bind-Value="userInfoViewModel.Name" class="form-control"/>
-                </div>
-            </div>
+    <div class="mb-3 row">
+        <label class="col-sm-4 col-form-label">Name</label>
+        <div class="col-sm-8">
+            <InputText @bind-Value="userInfoViewModel.Name" class="form-control"/>
+        </div>
+    </div>
 
-            <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">Email</label>
-                <div class="col-sm-8">
-                    <InputText type="email" @bind-Value="userInfoViewModel.Email" class="form-control"/>
-                </div>
-            </div>
+    <div class="mb-3 row">
+        <label class="col-sm-4 col-form-label">Email</label>
+        <div class="col-sm-8">
+            <InputText type="email" @bind-Value="userInfoViewModel.Email" class="form-control"/>
+        </div>
+    </div>
 
-            <div class="mb-3 row">
-                <label class="col-sm-4 col-form-label">Register date</label>
-                <div class="col-sm-8">
-                    <InputText @bind-Value="userInfoViewModel.RegisterDate" class="form-control" readonly/>
-                </div>
-            </div>
+    <div class="mb-3 row">
+        <label class="col-sm-4 col-form-label">Register date</label>
+        <div class="col-sm-8">
+            <InputText @bind-Value="userInfoViewModel.RegisterDate" class="form-control" readonly/>
+        </div>
+    </div>
 
-            <div class="row">
-                <div class="d-flex justify-content-end mb-3 col">
-                    <button class="w-50 btn btn-primary" type="submit">Update info</button>
-                </div>
-            </div>
+    <div class="row">
+        <div class="d-flex justify-content-end mb-3 col">
+            <button class="w-50 btn btn-primary" type="submit">Update info</button>
+        </div>
+    </div>
 </EditForm>
 
 @code {
     private UserInfoViewModel userInfoViewModel = new();
-    
-    private string Result { get; set; }
+
+    private string? Result { get; set; }
 
     private Modal modal = new();
-    
+
     [Inject]
-    public ServerProxy ServerProxy { get; set; }
+    public ServerProxy? ServerProxy { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        GetUserInfoResponse result = await ServerProxy.GetUserInfoAsync();
+        var result = await ServerProxy!.GetUserInfoAsync();
 
         if (!result.IsSuccess)
         {
@@ -56,14 +56,14 @@
             return;
         }
 
-        userInfoViewModel.SetInfo(result.UserInfo!);
+        userInfoViewModel.SetInfo(result.Value!);
     }
     private async Task ChangeInfo()
     {
-        var result = await ServerProxy.ChangeUserInfoAsync(userInfoViewModel.GetRequest());
+        var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetRequest());
 
         Result = result.IsSuccess ? "About changed successfully" : result.ErrorDescription!;
-        
+
         modal.Open();
     }
 }

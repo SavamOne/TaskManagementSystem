@@ -7,21 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.1"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TaskManagementSystem.Client\TaskManagementSystem.Client.csproj"/>
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj"/>
-        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic\TaskManagementSystem.BusinessLogic.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.Client\TaskManagementSystem.Client.csproj" />
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj" />
+        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic\TaskManagementSystem.BusinessLogic.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Watch Include="../TaskManagementSystem.Client/**/*.cs"/>
-        <Watch Include="../TaskManagementSystem.Client/**/*.css"/>
-        <Watch Include="../TaskManagementSystem.Client/**/*.razor"/>
+        <Watch Include="../TaskManagementSystem.Client/**/*.cs" />
+        <Watch Include="../TaskManagementSystem.Client/**/*.css" />
+        <Watch Include="../TaskManagementSystem.Client/**/*.razor" />
     </ItemGroup>
 
 

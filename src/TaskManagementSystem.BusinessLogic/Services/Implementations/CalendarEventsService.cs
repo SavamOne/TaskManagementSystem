@@ -46,21 +46,21 @@ public class CalendarEventsService
         this.logger = logger;
     }
 
-    public async Task<Result<IEnumerable<CalendarEvent>>> GetEvents(DateTime utcStartTime, DateTime utcEndTime)
+    public async Task<IEnumerable<CalendarEvent>> GetEvents(DateTime utcStartTime, DateTime utcEndTime)
     {
         if (utcStartTime - utcEndTime >= TimeSpan.FromDays(55))
         {
-            return Result<IEnumerable<CalendarEvent>>.Error("55 days limit range");
+            throw new ArgumentException("55 days limit range");
         }
 
         if (utcStartTime.Kind != DateTimeKind.Utc)
         {
-            return Result<IEnumerable<CalendarEvent>>.Error("DateTime Kind is not UTC");
+            throw new ArgumentException("DateTime Kind is not UTC");
         }
 
         if (utcEndTime.Kind != DateTimeKind.Utc)
         {
-            return Result<IEnumerable<CalendarEvent>>.Error("DateTime Kind is not UTC");
+            throw new ArgumentException("DateTime Kind is not UTC");
         }
 
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -77,7 +77,7 @@ public class CalendarEventsService
 
         logger.Log(LogLevel.Information, "Get events time:{Elapsed:g}", stopwatch.Elapsed);
 
-        return Result<IEnumerable<CalendarEvent>>.Success(suitableEvents);
+        return suitableEvents;
     }
 
     private IEnumerable<CalendarEvent> CalculateRecurrentEvent(CalendarEvent recurrentEvent, DateTime calendarStartTime, DateTime calendarEndTime)

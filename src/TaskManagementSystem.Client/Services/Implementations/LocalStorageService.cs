@@ -15,12 +15,12 @@ public class LocalStorageService : ILocalStorageService
         this.wrapper = wrapper.AssertNotNull();
     }
 
-    public async Task<string> GetAccessTokenAsync()
+    public async Task<string?> GetAccessTokenAsync()
     {
         return await wrapper.GetStringAsync(AccessTokenKey);
     }
 
-    public async Task<string> GetRefreshTokenAsync()
+    public async Task<string?> GetRefreshTokenAsync()
     {
         return await wrapper.GetStringAsync(RefreshTokenKey);
     }

@@ -25,24 +25,23 @@ public class ServerProxy : BaseProxy
 
     public async Task<WeatherForecast[]> Get()
     {
-        return await SendRequestAsync<WeatherForecast[]>("WeatherForecast", HttpMethod.Get);
+        return ( await SendRequestAsync<WeatherForecast[]>("WeatherForecast", HttpMethod.Get) ).Value!;
     }
 
-    public async Task<RegisterResponse> RegisterUserAsync(RegisterRequest request)
+    public async Task<Result<Tokens>> RegisterUserAsync(RegisterRequest request)
     {
-        RegisterResponse result =
-            await SendAnonymousRequestAsync<RegisterRequest, RegisterResponse>("Api/V1/User/Register", HttpMethod.Post,
-            request);
+        var result = await SendAnonymousRequestAsync<RegisterRequest, Tokens>("Api/V1/User/Register", HttpMethod.Post,
+        request);
 
         await ProcessRefreshTokensResponse(result);
 
         return result;
     }
 
-    public async Task<LoginResponse> LoginAsync(LoginRequest request)
+    public async Task<Result<Tokens>> LoginAsync(LoginRequest request)
     {
-        LoginResponse result =
-            await SendAnonymousRequestAsync<LoginRequest, LoginResponse>("Api/V1/User/Login", HttpMethod.Post, request);
+        var result =
+            await SendAnonymousRequestAsync<LoginRequest, Tokens>("Api/V1/User/Login", HttpMethod.Post, request);
 
         await ProcessRefreshTokensResponse(result);
 
@@ -55,35 +54,35 @@ public class ServerProxy : BaseProxy
         navigationManager.NavigateTo("Login");
         stateProvider.ChangeAuthenticationState(false);
     }
-    
-    public async Task<GetUserInfoResponse> GetUserInfoAsync()
-    {
-        GetUserInfoResponse result =
-            await SendRequestAsync<GetUserInfoResponse>("Api/V1/User/GetInfo", HttpMethod.Post);
 
-        return result;
-    }
-    
-    public async Task<ChangePasswordResponse> ChangeUserPasswordAsync(ChangePasswordRequest request)
+    public async Task<Result<UserInfo>> GetUserInfoAsync()
     {
-        ChangePasswordResponse result =
-            await SendRequestAsync<ChangePasswordRequest, ChangePasswordResponse>("Api/V1/User/ChangePassword", HttpMethod.Post, request);
-
-        return result;
-    }
-    
-    public async Task<ChangeUserInfoResponse> ChangeUserInfoAsync(ChangeUserInfoRequest request)
-    {
-        ChangeUserInfoResponse result =
-            await SendRequestAsync<ChangeUserInfoRequest, ChangeUserInfoResponse>("Api/V1/User/ChangeInfo", HttpMethod.Post, request);
+        var result =
+            await SendRequestAsync<UserInfo>("Api/V1/User/GetInfo", HttpMethod.Post);
 
         return result;
     }
 
-    public async Task<CalendarResponse> GetEventsForMonth(CalendarGetEventsRequest request)
+    public async Task<Result<UserInfo>> ChangeUserPasswordAsync(ChangePasswordRequest request)
     {
-        CalendarResponse result =
-            await SendRequestAsync<CalendarGetEventsRequest, CalendarResponse>("Api/V1/CalendarEvents/GetEvents", HttpMethod.Post, request);
+        var result =
+            await SendRequestAsync<ChangePasswordRequest, UserInfo>("Api/V1/User/ChangePassword", HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<UserInfo>> ChangeUserInfoAsync(ChangeUserInfoRequest request)
+    {
+        var result =
+            await SendRequestAsync<ChangeUserInfoRequest, UserInfo>("Api/V1/User/ChangeInfo", HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarEventInfo[]>> GetEventsForMonth(CalendarGetEventsRequest request)
+    {
+        var result =
+            await SendRequestAsync<CalendarGetEventsRequest, CalendarEventInfo[]>("Api/V1/CalendarEvents/GetEvents", HttpMethod.Post, request);
 
         return result;
     }
@@ -93,18 +92,18 @@ public class ServerProxy : BaseProxy
         string refreshToken = await StorageService.GetRefreshTokenAsync();
         RefreshTokensRequest request = new(refreshToken);
 
-        RefreshTokensResponse result =
-            await SendAnonymousRequestAsync<RefreshTokensRequest, RefreshTokensResponse>(
+        var result =
+            await SendAnonymousRequestAsync<RefreshTokensRequest, Tokens>(
             "Api/V1/User/Refresh", HttpMethod.Post, request);
 
         await ProcessRefreshTokensResponse(result);
     }
 
-    private async Task ProcessRefreshTokensResponse(RefreshTokensResponse response)
+    private async Task ProcessRefreshTokensResponse(Result<Tokens> response)
     {
         if (response.IsSuccess)
         {
-            await StorageService.SetAccessAndRefreshTokenAsync(response.Tokens!.AccessToken, response.Tokens!.RefreshToken);
+            await StorageService.SetAccessAndRefreshTokenAsync(response.Value!.AccessToken, response.Value!.RefreshToken);
             stateProvider.ChangeAuthenticationState(true);
             return;
         }

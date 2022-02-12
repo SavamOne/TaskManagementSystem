@@ -34,7 +34,7 @@
     @if (IsLoaded)
     {
         <div class="day-names">
-            @foreach (string day in DayOfWeekNamesWithFirstDay)
+            @foreach (string day in DayOfWeekNamesWithFirstDay!)
             {
                 <div class="value day-name">@day</div>
             }

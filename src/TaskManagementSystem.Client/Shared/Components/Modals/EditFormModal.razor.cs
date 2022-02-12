@@ -10,13 +10,13 @@ public partial class EditFormModal<TItem>
     private bool showBackdrop = false;
 
     [Parameter]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [Parameter]
-    public RenderFragment Body { get; set; }
+    public RenderFragment? Body { get; set; }
 
     [Parameter]
-    public TItem Item { get; set; }
+    public TItem? Item { get; set; }
 
     [Parameter]
     public Action<TItem>? Submit { get; set; }
@@ -41,7 +41,7 @@ public partial class EditFormModal<TItem>
 
     private void OnValidSubmit()
     {
-        Submit?.Invoke(Item);
+        Submit?.Invoke(Item!);
 
         Close();
     }

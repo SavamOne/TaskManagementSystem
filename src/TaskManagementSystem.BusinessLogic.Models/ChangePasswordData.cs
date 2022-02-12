@@ -12,8 +12,8 @@ public class ChangePasswordData
     }
 
     public Guid UserId { get; }
-    
+
     public string OldPassword { get; }
-    
+
     public string NewPassword { get; }
 }

@@ -1,5 +1,3 @@
-using TaskManagementSystem.Shared.Helpers;
-
 namespace TaskManagementSystem.BusinessLogic.Models;
 
 public class ChangeUserInfoData
@@ -14,6 +12,6 @@ public class ChangeUserInfoData
     public Guid UserId { get; }
 
     public string Name { get; }
-    
+
     public string Email { get; }
 }

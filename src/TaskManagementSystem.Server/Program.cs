@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Services;
 using TaskManagementSystem.BusinessLogic.Services.Implementations;
+using TaskManagementSystem.Server.Filters;
 using TaskManagementSystem.Server.Options;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Server.Services.Implementations;
@@ -10,7 +11,6 @@ using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://0.0.0.0:5000/");
 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
@@ -19,15 +19,19 @@ builder.Services.AddSingleton<CalendarEventsService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Encoder = ApplicationJsonOptions.Encoder;
-        options.JsonSerializerOptions.DefaultIgnoreCondition = ApplicationJsonOptions.DefaultIgnoreCondition;
-        options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
-        options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
-    });
+builder.Services.AddSingleton<ApiResponseExceptionFilter>();
+builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+    options.SuppressMapClientErrors = true;
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Encoder = ApplicationJsonOptions.Encoder;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = ApplicationJsonOptions.DefaultIgnoreCondition;
+    options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
+    options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
+});
 
 builder.Services.AddRazorPages();
 
@@ -63,10 +67,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.UseWebAssemblyDebugging();
-}
-else
-{
-    app.UseExceptionHandler("/Error");
 }
 
 app.UseBlazorFrameworkFiles();
