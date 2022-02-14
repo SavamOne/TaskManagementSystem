@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
-using TaskManagementSystem.Client.Shared.Components.Modals;
 using TaskManagementSystem.Client.ViewModels;
 
 namespace TaskManagementSystem.Client.Shared.Components;
@@ -12,7 +11,7 @@ public partial class LoginComponent
 
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
 

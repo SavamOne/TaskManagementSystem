@@ -7,10 +7,17 @@ namespace TaskManagementSystem.Client.Shared.Components.Toasts;
 
 public partial class ToastComponent : IDisposable
 {
+
+    private ICollection<ToastViewModel> toasts = new List<ToastViewModel>();
+
     [Inject]
     public IToastService? ToastService { get; set; }
 
-    private ICollection<ToastViewModel> toasts = new List<ToastViewModel>();
+    public void Dispose()
+    {
+        ToastService!.NotifyAdded -= OnToastAdded;
+        ToastService!.NotifyDeleted -= OnToastDeleted;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -30,17 +37,11 @@ public partial class ToastComponent : IDisposable
         toastViewModel.RemoveAfterTimeout();
         StateHasChanged();
     }
-    
+
     public void OnToastDeleted(Guid id)
     {
         ToastViewModel toastViewModel = toasts.First(x => x.Id == id);
         toasts.Remove(toastViewModel);
         StateHasChanged();
-    }
-    
-    public void Dispose()
-    {
-        ToastService!.NotifyAdded -= OnToastAdded;
-        ToastService!.NotifyDeleted -= OnToastDeleted;
     }
 }

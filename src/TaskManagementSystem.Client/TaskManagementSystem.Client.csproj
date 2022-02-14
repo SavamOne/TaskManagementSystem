@@ -4,6 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +15,30 @@
 
     <ItemGroup>
         <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\LocalizedResources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>LocalizedResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\LocalizedResources.ru.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>LocalizedResources.ru.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Resources\LocalizedResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>LocalizedResources.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\LocalizedResources.ru.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>LocalizedResources.ru.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

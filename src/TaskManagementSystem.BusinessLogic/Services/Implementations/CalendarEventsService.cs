@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.BusinessLogic.Resources;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
@@ -48,19 +50,14 @@ public class CalendarEventsService
 
     public async Task<IEnumerable<CalendarEvent>> GetEvents(DateTime utcStartTime, DateTime utcEndTime)
     {
-        if (utcStartTime - utcEndTime >= TimeSpan.FromDays(55))
+        if (utcStartTime - utcEndTime >= TimeSpan.FromDays(60))
         {
-            throw new ArgumentException("55 days limit range");
+            throw new BusinessLogicException(LocalizedResources.DaysLimitOutOfRange, 60);
         }
 
-        if (utcStartTime.Kind != DateTimeKind.Utc)
+        if (utcStartTime.Kind != DateTimeKind.Utc || utcEndTime.Kind != DateTimeKind.Utc)
         {
-            throw new ArgumentException("DateTime Kind is not UTC");
-        }
-
-        if (utcEndTime.Kind != DateTimeKind.Utc)
-        {
-            throw new ArgumentException("DateTime Kind is not UTC");
+            throw new BusinessLogicException(LocalizedResources.DateIsNotInUtc);
         }
 
         Stopwatch stopwatch = Stopwatch.StartNew();

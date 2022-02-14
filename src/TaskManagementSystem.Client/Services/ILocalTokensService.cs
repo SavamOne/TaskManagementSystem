@@ -1,6 +1,6 @@
 namespace TaskManagementSystem.Client.Services;
 
-public interface ILocalStorageService
+public interface ILocalTokensService
 {
     Task<string?> GetAccessTokenAsync();
 

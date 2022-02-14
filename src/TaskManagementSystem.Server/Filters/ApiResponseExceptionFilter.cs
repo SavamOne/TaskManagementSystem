@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using TaskManagementSystem.BusinessLogic.Exceptions;
+using TaskManagementSystem.Server.Resources;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Server.Filters;
@@ -22,9 +24,16 @@ public class ApiResponseExceptionFilter : IActionFilter, IOrderedFilter
             return;
         }
 
-        if (context.Exception is ArgumentException argumentException)
+        if (context.Exception is ArgumentNullException argumentNullException)
         {
-            ErrorObject error = new(argumentException.Message);
+            ErrorObject error = new(string.Format(LocalizedResources.ApiResponseExceptionFilter_ParameterIsEmptyOrMissing, argumentNullException.ParamName));
+
+            context.Result = new BadRequestObjectResult(error);
+            context.ExceptionHandled = true;
+        }
+        else if (context.Exception is BusinessLogicException argumentException)
+        {
+            ErrorObject error = new(argumentException.Description);
 
             context.Result = new BadRequestObjectResult(error);
             context.ExceptionHandled = true;
@@ -33,7 +42,7 @@ public class ApiResponseExceptionFilter : IActionFilter, IOrderedFilter
         {
             context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
             context.ExceptionHandled = true;
-            loggerFactory.CreateLogger(context.Controller.GetType()).LogCritical(context.Exception, "Something went wrong");
+            loggerFactory.CreateLogger(context.Controller.GetType()).LogError(context.Exception, "Unhandled exception");
         }
 
     }

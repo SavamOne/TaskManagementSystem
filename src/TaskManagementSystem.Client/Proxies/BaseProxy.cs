@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using TaskManagementSystem.Client.Resources;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
@@ -13,17 +15,19 @@ public abstract class BaseProxy
     private const string ApplicationJson = "application/json";
 
     private readonly HttpClient httpClient;
+    private readonly ILocalizationService localizationService;
 
-    protected BaseProxy(HttpClient httpClient, ILocalStorageService storageService, IToastService toastService)
+    protected BaseProxy(HttpClient httpClient, ILocalTokensService storageService, IToastService toastService, ILocalizationService localizationService)
     {
+        this.localizationService = localizationService;
         ToastService = toastService;
         StorageService = storageService.AssertNotNull();
         this.httpClient = httpClient.AssertNotNull();
     }
-    
+
     protected IToastService ToastService { get; }
 
-    protected ILocalStorageService StorageService { get; }
+    protected ILocalTokensService StorageService { get; }
 
     protected abstract Task RefreshTokens();
 
@@ -47,15 +51,15 @@ public abstract class BaseProxy
             }
             if (response.StatusCode == HttpStatusCode.InternalServerError)
             {
-                return Result<TResponse>.Error("Internal server error");
+                return Result<TResponse>.Error(LocalizedResources.BaseProxy_InternalServerError);
             }
             if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error($"You don't have access to this page {url}");
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url.ToLower()));
             }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
             }
 
             await RefreshTokens();
@@ -86,15 +90,15 @@ public abstract class BaseProxy
             }
             if (response.StatusCode == HttpStatusCode.InternalServerError)
             {
-                return Result<TResponse>.Error("Internal server error");
+                return Result<TResponse>.Error(LocalizedResources.BaseProxy_InternalServerError);
             }
             if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error($"You don't have access to this page {url}");
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url.ToLower()));
             }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
             }
 
             await RefreshTokens();
@@ -118,10 +122,10 @@ public abstract class BaseProxy
         }
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return Result<TResponse>.Error("Internal server error");
+            return Result<TResponse>.Error(LocalizedResources.BaseProxy_InternalServerError);
         }
 
-        return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
+        return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
     }
 
     protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TRequest, TResponse>(
@@ -143,10 +147,10 @@ public abstract class BaseProxy
         }
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return Result<TResponse>.Error("Internal server error");
+            return Result<TResponse>.Error(LocalizedResources.BaseProxy_InternalServerError);
         }
 
-        return Result<TResponse>.Error($"Unhandled status code: {response.StatusCode}");
+        return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
     }
 
     private async Task<HttpResponseMessage> SendRequestCoreAsync(
@@ -156,10 +160,15 @@ public abstract class BaseProxy
     {
         using HttpRequestMessage requestMessage = new(httpMethod, url);
 
+        CultureInfo cultureInfo = await localizationService.GetApplicationCultureAsync();
+        requestMessage.Headers.AcceptLanguage.Clear();
+        requestMessage.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo.TwoLetterISOLanguageName));
+
         if (addAuthorization)
         {
             string? token = await StorageService.GetAccessTokenAsync();
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Console.WriteLine(requestMessage.Headers.AcceptLanguage);
         }
 
         HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
@@ -177,6 +186,10 @@ public abstract class BaseProxy
         {
             Content = JsonContent.Create(content, MediaTypeHeaderValue.Parse(ApplicationJson))
         };
+
+        CultureInfo cultureInfo = await localizationService.GetApplicationCultureAsync();
+        requestMessage.Headers.AcceptLanguage.Clear();
+        requestMessage.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(cultureInfo.TwoLetterISOLanguageName));
 
         if (addAuthorization)
         {

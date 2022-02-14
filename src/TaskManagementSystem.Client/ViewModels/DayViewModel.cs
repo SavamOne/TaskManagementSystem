@@ -1,12 +1,9 @@
-using System.Globalization;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
 public class DayViewModel
 {
-    private static readonly DateTimeFormatInfo DateTimeFormat = CultureInfo.CurrentUICulture.DateTimeFormat.Clone() as DateTimeFormatInfo;
-
     public DayViewModel(DateOnly date, bool isHidden)
     {
         Date = date;

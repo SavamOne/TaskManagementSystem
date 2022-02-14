@@ -14,11 +14,12 @@ public class ServerProxy : BaseProxy
 
     public ServerProxy(
         HttpClient httpClient,
-        ILocalStorageService storageService,
+        ILocalTokensService storageService,
         IToastService toastService,
         NavigationManager navigationManager,
-        JwtAuthenticationStateProvider stateProvider)
-        : base(httpClient, storageService, toastService)
+        JwtAuthenticationStateProvider stateProvider,
+        ILocalizationService localizationService)
+        : base(httpClient, storageService, toastService, localizationService)
     {
         this.navigationManager = navigationManager.AssertNotNull();
         this.stateProvider = stateProvider.AssertNotNull();
@@ -113,7 +114,7 @@ public class ServerProxy : BaseProxy
             stateProvider.ChangeAuthenticationState(true);
             return;
         }
-        
+
         await LogoutAsync();
     }
 }

@@ -1,5 +1,7 @@
-﻿using TaskManagementSystem.BusinessLogic.Helpers;
+﻿using TaskManagementSystem.BusinessLogic.Exceptions;
+using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.BusinessLogic.Resources;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
@@ -17,10 +19,10 @@ public class UserService : IUserService
 
         //TODO: DataAccess
         User? existedUser = users.Find(x =>
-            string.Equals(x.Name, data.Username, StringComparison.InvariantCultureIgnoreCase));
+            string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
         if (existedUser is not null)
         {
-            throw new ArgumentException($"User with name {data.Username} already exists");
+            throw new BusinessLogicException(LocalizedResources.UserAlreadyExists);
         }
 
         User user = new(Guid.NewGuid(), data.Username, data.Email, DateTimeOffset.UtcNow, PasswordHelper.GetHash(data.Password));
@@ -31,6 +33,7 @@ public class UserService : IUserService
 
     public async Task<User> CheckUserCredentialsAsync(LoginData data)
     {
+        Console.WriteLine(Thread.CurrentThread.CurrentUICulture.Name);
         data.AssertNotNull();
 
         //TODO: DataAccess
@@ -38,13 +41,13 @@ public class UserService : IUserService
             users.Find(x => string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
         if (existedUser is null)
         {
-            throw new ArgumentException("Wrong username or password");
+            throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
         }
 
         byte[] loginUserHash = PasswordHelper.GetHash(data.Password);
         if (!loginUserHash.SequenceEqual(existedUser.PasswordHash))
         {
-            throw new ArgumentException("Wrong username or password");
+            throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
         }
 
         return existedUser;
@@ -56,7 +59,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new ArgumentException("User does not exists");
+            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
         }
 
         return user;
@@ -69,7 +72,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new ArgumentException("User does not exists");
+            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
         }
 
         string email = user.Email;
@@ -97,19 +100,19 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new ArgumentException("User does not exists");
+            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
         }
 
         byte[] oldHash = PasswordHelper.GetHash(data.OldPassword);
         if (!oldHash.SequenceEqual(user.PasswordHash))
         {
-            throw new ArgumentException("Old password is incorrect");
+            throw new BusinessLogicException(LocalizedResources.OldPasswordIsIncorrect);
         }
 
         byte[] newHash = PasswordHelper.GetHash(data.NewPassword);
         if (newHash.SequenceEqual(oldHash))
         {
-            throw new ArgumentException("New password is the same");
+            throw new BusinessLogicException(LocalizedResources.NewPasswordIsTheSame);
         }
 
         User updatedUser = new(data.UserId, user.Name, user.Email, user.DateJoined, newHash);

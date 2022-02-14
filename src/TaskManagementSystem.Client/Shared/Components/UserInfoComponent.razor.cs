@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Proxies;
+using TaskManagementSystem.Client.Resources;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
 
@@ -11,7 +12,7 @@ public partial class UserInfoComponent
 
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
 
@@ -27,17 +28,17 @@ public partial class UserInfoComponent
 
         userInfoViewModel.SetInfo(result.Value!);
     }
-    
+
     private async Task ChangeInfo()
     {
         var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetRequest());
 
         if (result.IsSuccess)
         {
-            ToastService!.AddSystemToast("About change", "About successfully changed");
+            ToastService!.AddSystemToast(LocalizedResources.UserInfoComponent_AboutMe, LocalizedResources.UserInfoComponent_AboutSuccessfullyChanged);
             return;
         }
-        
+
         ToastService!.AddSystemErrorToast(result.ErrorDescription!);
     }
 }
