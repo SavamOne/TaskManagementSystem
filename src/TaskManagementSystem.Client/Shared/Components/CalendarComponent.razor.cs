@@ -9,22 +9,23 @@ namespace TaskManagementSystem.Client.Shared.Components;
 
 public partial class CalendarComponent
 {
-    private readonly DateTimeFormatInfo dateTimeFormat = ( CultureInfo.CurrentUICulture.DateTimeFormat.Clone() as DateTimeFormatInfo )!;
-
     [Parameter]
     public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
 
-    [Parameter]
-    public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Monday;
-
-    [Parameter]
-    public EventEditFormModal EditEventModal { get; set; } = new();
-
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
+
+    [Inject]
+    public ILocalizationService? LocalizationService { get; set; }
+
+    private DayOfWeek FirstDayOfWeek { get; set; }
+
+    private EventEditFormModal EditEventModal { get; set; } = new();
+
+    private DateTimeFormatInfo? DateTimeFormat { get; set; }
 
     private DateRangeViewModel? DateRangeViewModel { get; set; }
 
@@ -40,6 +41,10 @@ public partial class CalendarComponent
     {
         IsLoaded = false;
 
+        DateTimeFormat = await LocalizationService!.GetApplicationDateTimeFormatAsync();
+        FirstDayOfWeek = DateTimeFormat.FirstDayOfWeek;
+
+        UpdateFirstDayOfWeekState();
         UpdateFirstDayOfWeekState();
         await UpdateCurrentMonthStateAsync();
 
@@ -48,7 +53,7 @@ public partial class CalendarComponent
 
     private string GetDayName(DayOfWeek dayOfWeek)
     {
-        return dateTimeFormat.GetShortestDayName(dayOfWeek);
+        return DateTimeFormat!.GetShortestDayName(dayOfWeek);
     }
 
     private async Task AppendMonth()
@@ -80,7 +85,7 @@ public partial class CalendarComponent
     private int GetDayOfWeek(DateOnly date)
     {
         int day = (int)date.DayOfWeek;
-        int calendarFirstDay = (int)FirstDayOfWeek;
+        int calendarFirstDay = (int)DateTimeFormat!.FirstDayOfWeek;
         int mod = ( day - calendarFirstDay ) % 7;
 
         return mod >= 0 ? mod : mod + 7;
@@ -88,7 +93,7 @@ public partial class CalendarComponent
 
     private async Task UpdateCurrentMonthStateAsync()
     {
-        Month = dateTimeFormat.GetMonthName(WorkingDate.Month);
+        Month = DateTimeFormat!.GetMonthName(WorkingDate.Month);
         Year = WorkingDate.Year;
 
         int daysInMonth = DateTime.DaysInMonth(WorkingDate.Year, WorkingDate.Month);
@@ -117,7 +122,7 @@ public partial class CalendarComponent
 
     private void UpdateFirstDayOfWeekState()
     {
-        DayOfWeekNamesWithFirstDay = Enumerable.Range((int)FirstDayOfWeek, 7)
+        DayOfWeekNamesWithFirstDay = Enumerable.Range((int)DateTimeFormat!.FirstDayOfWeek, 7)
             .Select(x => x % 7)
             .Cast<DayOfWeek>()
             .Select(GetDayName).ToList();

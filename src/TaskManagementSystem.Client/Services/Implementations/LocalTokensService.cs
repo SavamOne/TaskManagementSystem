@@ -3,14 +3,14 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Client.Services.Implementations;
 
-public class LocalStorageService : ILocalStorageService
+public class LocalTokensService : ILocalTokensService
 {
     private const string AccessTokenKey = "access_token";
     private const string RefreshTokenKey = "refresh_token";
 
     private readonly ILocalStorageWrapper wrapper;
 
-    public LocalStorageService(ILocalStorageWrapper wrapper)
+    public LocalTokensService(ILocalStorageWrapper wrapper)
     {
         this.wrapper = wrapper.AssertNotNull();
     }

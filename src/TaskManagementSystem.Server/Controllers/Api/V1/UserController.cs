@@ -31,7 +31,6 @@ public class UserController : ControllerBase
         request.AssertNotNull();
 
         User registeredUser = await userService.RegisterUserAsync(new RegisterData(request.Name, request.Email, request.Password));
-
         Tokens tokens = tokenService.GenerateAccessAndRefreshTokens(registeredUser);
 
         return Ok(tokens);
@@ -49,7 +48,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("Refresh")]
-    public IActionResult Refresh(RefreshTokensRequest request)
+    public IActionResult RefreshAsync(RefreshTokensRequest request)
     {
         request.AssertNotNull();
 
@@ -62,8 +61,8 @@ public class UserController : ControllerBase
     [HttpPost("GetInfo")]
     public async Task<IActionResult> GetInfoAsync()
     {
-        Guid idResult = tokenService.GetUserIdFromClaims(User);
-        User user = await userService.GetUserAsync(idResult);
+        Guid id = tokenService.GetUserIdFromClaims(User);
+        User user = await userService.GetUserAsync(id);
 
         return Ok(new UserInfo(user.Name, user.Email, user.DateJoined));
     }

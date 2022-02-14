@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Services;
 using TaskManagementSystem.BusinessLogic.Services.Implementations;
@@ -37,27 +38,29 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidateAudience = true,
-            ValidAudience = jwtOptions.Audience,
-            ValidateLifetime = true,
-            IssuerSigningKey = jwtOptions.SymmetricAccessKey,
-            ValidateIssuerSigningKey = true,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+        ValidateIssuer = true,
+        ValidIssuer = jwtOptions.Issuer,
+        ValidateAudience = true,
+        ValidAudience = jwtOptions.Audience,
+        ValidateLifetime = true,
+        IssuerSigningKey = jwtOptions.SymmetricAccessKey,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
-builder.Services.AddSwaggerGen();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSwaggerGen();
+}
 
 WebApplication app = builder.Build();
 
@@ -68,6 +71,13 @@ if (app.Environment.IsDevelopment())
 
     app.UseWebAssemblyDebugging();
 }
+
+app.UseRequestLocalization(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(LocalizationOptions.DefaultCultureInfo);
+    options.SupportedCultures = LocalizationOptions.AvailableCultureInfos;
+    options.SupportedUICultures = LocalizationOptions.AvailableCultureInfos;
+});
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();

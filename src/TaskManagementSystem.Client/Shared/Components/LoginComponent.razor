@@ -3,23 +3,18 @@
         <DataAnnotationsValidator/>
 
         <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="57">
-        <h3 class="mb-4 fw-normal">Sign in</h3>
+        <h3 class="mb-4 fw-normal">@LocalizedResources.LoginComponent_SignIn</h3>
 
         <div class="mb-1 form-floating">
             <InputText @bind-Value="loginViewModel.Email" type="email" class="form-control email-input" id="floatingInput" placeholder="name@example.com"/>
-            <label for="floatingInput">Email</label>
+            <label for="floatingInput">@LocalizedResources.LoginComponent_Email</label>
         </div>
         <div class="mb-4 form-floating">
             <InputText @bind-Value="loginViewModel.Password" type="password" class="form-control password-input" id="floatingPassword" placeholder="Password"/>
-            <label for="floatingPassword">Password</label>
+            <label for="floatingPassword">@LocalizedResources.LoginComponent_Password</label>
         </div>
 
-        @* <div class="mb-4 checkbox"> *@
-        @*     <label> *@
-        @*         <InputCheckbox @bind-Value="loginViewModel.RememberMe"/> Remember me *@
-        @*     </label> *@
-        @* </div> *@
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
-        <p class="mt-5 mb-4 text-muted">&copy; TaskManagementSystem @DateTime.UtcNow.Year</p>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">@LocalizedResources.LoginComponent_Login</button>
+        <p class="mt-5 mb-4 text-muted">@string.Format(LocalizedResources.LoginComponent_Copyright, DateTime.Now.Year)</p>
     </EditForm>
 </main>

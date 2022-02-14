@@ -1,0 +1,27 @@
+<div class="col">
+    <h4>@LocalizedResources.LocalizationSettingsComponent_LocalizationSettings</h4>
+    <div class="row mb-4">
+        <h5 class="mb-2 col-form-label">@LocalizedResources.LocalizationSettingsComponent_Language</h5>
+        @if (IsLoaded)
+        {
+            <DropdownComponent Items="cultureItems!"
+                               ItemSelectedFunc="ChangeCulture"
+                               SelectedItem="selectedCulture"/>
+        }
+    </div>
+    <div class="row mb-5">
+        <h5 class="mb-2 col-form-label">@LocalizedResources.LocalizationSettingsComponent_FirstDayOfWeek</h5>
+        @if (IsLoaded)
+        {
+            <DropdownComponent Items="firstDayItems!"
+                               ItemSelectedFunc="ChangeFirstDay"
+                               SelectedItem="selectedFirstDay"/>
+        }
+    </div>
+    <div class="row">
+        @if (firstDayChanged || cultureChanged)
+        {
+            <button class="btn btn-primary" @onclick="Save">@LocalizedResources.LocalizationSettingsComponent_SaveSettings</button>
+        }
+    </div>
+</div>

@@ -3,7 +3,7 @@ using TaskManagementSystem.Shared.Models;
 namespace TaskManagementSystem.Client.Services;
 
 public interface IToastService
-{ 
+{
     event Action<Toast>? NotifyAdded;
 
     event Action<Guid>? NotifyDeleted;

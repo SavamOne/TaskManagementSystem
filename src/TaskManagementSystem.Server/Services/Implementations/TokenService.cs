@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.Server.Options;
 using TaskManagementSystem.Shared.Helpers;
@@ -52,7 +53,7 @@ public class TokenService : ITokenService
 
         if (!ValidateRefreshToken(refreshToken))
         {
-            throw new ApplicationException("Refresh token is incorrect");
+            throw new BusinessLogicException("Refresh token is incorrect");
         }
 
         (User User, string Token) tuple = refreshTokens.FirstOrDefault(x => string.Equals(x.RefreshToken, refreshToken));
@@ -80,7 +81,7 @@ public class TokenService : ITokenService
 
         if (!Guid.TryParse(idClaim, out Guid id))
         {
-            throw new ArgumentException($"Claim {JwtRegisteredClaimNames.NameId} is not exists or is not correct GUID");
+            throw new ApplicationException($"Claim {JwtRegisteredClaimNames.NameId} does not exists or is incorrect GUID");
         }
 
         return id;

@@ -11,12 +11,12 @@ public class Toast
         Description = description.AssertNotNullOrWhiteSpace();
         Text = text.AssertNotNullOrWhiteSpace();
     }
-    
+
     public Guid Id { get; }
 
     public string Author { get; }
-    
+
     public string Description { get; }
-    
+
     public string Text { get; }
 }

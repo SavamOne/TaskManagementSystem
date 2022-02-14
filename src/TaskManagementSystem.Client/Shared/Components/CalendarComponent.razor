@@ -1,20 +1,3 @@
-@* <div class="dropdown"> *@
-@*     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> *@
-@*         Первый день недели *@
-@*     </button> *@
-@*     @{ *@
-@*         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"> *@
-@*             @foreach (DayOfWeek day in DayOfWeekValues) *@
-@*             { *@
-@*                 <button class="dropdown-item" type="button" *@
-@*                         @onclick="() => ChangeFirstDayOfWeek(day)"> *@
-@*                     @GetDayName(day) *@
-@*                 </button> *@
-@*             } *@
-@*         </div> *@
-@*     } *@
-@* </div> *@
-
 <EventEditFormModal @ref="EditEventModal"/>
 
 <!-- Calendar -->
@@ -22,12 +5,15 @@
     <div class="d-flex justify-content-between w-100">
         <button class="btn btn-outline-primary text-capitalize"
                 @onclick="RemoveMonth">
-            Previous month
+            @LocalizedResources.CalendarComponent_PreviousMonth
         </button>
-        <h2 class="month font-weight-bold mb-0 text-capitalize">@Month @Year</h2>
+        @if (IsLoaded)
+        {
+            <h2 class="month font-weight-bold mb-0 text-capitalize">@Month @Year</h2>
+        }
         <button class="btn btn-outline-primary text-capitalize"
                 @onclick="AppendMonth">
-            Next month
+            @LocalizedResources.CalendarComponent_NextMonth
         </button>
     </div>
 
@@ -62,7 +48,7 @@
     {
         <div class="loader">
             <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;"></div>
-            <p class="mt-4">Loading...</p>
+            <p class="mt-4">@LocalizedResources.Loading</p>
         </div>
     }
 </div>

@@ -8,11 +8,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic.Models\TaskManagementSystem.BusinessLogic.Models.csproj" />
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj" />
+        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic.Models\TaskManagementSystem.BusinessLogic.Models.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\LocalizedResources.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>LocalizedResources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Resources\LocalizedResources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>LocalizedResources.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

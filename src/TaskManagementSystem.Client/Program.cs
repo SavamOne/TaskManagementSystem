@@ -10,6 +10,7 @@ using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.Services.Implementations;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
+
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
@@ -23,10 +24,18 @@ builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>(provider =>
     provider.GetService<JwtAuthenticationStateProvider>()!);
 
-builder.Services.AddScoped<ILocalStorageWrapper, LocalStorageWrapper>();
-builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddSingleton<ILocalStorageWrapper, LocalStorageWrapper>();
+
+builder.Services.AddSingleton<ILocalTokensService, LocalTokensService>();
 builder.Services.AddSingleton<IToastService, ToastService>();
+builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
 builder.Services.AddAuthorizationCore();
+
+await using (ServiceProvider provider = builder.Services.BuildServiceProvider())
+{
+    ILocalizationService localizationService = provider.GetService<ILocalizationService>()!;
+    await localizationService.InitializeAsync();
+}
 
 await builder.Build().RunAsync();

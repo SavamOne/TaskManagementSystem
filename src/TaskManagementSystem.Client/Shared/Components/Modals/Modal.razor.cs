@@ -7,7 +7,7 @@ public partial class Modal
     private string modalClass = "";
 
     private string modalDisplay = "none;";
-    private bool showBackdrop = false;
+    private bool showBackdrop;
 
     [Parameter]
     public string? Title { get; set; }

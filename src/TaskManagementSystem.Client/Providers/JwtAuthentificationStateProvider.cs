@@ -10,9 +10,9 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     private static readonly AuthenticationState AnonymousState = new(new ClaimsPrincipal());
     private static readonly AuthenticationState AuthorizedState = new(new ClaimsPrincipal(new ClaimsIdentity("Token")));
 
-    private readonly ILocalStorageService storageService;
+    private readonly ILocalTokensService storageService;
 
-    public JwtAuthenticationStateProvider(ILocalStorageService storageService)
+    public JwtAuthenticationStateProvider(ILocalTokensService storageService)
     {
         this.storageService = storageService.AssertNotNull();
     }
