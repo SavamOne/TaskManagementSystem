@@ -28,7 +28,7 @@ public class UserService : IUserService
             throw new BusinessLogicException(LocalizedResources.UserAlreadyExists);
         }
 
-        User user = new(Guid.NewGuid(), data.Username, data.Email, DateTime.UtcNow, PasswordHelper.GetHash(data.Password));
+        User user = new(Guid.NewGuid(), data.Name, data.Email, DateTime.UtcNow, PasswordHelper.GetHash(data.Password));
 
         await userRepository.InsertAsync(user);
         return user;

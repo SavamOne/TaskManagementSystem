@@ -26,4 +26,10 @@
     <data name="ApiResponseExceptionFilter_ParameterIsEmptyOrMissing" xml:space="preserve">
         <value>Параметр '{0}'  пустой или отсутствует</value>
     </data>
+    <data name="TokenService_RefreshTokenIsOutdated" xml:space="preserve">
+        <value>Токен устарел</value>
+    </data>
+    <data name="TokenService_RefreshTokenDoesNotExistsOrCancelled" xml:space="preserve">
+        <value>Такого токена не существует или он отменен</value>
+    </data>
 </root>

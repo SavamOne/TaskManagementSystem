@@ -4,14 +4,14 @@ namespace TaskManagementSystem.BusinessLogic.Models;
 
 public class RegisterData
 {
-    public RegisterData(string username, string email, string password)
+    public RegisterData(string name, string email, string password)
     {
-        Username = username.AssertNotNullOrWhiteSpace();
+        Name = name.AssertNotNullOrWhiteSpace();
         Email = email.AssertNotNullOrWhiteSpace();
         Password = password.AssertNotNullOrWhiteSpace();
     }
 
-    public string Username { get; }
+    public string Name { get; }
 
     public string Email { get; }
 

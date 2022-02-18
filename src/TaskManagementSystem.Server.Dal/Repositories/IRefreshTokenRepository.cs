@@ -6,5 +6,9 @@ public interface IRefreshTokenRepository
 
     Task UpdateForUserAsync(Guid userId, string oldRefreshToken, string newRefreshToken);
 
+    Task<Guid?> GetUserIdFromTokenAsync(string refreshToken);
+    
+    Task RemoveTokenAsync(string refreshToken);
+    
     Task ClearForUserAsync(Guid userId);
 }

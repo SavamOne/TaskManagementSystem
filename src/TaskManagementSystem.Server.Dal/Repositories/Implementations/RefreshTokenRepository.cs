@@ -22,7 +22,7 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
             RefreshToken = refreshToken
         };
 
-        await base.InsertAsync(entry);
+        await InsertAsync(entry);
     }
 
     public async Task UpdateForUserAsync(Guid userId, string oldRefreshToken, string newRefreshToken)
@@ -31,9 +31,25 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
         newRefreshToken.AssertNotNullOrWhiteSpace();
 
         using IDbTransaction transaction = GetConnection().BeginTransaction();
-        await DeleteMultipleAsync(x => x.RefreshToken == newRefreshToken);
+        await RemoveTokenAsync(oldRefreshToken);
         await InsertForUserAsync(userId, newRefreshToken);
         transaction.Commit();
+    }
+    
+    public async Task<Guid?> GetUserIdFromTokenAsync(string refreshToken)
+    {
+        refreshToken.AssertNotNullOrWhiteSpace();
+
+        DalUserToken? userToken = await FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
+
+        return userToken?.UserId;
+    }
+    
+    public async Task RemoveTokenAsync(string refreshToken)
+    {
+        refreshToken.AssertNotNullOrWhiteSpace();
+
+        await DeleteMultipleAsync(x => x.RefreshToken == refreshToken);
     }
 
     public async Task ClearForUserAsync(Guid userId)

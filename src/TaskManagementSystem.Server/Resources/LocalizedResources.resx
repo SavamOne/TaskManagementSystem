@@ -27,4 +27,10 @@
         <value>Parameter '{0}' is empty or missing
 </value>
     </data>
+    <data name="TokenService_RefreshTokenDoesNotExistsOrCancelled" xml:space="preserve">
+        <value>Refresh token does not exists or cancelled</value>
+    </data>
+    <data name="TokenService_RefreshTokenIsOutdated" xml:space="preserve">
+        <value>Refresh token is outdated</value>
+    </data>
 </root>

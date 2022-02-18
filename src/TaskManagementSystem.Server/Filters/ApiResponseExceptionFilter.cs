@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TaskManagementSystem.BusinessLogic.Exceptions;
+using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Resources;
 using TaskManagementSystem.Shared.Models;
 
@@ -34,6 +35,13 @@ public class ApiResponseExceptionFilter : IActionFilter, IOrderedFilter
         else if (context.Exception is BusinessLogicException argumentException)
         {
             ErrorObject error = new(argumentException.Description);
+
+            context.Result = new BadRequestObjectResult(error);
+            context.ExceptionHandled = true;
+        }
+        else if (context.Exception is ServerException serverException)
+        {
+            ErrorObject error = new(serverException.Description);
 
             context.Result = new BadRequestObjectResult(error);
             context.ExceptionHandled = true;

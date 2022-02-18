@@ -2,11 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Services;
 using TaskManagementSystem.Server.Dal.Repositories;
+using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Options;
+using TaskManagementSystem.Server.Resources;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
@@ -55,17 +56,27 @@ public class TokenService : ITokenService
     {
         refreshToken.AssertNotNullOrWhiteSpace();
 
-        if (!TryValidateRefreshToken(refreshToken, out ClaimsPrincipal? principal))
+        Guid? userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
+
+        if (!userId.HasValue)
         {
-            throw new BusinessLogicException("Refresh token is incorrect or outdated");
+            throw new ServerException(LocalizedResources.TokenService_RefreshTokenDoesNotExistsOrCancelled);
         }
 
-        Guid userId = GetUserIdFromClaims(principal!);
-        User user = await userService.GetUserAsync(userId);
+        await ValidateRefreshToken(refreshToken);
+
+        User user = await userService.GetUserAsync(userId.Value);
         Tokens tokens = GenerateTokens(user);
 
-        await tokenRepository.UpdateForUserAsync(userId, refreshToken, tokens.RefreshToken);
+        await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
         return tokens;
+    }
+    
+    public async Task RemoveTokenAsync(string refreshToken)
+    {
+        refreshToken.AssertNotNullOrWhiteSpace();
+
+        await tokenRepository.RemoveTokenAsync(refreshToken);
     }
 
     public Guid GetUserIdFromClaims(ClaimsPrincipal principal)
@@ -76,7 +87,7 @@ public class TokenService : ITokenService
 
         if (!Guid.TryParse(idClaim, out Guid id))
         {
-            throw new ApplicationException($"Claim {JwtRegisteredClaimNames.NameId} does not exists or is incorrect GUID");
+            throw new ApplicationException($"Claim '{JwtRegisteredClaimNames.NameId}' does not exists or is incorrect GUID");
         }
 
         return id;
@@ -102,17 +113,21 @@ public class TokenService : ITokenService
         return new Tokens(accessToken, refreshToken);
     }
 
-    private bool TryValidateRefreshToken(string? refreshToken, out ClaimsPrincipal? claimsPrincipal)
+    private async Task ValidateRefreshToken(string refreshToken)
     {
         try
         {
-            claimsPrincipal = JwtSecurityTokenHandler.ValidateToken(refreshToken, refreshTokenValidationParams, out SecurityToken _);
-            return true;
+            JwtSecurityTokenHandler.ValidateToken(refreshToken, refreshTokenValidationParams, out SecurityToken _);
         }
-        catch (Exception)
+        catch (SecurityTokenExpiredException)
         {
-            claimsPrincipal = null;
-            return false;
+            await tokenRepository.RemoveTokenAsync(refreshToken);
+            throw new ServerException(LocalizedResources.TokenService_RefreshTokenIsOutdated);
+        }
+        catch (Exception ex)
+        {
+            await tokenRepository.RemoveTokenAsync(refreshToken);
+            throw new ApplicationException("Incorrect token in database", ex);
         }
     }
 
