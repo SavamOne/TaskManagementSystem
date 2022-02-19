@@ -17,9 +17,7 @@ public class UserController : ControllerBase
     private readonly ITokenService tokenService;
     private readonly IUserService userService;
 
-    public UserController(
-        IUserService userService,
-        ITokenService tokenService)
+    public UserController(IUserService userService, ITokenService tokenService)
     {
         this.userService = userService.AssertNotNull();
         this.tokenService = tokenService.AssertNotNull();
@@ -31,7 +29,7 @@ public class UserController : ControllerBase
         request.AssertNotNull();
 
         User registeredUser = await userService.RegisterUserAsync(new RegisterData(request.Name, request.Email, request.Password));
-        Tokens tokens = tokenService.GenerateAccessAndRefreshTokens(registeredUser);
+        Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(registeredUser);
 
         return Ok(tokens);
     }
@@ -42,17 +40,17 @@ public class UserController : ControllerBase
         request.AssertNotNull();
 
         User user = await userService.CheckUserCredentialsAsync(new LoginData(request.Email, request.Password));
-        Tokens tokens = tokenService.GenerateAccessAndRefreshTokens(user);
+        Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(user);
 
         return Ok(tokens);
     }
 
     [HttpPost("Refresh")]
-    public IActionResult RefreshAsync(RefreshTokensRequest request)
+    public async Task<IActionResult> RefreshAsync(RefreshTokensRequest request)
     {
         request.AssertNotNull();
 
-        Tokens tokens = tokenService.RefreshAccessToken(request.RefreshToken);
+        Tokens tokens = await tokenService.RefreshAccessTokenAsync(request.RefreshToken);
 
         return Ok(tokens);
     }
@@ -64,7 +62,7 @@ public class UserController : ControllerBase
         Guid id = tokenService.GetUserIdFromClaims(User);
         User user = await userService.GetUserAsync(id);
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoined));
+        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
     }
 
     [Authorize]
@@ -76,7 +74,7 @@ public class UserController : ControllerBase
         Guid id = tokenService.GetUserIdFromClaims(User);
         User user = await userService.ChangePasswordAsync(new ChangePasswordData(id, request.OldPassword, request.NewPassword));
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoined));
+        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
     }
 
 
@@ -89,6 +87,6 @@ public class UserController : ControllerBase
         Guid id = tokenService.GetUserIdFromClaims(User);
         User user = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(id, request.Name, request.Email));
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoined));
+        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
     }
 }

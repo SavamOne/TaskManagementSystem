@@ -1,4 +1,7 @@
-﻿using TaskManagementSystem.BusinessLogic.Exceptions;
+﻿using TaskManagementSystem.BusinessLogic.Dal;
+using TaskManagementSystem.BusinessLogic.Dal.Repositories;
+using TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
+using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Resources;
@@ -8,37 +11,34 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
 public class UserService : IUserService
 {
-    private readonly List<User> users = new()
+    private readonly IUserRepository userRepository;
+
+    public UserService(IUserRepository userRepository)
     {
-        new User(new Guid("8B51CF94-CD5D-48BD-8B40-54539CD9212D"), "Anton Sav", "aaa@aaa.ru", DateTimeOffset.UtcNow, PasswordHelper.GetHash("hello"))
-    };
+        this.userRepository = userRepository.AssertNotNull();
+    }
 
     public async Task<User> RegisterUserAsync(RegisterData data)
     {
         data.AssertNotNull();
 
-        //TODO: DataAccess
-        User? existedUser = users.Find(x =>
-            string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
+        User? existedUser = await userRepository.GetByEmailAsync(data.Email);
         if (existedUser is not null)
         {
             throw new BusinessLogicException(LocalizedResources.UserAlreadyExists);
         }
 
-        User user = new(Guid.NewGuid(), data.Username, data.Email, DateTimeOffset.UtcNow, PasswordHelper.GetHash(data.Password));
-        users.Add(user);
+        User user = new(Guid.NewGuid(), data.Name, data.Email, DateTime.UtcNow, PasswordHelper.GetHash(data.Password));
 
+        await userRepository.InsertAsync(user);
         return user;
     }
 
     public async Task<User> CheckUserCredentialsAsync(LoginData data)
     {
-        Console.WriteLine(Thread.CurrentThread.CurrentUICulture.Name);
         data.AssertNotNull();
-
-        //TODO: DataAccess
-        User? existedUser =
-            users.Find(x => string.Equals(x.Email, data.Email, StringComparison.InvariantCultureIgnoreCase));
+        
+        User? existedUser = await userRepository.GetByEmailAsync(data.Email);
         if (existedUser is null)
         {
             throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
@@ -55,7 +55,7 @@ public class UserService : IUserService
 
     public async Task<User> GetUserAsync(Guid userId)
     {
-        User? user = users.FirstOrDefault(x => x.Id == userId);
+        User? user = await userRepository.GetByIdAsync(userId);
 
         if (user is null)
         {
@@ -68,7 +68,7 @@ public class UserService : IUserService
     {
         data.AssertNotNull();
 
-        User? user = users.FirstOrDefault(x => x.Id == data.UserId);
+        User? user = await userRepository.GetByIdAsync(data.UserId);
 
         if (user is null)
         {
@@ -86,17 +86,16 @@ public class UserService : IUserService
             name = data.Name;
         }
 
-        User updatedUser = new(data.UserId, name, email, user.DateJoined, user.PasswordHash);
-        users.Add(updatedUser);
-        users.Remove(user);
+        User updatedUser = new(data.UserId, name, email, user.DateJoinedUtc, user.PasswordHash);
 
+        await userRepository.UpdateAsync(updatedUser);
         return updatedUser;
     }
     public async Task<User> ChangePasswordAsync(ChangePasswordData data)
     {
         data.AssertNotNull();
 
-        User? user = users.FirstOrDefault(x => x.Id == data.UserId);
+        User? user =  await userRepository.GetByIdAsync(data.UserId);
 
         if (user is null)
         {
@@ -115,10 +114,9 @@ public class UserService : IUserService
             throw new BusinessLogicException(LocalizedResources.NewPasswordIsTheSame);
         }
 
-        User updatedUser = new(data.UserId, user.Name, user.Email, user.DateJoined, newHash);
-        users.Add(updatedUser);
-        users.Remove(user);
-
+        User updatedUser = new(data.UserId, user.Name, user.Email, user.DateJoinedUtc, newHash);
+        
+        await userRepository.UpdateAsync(updatedUser);
         return updatedUser;
     }
 }

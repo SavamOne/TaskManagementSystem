@@ -2,9 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.BusinessLogic.Services;
+using TaskManagementSystem.Server.Dal.Repositories;
+using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Options;
+using TaskManagementSystem.Server.Resources;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
@@ -15,13 +18,16 @@ public class TokenService : ITokenService
     private static readonly JwtSecurityTokenHandler JwtSecurityTokenHandler = new();
 
     private readonly IOptions<JwtOptions> options;
-
-    private readonly List<(User User, string RefreshToken)> refreshTokens = new();
+    private readonly IUserService userService;
+    private readonly IRefreshTokenRepository tokenRepository;
     private readonly TokenValidationParameters refreshTokenValidationParams;
 
-    public TokenService(IOptions<JwtOptions> options)
+    // TODO: Переделать, чтобы не тянуть userService
+    public TokenService(IOptions<JwtOptions> options, IUserService userService, IRefreshTokenRepository tokenRepository)
     {
         this.options = options;
+        this.userService = userService;
+        this.tokenRepository = tokenRepository;
 
         refreshTokenValidationParams = new TokenValidationParameters
         {
@@ -36,41 +42,41 @@ public class TokenService : ITokenService
         };
     }
 
-    public Tokens GenerateAccessAndRefreshTokens(User user)
+    public async Task<Tokens> GenerateAccessAndRefreshTokensAsync(User user)
     {
         user.AssertNotNull();
 
         Tokens tokens = GenerateTokens(user);
 
-        refreshTokens.Add(( user, tokens.RefreshToken ));
-
+        await tokenRepository.InsertForUserAsync(user.Id, tokens.RefreshToken);
         return tokens;
     }
 
-    public Tokens RefreshAccessToken(string refreshToken)
+    public async Task<Tokens> RefreshAccessTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();
 
-        if (!ValidateRefreshToken(refreshToken))
+        Guid? userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
+
+        if (!userId.HasValue)
         {
-            throw new BusinessLogicException("Refresh token is incorrect");
+            throw new ServerException(LocalizedResources.TokenService_RefreshTokenDoesNotExistsOrCancelled);
         }
 
-        (User User, string Token) tuple = refreshTokens.FirstOrDefault(x => string.Equals(x.RefreshToken, refreshToken));
-        if (tuple.User is null)
-        {
-            throw new ApplicationException("How do you got this token?");
-        }
+        await ValidateRefreshToken(refreshToken);
 
-        Tokens tokens = GenerateTokens(tuple.User);
+        User user = await userService.GetUserAsync(userId.Value);
+        Tokens tokens = GenerateTokens(user);
 
-        refreshTokens.Remove(tuple);
-
-        tuple.Token = tokens.RefreshToken;
-
-        refreshTokens.Add(tuple);
-
+        await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
         return tokens;
+    }
+    
+    public async Task RemoveTokenAsync(string refreshToken)
+    {
+        refreshToken.AssertNotNullOrWhiteSpace();
+
+        await tokenRepository.RemoveTokenAsync(refreshToken);
     }
 
     public Guid GetUserIdFromClaims(ClaimsPrincipal principal)
@@ -81,7 +87,7 @@ public class TokenService : ITokenService
 
         if (!Guid.TryParse(idClaim, out Guid id))
         {
-            throw new ApplicationException($"Claim {JwtRegisteredClaimNames.NameId} does not exists or is incorrect GUID");
+            throw new ApplicationException($"Claim '{JwtRegisteredClaimNames.NameId}' does not exists or is incorrect GUID");
         }
 
         return id;
@@ -107,16 +113,21 @@ public class TokenService : ITokenService
         return new Tokens(accessToken, refreshToken);
     }
 
-    private bool ValidateRefreshToken(string? refreshToken)
+    private async Task ValidateRefreshToken(string refreshToken)
     {
         try
         {
             JwtSecurityTokenHandler.ValidateToken(refreshToken, refreshTokenValidationParams, out SecurityToken _);
-            return true;
         }
-        catch (Exception)
+        catch (SecurityTokenExpiredException)
         {
-            return false;
+            await tokenRepository.RemoveTokenAsync(refreshToken);
+            throw new ServerException(LocalizedResources.TokenService_RefreshTokenIsOutdated);
+        }
+        catch (Exception ex)
+        {
+            await tokenRepository.RemoveTokenAsync(refreshToken);
+            throw new ApplicationException("Incorrect token in database", ex);
         }
     }
 

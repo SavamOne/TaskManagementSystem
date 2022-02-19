@@ -69,5 +69,23 @@ namespace TaskManagementSystem.Server.Resources {
                 return ResourceManager.GetString("ApiResponseExceptionFilter_ParameterIsEmptyOrMissing", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh token does not exists or cancelled.
+        /// </summary>
+        internal static string TokenService_RefreshTokenDoesNotExistsOrCancelled {
+            get {
+                return ResourceManager.GetString("TokenService_RefreshTokenDoesNotExistsOrCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh token is outdated.
+        /// </summary>
+        internal static string TokenService_RefreshTokenIsOutdated {
+            get {
+                return ResourceManager.GetString("TokenService_RefreshTokenIsOutdated", resourceCulture);
+            }
+        }
     }
 }

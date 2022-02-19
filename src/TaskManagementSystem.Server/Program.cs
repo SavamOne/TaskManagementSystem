@@ -1,24 +1,17 @@
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.IdentityModel.Tokens;
-using TaskManagementSystem.BusinessLogic.Services;
-using TaskManagementSystem.BusinessLogic.Services.Implementations;
+using TaskManagementSystem.BusinessLogic.Extensions;
+using TaskManagementSystem.Server.Extensions;
 using TaskManagementSystem.Server.Filters;
 using TaskManagementSystem.Server.Options;
-using TaskManagementSystem.Server.Services;
-using TaskManagementSystem.Server.Services.Implementations;
-using TaskManagementSystem.Shared.Helpers;
+using TaskManagementSystem.Shared.Dal.Options;
 using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-JwtOptions jwtOptions = ConfigureJwtOptions(builder);
-builder.Services.AddSingleton<CalendarEventsService>();
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<ITokenService, TokenService>();
+//TODO: Придумать, как передавать секцию без установки дополнительного нугета.
+builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection(nameof(PostgresOptions)));
+builder.Services.AddBusinessLogic();
+builder.Services.AddServerAuth(builder.Configuration.GetSection(nameof(JwtOptions)));
 
 builder.Services.AddSingleton<ApiResponseExceptionFilter>();
 builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
@@ -35,27 +28,6 @@ builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =
 });
 
 builder.Services.AddRazorPages();
-
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidIssuer = jwtOptions.Issuer,
-        ValidateAudience = true,
-        ValidAudience = jwtOptions.Audience,
-        ValidateLifetime = true,
-        IssuerSigningKey = jwtOptions.SymmetricAccessKey,
-        ValidateIssuerSigningKey = true,
-        ClockSkew = TimeSpan.Zero
-    };
-});
 
 if (builder.Environment.IsDevelopment())
 {
@@ -93,21 +65,3 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 await app.RunAsync();
-
-JwtOptions ConfigureJwtOptions(WebApplicationBuilder builder)
-{
-    IConfigurationSection? jwtSection = builder.Configuration.GetSection(nameof(JwtOptions));
-    jwtSection.AssertNotNull(nameof(jwtSection));
-
-    JwtOptions jwtOptions = new();
-    jwtSection.Bind(jwtOptions);
-
-    jwtOptions.Audience.AssertNotNullOrWhiteSpace();
-    jwtOptions.Issuer.AssertNotNullOrWhiteSpace();
-    jwtOptions.AccessTokenSecretKey.AssertNotNullOrWhiteSpace();
-    jwtOptions.RefreshTokenSecretKey.AssertNotNullOrWhiteSpace();
-
-    builder.Services.Configure<JwtOptions>(jwtSection);
-
-    return jwtOptions;
-}
