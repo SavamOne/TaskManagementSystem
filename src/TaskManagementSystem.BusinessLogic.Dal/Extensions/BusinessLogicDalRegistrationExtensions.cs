@@ -13,6 +13,8 @@ public static class BusinessLogicDalRegistrationExtensions
         serviceCollection.AddDal();
         
         serviceCollection.TryAddScoped<IUserRepository, UserRepository>();
+        serviceCollection.TryAddScoped<CalendarRepository>();
+        serviceCollection.TryAddScoped<CalendarParticipantRepository>();
 
         return serviceCollection;
     }

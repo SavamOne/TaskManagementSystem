@@ -1,4 +1,4 @@
-namespace TaskManagementSystem.BusinessLogic.Models;
+namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
 public class ChangeUserInfoData
 {

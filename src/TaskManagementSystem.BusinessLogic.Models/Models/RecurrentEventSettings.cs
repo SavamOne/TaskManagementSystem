@@ -1,4 +1,4 @@
-namespace TaskManagementSystem.BusinessLogic.Models;
+namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public class RecurrentEventSettings
 {

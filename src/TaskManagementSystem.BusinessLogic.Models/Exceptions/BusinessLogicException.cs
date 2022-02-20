@@ -1,6 +1,6 @@
 using TaskManagementSystem.Shared.Helpers;
 
-namespace TaskManagementSystem.BusinessLogic.Exceptions;
+namespace TaskManagementSystem.BusinessLogic.Models.Exceptions;
 
 public class BusinessLogicException : Exception
 {

@@ -1,9 +1,11 @@
 ﻿using TaskManagementSystem.BusinessLogic.Dal;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
-using TaskManagementSystem.BusinessLogic.Exceptions;
 using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.BusinessLogic.Models.Exceptions;
+using TaskManagementSystem.BusinessLogic.Models.Models;
+using TaskManagementSystem.BusinessLogic.Models.Requests;
 using TaskManagementSystem.BusinessLogic.Resources;
 using TaskManagementSystem.Shared.Helpers;
 

@@ -1,6 +1,8 @@
-﻿using TaskManagementSystem.BusinessLogic.Dal.Converters;
+﻿using System.Collections.Immutable;
+using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models;
+using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Shared.Dal;
 using TaskManagementSystem.Shared.Helpers;
 
@@ -20,6 +22,15 @@ public class UserRepository : Repository<DalUser>, IUserRepository
         return dalUser?.ToUser();
     }
     
+    public async Task<ISet<User>> GetByIdsAsync(ISet<Guid> ids)
+    {
+        ids.AssertNotNull();
+        
+        var dalUsers = await SelectAsync(x => ids.Contains(x.Id));
+
+        return dalUsers.Select(x => x.ToUser()).ToHashSet();
+    }
+
     public async Task<User?> GetByEmailAsync(string email)
     {
         email.AssertNotNullOrWhiteSpace();

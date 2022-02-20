@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using TaskManagementSystem.BusinessLogic.Exceptions;
+using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Resources;
 using TaskManagementSystem.Shared.Models;
