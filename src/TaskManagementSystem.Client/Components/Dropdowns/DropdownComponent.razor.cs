@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared.Components.Dropdowns;
+namespace TaskManagementSystem.Client.Components.Dropdowns;
 
 public partial class DropdownComponent<TItem>
 {
@@ -16,12 +16,28 @@ public partial class DropdownComponent<TItem>
     [Parameter]
     public Action<TItem>? ItemSelectedFunc { get; set; }
 
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabledClass != string.Empty;
+        set => disabledClass = value ? "disabled" : string.Empty;
+    }
+
     private string showClass = string.Empty;
+    private string disabledClass = string.Empty;
 
     private bool ShowDropdown
     {
         get => showClass != string.Empty;
-        set => showClass = value ? "show" : string.Empty;
+        set
+        {
+            if (Disabled)
+            {
+                return;
+            }
+            
+            showClass = value ? "show" : string.Empty;
+        }
     }
 
     protected override void OnParametersSet()
@@ -31,6 +47,11 @@ public partial class DropdownComponent<TItem>
 
     private void OnItemSelected(TItem item)
     {
+        if (Disabled)
+        {
+            return;
+        }
+        
         ShowDropdown = false;
 
         SelectedItem = item;

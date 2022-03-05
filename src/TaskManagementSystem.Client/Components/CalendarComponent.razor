@@ -3,16 +3,14 @@
 <!-- Calendar -->
 <div class="calendar">
     <div class="d-flex justify-content-between w-100">
-        <button class="btn btn-outline-primary text-capitalize"
-                @onclick="RemoveMonth">
+        <button class="btn btn-outline-primary text-capitalize" @onclick="RemoveMonth">
             @LocalizedResources.CalendarComponent_PreviousMonth
         </button>
         @if (IsLoaded)
         {
             <h2 class="month font-weight-bold mb-0 text-capitalize">@Month @Year</h2>
         }
-        <button class="btn btn-outline-primary text-capitalize"
-                @onclick="AppendMonth">
+        <button class="btn btn-outline-primary text-capitalize" @onclick="AppendMonth">
             @LocalizedResources.CalendarComponent_NextMonth
         </button>
     </div>
@@ -46,9 +44,6 @@
     }
     else
     {
-        <div class="loader">
-            <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;"></div>
-            <p class="mt-4">@LocalizedResources.Loading</p>
-        </div>
+        <LoaderComponent/>
     }
 </div>

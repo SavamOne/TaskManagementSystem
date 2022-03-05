@@ -4,11 +4,11 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Client.Helpers.Implementations;
 
-public class LocalStorageWrapper : ILocalStorageWrapper
+public class JSInteropWrapper : IJSInteropWrapper
 {
     private readonly IJSRuntime jsRuntime;
 
-    public LocalStorageWrapper(IJSRuntime jsRuntime)
+    public JSInteropWrapper(IJSRuntime jsRuntime)
     {
         this.jsRuntime = jsRuntime.AssertNotNull();
     }
@@ -53,5 +53,9 @@ public class LocalStorageWrapper : ILocalStorageWrapper
         key.AssertNotNullOrWhiteSpace();
 
         await jsRuntime.InvokeAsync<string>("remove", key);
+    }
+    public async Task<string> GetInnerTextByIdAsync(string id)
+    {
+        return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
     }
 }

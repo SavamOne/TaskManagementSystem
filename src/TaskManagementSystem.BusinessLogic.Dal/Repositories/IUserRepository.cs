@@ -10,6 +10,8 @@ public interface IUserRepository
     Task<ISet<User>> GetByIdsAsync(ISet<Guid> ids);
 
     Task<User?> GetByEmailAsync(string email);
+    
+    Task<ISet<User>> GetByFilter(string filter);
 
     Task UpdateAsync(User user);
 

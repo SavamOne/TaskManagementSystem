@@ -1,11 +1,11 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using TaskManagementSystem.Client.Components.Modals;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
-using TaskManagementSystem.Client.Shared.Components.Modals;
 using TaskManagementSystem.Client.ViewModels;
 
-namespace TaskManagementSystem.Client.Shared.Components;
+namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarComponent
 {

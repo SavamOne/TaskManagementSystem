@@ -3,7 +3,7 @@ using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
 using TaskManagementSystem.Shared.Models;
 
-namespace TaskManagementSystem.Client.Shared.Components.Toasts;
+namespace TaskManagementSystem.Client.Components.Toasts;
 
 public partial class ToastComponent : IDisposable
 {

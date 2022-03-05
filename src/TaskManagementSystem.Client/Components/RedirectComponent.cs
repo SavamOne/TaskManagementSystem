@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared.Components;
+namespace TaskManagementSystem.Client.Components;
 
 public class RedirectComponent : ComponentBase
 {

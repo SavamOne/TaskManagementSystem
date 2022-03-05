@@ -24,7 +24,7 @@ public static class CalendarParticipantConverter
     {
         if (calendarParticipant.IsDeleted)
         {
-            throw new BusinessLogicException("Этот календарь удален");
+            throw new BusinessLogicException("Этот участник удален");
         }
         
         return new CalendarParticipant(calendarParticipant.Id, 

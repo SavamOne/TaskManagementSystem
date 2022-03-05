@@ -4,7 +4,7 @@ using TaskManagementSystem.Client.Resources;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
 
-namespace TaskManagementSystem.Client.Shared.Components;
+namespace TaskManagementSystem.Client.Components;
 
 public partial class UserInfoComponent
 {
@@ -26,12 +26,12 @@ public partial class UserInfoComponent
             return;
         }
 
-        userInfoViewModel.SetInfo(result.Value!);
+        userInfoViewModel = new UserInfoViewModel(result.Value!);
     }
 
     private async Task ChangeInfo()
     {
-        var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetRequest());
+        var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetChangeInfoRequest());
 
         if (result.IsSuccess)
         {

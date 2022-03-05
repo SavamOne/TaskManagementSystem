@@ -1,13 +1,13 @@
 <EditFormModal @ref="Modal" Item="Event" Submit="x => Submit(x)" Title="@LocalizedResources.EventEditFormModal_EventEditing">
     <Body>
     <p class="m-0">@LocalizedResources.EventEditFormModal_EventName:</p>
-    <InputText @bind-Value="Event.Name" type="text" class="mb-2"/>
+    <InputText @bind-Value="Event.Name" type="text" class="mb-2 form-control"/>
 
     <p class="m-0">@LocalizedResources.EventEditFormModal_EventStartTime:</p>
-    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2"/>
+    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2 form-control"/>
 
     <p class="m-0">@LocalizedResources.EventEditFormModal_EventEndTime:</p>
-    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2"/>
+    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2 form-control"/>
     </Body>
 </EditFormModal>
 

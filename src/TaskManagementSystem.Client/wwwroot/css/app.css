@@ -9,6 +9,10 @@ h1:focus {
     outline: none;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /*a, .btn-link {*/
 /*    color: #0071c1;*/
 /*}*/

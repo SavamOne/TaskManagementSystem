@@ -62,9 +62,21 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetInfoAsync()
     {
         Guid id = tokenService.GetUserIdFromClaims(User);
+        
         User user = await userService.GetUserAsync(id);
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
+        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+    }
+    
+    [Authorize]
+    [HttpPost("GetInfoById")]
+    public async Task<IActionResult> GetInfoAsync(GetUserInfoByIdRequest byIdRequest)
+    {
+        byIdRequest.AssertNotNull();
+
+        User user = await userService.GetUserAsync(byIdRequest.UserId);
+
+        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
     }
 
     [Authorize]
@@ -76,10 +88,9 @@ public class UserController : ControllerBase
         Guid id = tokenService.GetUserIdFromClaims(User);
         User user = await userService.ChangePasswordAsync(new ChangePasswordData(id, request.OldPassword, request.NewPassword));
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
+        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
     }
-
-
+    
     [Authorize]
     [HttpPost("ChangeInfo")]
     public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)
@@ -89,6 +100,17 @@ public class UserController : ControllerBase
         Guid id = tokenService.GetUserIdFromClaims(User);
         User user = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(id, request.Name, request.Email));
 
-        return Ok(new UserInfo(user.Name, user.Email, user.DateJoinedUtc));
+        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+    }
+
+    [Authorize]
+    [HttpPost("GetInfosByFilter")]
+    public async Task<IActionResult> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
+    {
+        request.AssertNotNull();
+
+        var result = await userService.GetUsersByFilter(request.Filter);
+
+        return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
     }
 }

@@ -66,6 +66,29 @@ public class UserService : IUserService
 
         return user;
     }
+    
+    public async Task<ISet<User>> GetUsersAsync(ISet<Guid> userIds)
+    {
+        userIds.AssertNotNull();
+
+        var result = await userRepository.GetByIdsAsync(userIds);
+
+        if (result.Count != userIds.Count)
+        {
+            // TODO: Определять конкретный список.
+            throw new BusinessLogicException("Найдены не все пользователи");
+        }
+
+        return result;
+    }
+
+    public async Task<ISet<User>> GetUsersByFilter(string filter)
+    {
+        filter.AssertNotNull();
+
+        return await userRepository.GetByFilter(filter);
+    }
+    
     public async Task<User> ChangeUserInfoAsync(ChangeUserInfoData data)
     {
         data.AssertNotNull();
@@ -93,6 +116,7 @@ public class UserService : IUserService
         await userRepository.UpdateAsync(updatedUser);
         return updatedUser;
     }
+    
     public async Task<User> ChangePasswordAsync(ChangePasswordData data)
     {
         data.AssertNotNull();

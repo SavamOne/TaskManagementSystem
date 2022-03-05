@@ -1,0 +1,10 @@
+@page "/Events/{CalendarId:guid}"
+
+
+<CalendarComponent />
+
+@code
+{
+    [Parameter]
+    public Guid CalendarId { get; set; }
+}

@@ -1,8 +1,6 @@
 using Dapper;
-using Dommel;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
-using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Shared.Dal;
 using TaskManagementSystem.Shared.Helpers;
@@ -15,25 +13,11 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
     public CalendarParticipantRepository(DatabaseConnectionProvider connectionProvider)
         : base(connectionProvider)
     {
-        
-    }
-    
-    public async Task<CalendarParticipant?> GetByIdAsync(Guid id)
-    {
-        DalUser? dalUser = null;
-        DalCalendarParticipant? dalCalendar = await GetConnection().FirstOrDefaultAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(participant => participant.Id == id, 
-        (participant, user) =>
-        {
-            dalUser = user;
-            return participant;
-        });
-
-        return dalCalendar?.ToCalendarParticipant();
     }
 
     public async Task<ISet<CalendarParticipant>> GetByCalendarIdAsync(Guid calendarId)
     {
-        var dalParticipants = await SelectAsync(x => x.CalendarId == calendarId);
+        var dalParticipants = await SelectAsync(x => x.CalendarId == calendarId && !x.IsDeleted);
 
         return dalParticipants.Select(x => x.ToCalendarParticipant()).ToHashSet();
     }
@@ -50,13 +34,22 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
         await InsertAllAsync(calendarParticipants.Select(x => x.ToDalCalendarParticipant()));
     }
     
+    public async Task UpdateAllAsync(ISet<CalendarParticipant> calendarParticipants)
+    {
+        calendarParticipants.AssertNotNull();
+        foreach (CalendarParticipant calendarParticipant in calendarParticipants)
+        {
+            await UpdateAsync(calendarParticipant.ToDalCalendarParticipant());
+        }
+    }
+    
     public async Task DeleteByIds(ISet<Guid> calendarParticipantsIds)
     {
         calendarParticipantsIds.AssertNotNull();
-
-        await GetConnection().ExecuteAsync("UPDATE calendar_participant SET is_deleted = TRUE WHERE id IN @Ids", new
+        
+        await GetConnection().ExecuteScalarAsync("UPDATE calendar_participant SET is_deleted = TRUE WHERE id = ANY(@Ids);", new
         {
-            Ids = calendarParticipantsIds
+            Ids = calendarParticipantsIds.ToList()
         });
     }
 }

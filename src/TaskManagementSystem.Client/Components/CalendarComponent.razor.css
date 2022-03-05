@@ -61,12 +61,3 @@
 .outside {
     color: #99999c;
 }
-
-.loader {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    flex-direction: column;
-    justify-content: center;
-
-}

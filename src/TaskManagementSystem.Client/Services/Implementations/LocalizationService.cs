@@ -10,14 +10,14 @@ public class LocalizationService : ILocalizationService
     private const string CultureKey = "culture";
     private const string FirstDayOfWeekKey = "first_day_of_week";
 
-    private readonly ILocalStorageWrapper wrapper;
+    private readonly IJSInteropWrapper wrapper;
 
     private bool initialized;
 
     private CultureInfo? usedCulture;
     private DayOfWeek? usedFirstDayOfWeek;
 
-    public LocalizationService(ILocalStorageWrapper wrapper)
+    public LocalizationService(IJSInteropWrapper wrapper)
     {
         this.wrapper = wrapper.AssertNotNull();
     }

@@ -1,3 +1,36 @@
 ﻿@page "/"
 
-<CalendarComponent/>
+<CreateCalendarModal @ref="createCalendarModal" OnSuccess="tabs.RefreshCalendarsStateAsync"/>
+
+@*<h3>Мои события</h3>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    <div class="col p-4">
+        <div class="card text-white bg-danger mb-3 pe-auto opacity-75">
+            <div class="card-header">
+                <h5 class="card-title mt-2 mb-2">Календарь с моими событиями</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Выделенный календарь с событиями, где вы являетесь участником, со всех календарей.</p>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="d-flex flex-row align-items-baseline">
+    <h3>Календари</h3>
+    <div class="cursor-pointer mx-2 oi oi-plus" @onclick="Create"></div>
+</div>
+
+<CalendarTabsComponent @ref="tabs"/>
+
+@code
+{
+    private CreateCalendarModal createCalendarModal = new();
+    
+    private CalendarTabsComponent tabs = new();
+
+    private void Create()
+    {
+        createCalendarModal.Create();
+    }
+}

@@ -3,7 +3,7 @@ using TaskManagementSystem.Client.Resources;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
 
-namespace TaskManagementSystem.Client.Shared.Components;
+namespace TaskManagementSystem.Client.Components;
 
 public partial class LocalizationSettingsComponent
 {

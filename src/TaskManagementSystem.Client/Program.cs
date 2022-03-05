@@ -24,7 +24,7 @@ builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>(provider =>
     provider.GetService<JwtAuthenticationStateProvider>()!);
 
-builder.Services.AddSingleton<ILocalStorageWrapper, LocalStorageWrapper>();
+builder.Services.AddSingleton<IJSInteropWrapper, JSInteropWrapper>();
 
 builder.Services.AddSingleton<ILocalTokensService, LocalTokensService>();
 builder.Services.AddSingleton<IToastService, ToastService>();

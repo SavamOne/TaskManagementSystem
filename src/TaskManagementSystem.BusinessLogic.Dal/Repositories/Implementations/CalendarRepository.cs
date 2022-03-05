@@ -18,7 +18,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
 
     public async Task<Calendar?> GetByIdAsync(Guid id)
     {
-        DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Id == id);
+        DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
         return dalCalendar?.ToCalendar();
     }
@@ -27,7 +27,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
     {
         name.AssertNotNullOrWhiteSpace();
         
-        DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Name == name);
+        DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Name == name && !x.IsDeleted);
         
         return dalCalendar?.ToCalendar();
     }
@@ -35,7 +35,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
     public async Task<ISet<Calendar>> GetByUserId(Guid userId)
     {
         var dalCalendars = await GetConnection().QueryAsync<DalCalendar>(
-        "SELECT c.* FROM calendar_participant cp inner join calendar c on cp.calendar_id = c.id where cp.user_id == @userId", 
+        "SELECT c.* FROM calendar_participant cp inner join calendar c on cp.calendar_id = c.id where cp.user_id = @userId and cp.is_deleted = false", 
         new
         {
             userId

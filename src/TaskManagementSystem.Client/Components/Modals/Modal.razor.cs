@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Components;
 
-namespace TaskManagementSystem.Client.Shared.Components.Modals;
+namespace TaskManagementSystem.Client.Components.Modals;
 
-public partial class EditFormModal<TItem>
+public partial class Modal
 {
     private string modalClass = "";
 
     private string modalDisplay = "none;";
-    private bool showBackdrop = false;
+    private bool showBackdrop;
 
     [Parameter]
     public string? Title { get; set; }
@@ -16,10 +16,7 @@ public partial class EditFormModal<TItem>
     public RenderFragment? Body { get; set; }
 
     [Parameter]
-    public TItem? Item { get; set; }
-
-    [Parameter]
-    public Action<TItem>? Submit { get; set; }
+    public RenderFragment? Footer { get; set; }
 
     public void Open()
     {
@@ -37,12 +34,5 @@ public partial class EditFormModal<TItem>
         showBackdrop = false;
 
         StateHasChanged();
-    }
-
-    private void OnValidSubmit()
-    {
-        Submit?.Invoke(Item!);
-
-        Close();
     }
 }

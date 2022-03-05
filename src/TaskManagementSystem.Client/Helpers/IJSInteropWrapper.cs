@@ -1,6 +1,6 @@
 namespace TaskManagementSystem.Client.Helpers;
 
-public interface ILocalStorageWrapper
+public interface IJSInteropWrapper
 {
     Task SetAsync<T>(string key, T item);
 
@@ -11,4 +11,6 @@ public interface ILocalStorageWrapper
     Task<string?> GetStringAsync(string key);
 
     Task RemoveAsync(string key);
+    
+    Task<string> GetInnerTextByIdAsync(string id);
 }

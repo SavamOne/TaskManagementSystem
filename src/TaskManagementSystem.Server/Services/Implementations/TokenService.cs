@@ -8,7 +8,6 @@ using TaskManagementSystem.Server.Dal.Repositories;
 using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Options;
 using TaskManagementSystem.Server.Resources;
-using TaskManagementSystem.Shared.Dal;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
@@ -21,15 +20,13 @@ public class TokenService : ITokenService
     private readonly IOptions<JwtOptions> options;
     private readonly IUserRepository userRepository;
     private readonly IRefreshTokenRepository tokenRepository;
-    private readonly IUnitOfWork unitOfWork;
     private readonly TokenValidationParameters refreshTokenValidationParams;
     
-    public TokenService(IOptions<JwtOptions> options, IUserRepository userRepository, IRefreshTokenRepository tokenRepository, IUnitOfWork unitOfWork)
+    public TokenService(IOptions<JwtOptions> options, IUserRepository userRepository, IRefreshTokenRepository tokenRepository)
     {
         this.options = options;
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
-        this.unitOfWork = unitOfWork;
 
         refreshTokenValidationParams = new TokenValidationParameters
         {
@@ -57,8 +54,7 @@ public class TokenService : ITokenService
     public async Task<Tokens> RefreshAccessTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();
-
-        unitOfWork.BeginTransaction();
+        
         Guid? userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
 
         if (!userId.HasValue)
@@ -73,7 +69,6 @@ public class TokenService : ITokenService
         Tokens tokens = GenerateTokens(user);
 
         await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
-        unitOfWork.CommitTransaction();
         return tokens;
     }
     

@@ -31,7 +31,7 @@ public abstract class BaseProxy
 
     protected abstract Task RefreshTokens();
 
-    protected async Task<Result<TResponse>> SendRequestAsync<TResponse>(string url, HttpMethod method)
+    protected async Task<Result<TResponse>> SendRequestAsync<TResponse>(Uri url, HttpMethod method)
     {
         bool isFirstTry = true;
 
@@ -55,7 +55,7 @@ public abstract class BaseProxy
             }
             if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url.ToLower()));
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url));
             }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
@@ -68,7 +68,7 @@ public abstract class BaseProxy
     }
 
     protected async Task<Result<TResponse>> SendRequestAsync<TRequest, TResponse>(
-        string url,
+        Uri url,
         HttpMethod method,
         TRequest request)
     {
@@ -94,7 +94,7 @@ public abstract class BaseProxy
             }
             if (!isFirstTry && response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url.ToLower()));
+                return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_SendRequestAsync_YouDontHaveAccessToThisUrl, url));
             }
             if (response.StatusCode != HttpStatusCode.Unauthorized)
             {
@@ -106,7 +106,7 @@ public abstract class BaseProxy
         }
     }
 
-    protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TResponse>(string url, HttpMethod method)
+    protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TResponse>(Uri url, HttpMethod method)
     {
         using HttpResponseMessage response = await SendRequestCoreAsync(url, method, false);
 
@@ -129,7 +129,7 @@ public abstract class BaseProxy
     }
 
     protected async Task<Result<TResponse>> SendAnonymousRequestAsync<TRequest, TResponse>(
-        string url,
+        Uri url,
         HttpMethod method,
         TRequest request)
     {
@@ -154,7 +154,7 @@ public abstract class BaseProxy
     }
 
     private async Task<HttpResponseMessage> SendRequestCoreAsync(
-        string url,
+        Uri url,
         HttpMethod httpMethod,
         bool addAuthorization)
     {
@@ -177,7 +177,7 @@ public abstract class BaseProxy
     }
 
     private async Task<HttpResponseMessage> SendRequestCoreAsync<TRequest>(
-        string url,
+        Uri url,
         HttpMethod httpMethod,
         TRequest content,
         bool addAuthorization)

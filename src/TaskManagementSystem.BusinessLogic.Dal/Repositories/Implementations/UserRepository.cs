@@ -39,6 +39,14 @@ public class UserRepository : Repository<DalUser>, IUserRepository
         
         return dalUser?.ToUser();
     }
+    public async Task<ISet<User>> GetByFilter(string filter)
+    {
+        filter.AssertNotNull();
+
+        var dalUsers = await SelectAsync(x => x.Name.StartsWith(filter) || x.Email.StartsWith(filter));
+
+        return dalUsers.Select(x => x.ToUser()).ToHashSet();
+    }
 
     public async Task UpdateAsync(User user)
     {
