@@ -1,0 +1,15 @@
+@typeparam TItem 
+
+<div class="dropdown w-100 @disabledClass">
+    <button class="btn btn-secondary dropdown-toggle w-100 @disabledClass" type="button" @onclick="() => ShowDropdown = !ShowDropdown">
+        @ItemToStringFunc(SelectedItem)
+    </button>
+    <div class="dropdown-menu @showClass">
+        @foreach (TItem item in Items)
+        {
+            <div class="dropdown-item" @onclick="() => OnItemSelected(item)">
+                @ItemToStringFunc(item)
+            </div>
+        }
+    </div>
+</div>

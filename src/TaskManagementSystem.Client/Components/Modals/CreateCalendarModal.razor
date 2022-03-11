@@ -1,0 +1,47 @@
+<EditFormModal @ref="Modal" Item="Calendar" Submit="x => _ = Submit(x)" Title="Создание календаря">
+    <Body>
+    <p class="m-0">Название календаря</p>
+    <InputText @bind-Value="Calendar.Name" type="text" class="mb-2 form-control"/>
+
+    <p class="m-0">Описание календаря</p>
+    <InputText @bind-Value="Calendar.Description" type="text" class="mb-2 form-control"/>
+
+    </Body>
+</EditFormModal>
+
+@code {
+
+    [Inject]
+    public ServerProxy? ServerProxy { get; set; }
+
+    [Inject]
+    public IToastService? ToastService { get; set; }
+
+    [Parameter]
+    public Func<Task>? OnSuccess { get; set; }
+
+    private EditFormModal<CalendarViewModel> Modal { get; set; } = new();
+
+    private CalendarViewModel Calendar { get; set; } = new();
+
+    public void Create()
+    {
+        Modal.Open();
+    }
+
+    public async Task Submit(CalendarViewModel calendarViewModel)
+    {
+        var result = await ServerProxy!.CreateCalendar(calendarViewModel.GetRequest());
+
+        if (result.IsSuccess)
+        {
+            ToastService!.AddSystemToast("Создание календаря", "Календарь создан успешно");
+            Modal.Close();
+            await ( OnSuccess?.Invoke() ?? Task.CompletedTask );
+        }
+        else
+        {
+            ToastService!.AddSystemToast("Создание календаря", result.ErrorDescription!);
+        }
+    }
+}

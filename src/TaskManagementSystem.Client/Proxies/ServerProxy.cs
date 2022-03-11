@@ -27,12 +27,12 @@ public class ServerProxy : BaseProxy
 
     public async Task<WeatherForecast[]> Get()
     {
-        return ( await SendRequestAsync<WeatherForecast[]>("WeatherForecast", HttpMethod.Get) ).Value!;
+        return ( await SendRequestAsync<WeatherForecast[]>(new Uri("WeatherForecast", UriKind.Relative), HttpMethod.Get) ).Value!;
     }
 
     public async Task<Result<Tokens>> RegisterUserAsync(RegisterRequest request)
     {
-        var result = await SendAnonymousRequestAsync<RegisterRequest, Tokens>("Api/V1/User/Register", HttpMethod.Post,
+        var result = await SendAnonymousRequestAsync<RegisterRequest, Tokens>(new Uri("Api/V1/User/Register", UriKind.Relative), HttpMethod.Post,
         request);
 
         await ProcessRefreshTokensResponse(result);
@@ -43,7 +43,7 @@ public class ServerProxy : BaseProxy
     public async Task<Result<Tokens>> LoginAsync(LoginRequest request)
     {
         var result =
-            await SendAnonymousRequestAsync<LoginRequest, Tokens>("Api/V1/User/Login", HttpMethod.Post, request);
+            await SendAnonymousRequestAsync<LoginRequest, Tokens>(new Uri("Api/V1/User/Login", UriKind.Relative), HttpMethod.Post, request);
 
         await ProcessRefreshTokensResponse(result);
 
@@ -60,7 +60,23 @@ public class ServerProxy : BaseProxy
     public async Task<Result<UserInfo>> GetUserInfoAsync()
     {
         var result =
-            await SendRequestAsync<UserInfo>("Api/V1/User/GetInfo", HttpMethod.Post);
+            await SendRequestAsync<UserInfo>(new Uri("Api/V1/User/GetInfo", UriKind.Relative), HttpMethod.Post);
+
+        return result;
+    }
+
+    public async Task<Result<UserInfo>> GetUserInfoAsync(GetUserInfoByIdRequest byIdRequest)
+    {
+        var result =
+            await SendRequestAsync<GetUserInfoByIdRequest, UserInfo>(new Uri("Api/V1/User/GetInfoById", UriKind.Relative), HttpMethod.Post, byIdRequest);
+
+        return result;
+    }
+
+    public async Task<Result<UserInfo[]>> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetUserInfosByFilterRequest, UserInfo[]>(new Uri("Api/V1/User/GetInfosByFilter", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
@@ -68,7 +84,7 @@ public class ServerProxy : BaseProxy
     public async Task<Result<UserInfo>> ChangeUserPasswordAsync(ChangePasswordRequest request)
     {
         var result =
-            await SendRequestAsync<ChangePasswordRequest, UserInfo>("Api/V1/User/ChangePassword", HttpMethod.Post, request);
+            await SendRequestAsync<ChangePasswordRequest, UserInfo>(new Uri("Api/V1/User/ChangePassword", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
@@ -76,7 +92,7 @@ public class ServerProxy : BaseProxy
     public async Task<Result<UserInfo>> ChangeUserInfoAsync(ChangeUserInfoRequest request)
     {
         var result =
-            await SendRequestAsync<ChangeUserInfoRequest, UserInfo>("Api/V1/User/ChangeInfo", HttpMethod.Post, request);
+            await SendRequestAsync<ChangeUserInfoRequest, UserInfo>(new Uri("Api/V1/User/ChangeInfo", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
@@ -84,10 +100,67 @@ public class ServerProxy : BaseProxy
     public async Task<Result<CalendarEventInfo[]>> GetEventsForMonth(CalendarGetEventsRequest request)
     {
         var result =
-            await SendRequestAsync<CalendarGetEventsRequest, CalendarEventInfo[]>("Api/V1/CalendarEvents/GetEvents", HttpMethod.Post, request);
+            await SendRequestAsync<CalendarGetEventsRequest, CalendarEventInfo[]>(new Uri("Api/V1/CalendarEvents/GetEvents", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
+
+    public async Task<Result<IEnumerable<CalendarInfo>>> GetUserCalendars()
+    {
+        var result =
+            await SendRequestAsync<IEnumerable<CalendarInfo>>(new Uri("Api/V1/Calendar/GetMyList", UriKind.Relative), HttpMethod.Post);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarInfo>> CreateCalendar(CreateCalendarRequest request)
+    {
+        var result =
+            await SendRequestAsync<CreateCalendarRequest, CalendarInfo>(new Uri("Api/V1/Calendar/Create", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarInfo>> EditCalendar(EditCalendarRequest request)
+    {
+        var result =
+            await SendRequestAsync<EditCalendarRequest, CalendarInfo>(new Uri("Api/V1/Calendar/Edit", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarWithParticipantUsers>> GetCalendarInfo(GetCalendarInfoRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetCalendarInfoRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/GetInfo", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarWithParticipantUsers>> AddCalendarParticipants(AddCalendarParticipantsRequest request)
+    {
+        var result =
+            await SendRequestAsync<AddCalendarParticipantsRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/AddParticipants", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarWithParticipantUsers>> ChangeParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
+    {
+        var result =
+            await SendRequestAsync<ChangeCalendarParticipantsRoleRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/ChangeParticipantsRole", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<CalendarWithParticipantUsers>> DeleteCalendarParticipants(DeleteParticipantsRequest request)
+    {
+        var result =
+            await SendRequestAsync<DeleteParticipantsRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/DeleteParticipants", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
 
     protected override async Task RefreshTokens()
     {
@@ -96,7 +169,7 @@ public class ServerProxy : BaseProxy
 
         var result =
             await SendAnonymousRequestAsync<RefreshTokensRequest, Tokens>(
-            "Api/V1/User/Refresh", HttpMethod.Post, request);
+            new Uri("Api/V1/User/Refresh", UriKind.Relative), HttpMethod.Post, request);
 
         await ProcessRefreshTokensResponse(result);
 

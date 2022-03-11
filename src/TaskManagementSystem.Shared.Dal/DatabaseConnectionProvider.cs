@@ -16,14 +16,20 @@ public class DatabaseConnectionProvider : IDisposable
     {
         this.options = options;
     }
-    
+
+    public void Dispose()
+    {
+        connection?.Dispose();
+        disposed = true;
+    }
+
     public IDbConnection GetConnection()
     {
         if (disposed)
         {
             throw new ObjectDisposedException(nameof(DatabaseConnectionProvider));
         }
-        
+
         if (connection?.State != ConnectionState.Open)
         {
             connection?.Dispose();
@@ -32,11 +38,5 @@ public class DatabaseConnectionProvider : IDisposable
         }
 
         return connection;
-    }
-    
-    public void Dispose()
-    {
-        connection?.Dispose();
-        disposed = true;
     }
 }

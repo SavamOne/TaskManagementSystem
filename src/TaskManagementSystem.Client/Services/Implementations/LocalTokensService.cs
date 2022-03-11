@@ -8,9 +8,9 @@ public class LocalTokensService : ILocalTokensService
     private const string AccessTokenKey = "access_token";
     private const string RefreshTokenKey = "refresh_token";
 
-    private readonly ILocalStorageWrapper wrapper;
+    private readonly IJSInteropWrapper wrapper;
 
-    public LocalTokensService(ILocalStorageWrapper wrapper)
+    public LocalTokensService(IJSInteropWrapper wrapper)
     {
         this.wrapper = wrapper.AssertNotNull();
     }

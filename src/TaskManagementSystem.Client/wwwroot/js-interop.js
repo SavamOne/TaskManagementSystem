@@ -2,6 +2,10 @@ function message(e) {
     alert(e);
 }
 
+function getInnerTextById(id) {
+    return document.getElementById(id).innerHTML
+}
+
 function set(key, value) {
     localStorage.setItem(key, value);
 }

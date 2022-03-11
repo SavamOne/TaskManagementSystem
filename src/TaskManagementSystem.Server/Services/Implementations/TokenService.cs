@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using TaskManagementSystem.BusinessLogic.Models;
-using TaskManagementSystem.BusinessLogic.Services;
+using TaskManagementSystem.BusinessLogic.Dal.Repositories;
+using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Server.Dal.Repositories;
 using TaskManagementSystem.Server.Exceptions;
 using TaskManagementSystem.Server.Options;
@@ -18,15 +18,14 @@ public class TokenService : ITokenService
     private static readonly JwtSecurityTokenHandler JwtSecurityTokenHandler = new();
 
     private readonly IOptions<JwtOptions> options;
-    private readonly IUserService userService;
-    private readonly IRefreshTokenRepository tokenRepository;
     private readonly TokenValidationParameters refreshTokenValidationParams;
+    private readonly IRefreshTokenRepository tokenRepository;
+    private readonly IUserRepository userRepository;
 
-    // TODO: Переделать, чтобы не тянуть userService
-    public TokenService(IOptions<JwtOptions> options, IUserService userService, IRefreshTokenRepository tokenRepository)
+    public TokenService(IOptions<JwtOptions> options, IUserRepository userRepository, IRefreshTokenRepository tokenRepository)
     {
         this.options = options;
-        this.userService = userService;
+        this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
 
         refreshTokenValidationParams = new TokenValidationParameters
@@ -56,7 +55,7 @@ public class TokenService : ITokenService
     {
         refreshToken.AssertNotNullOrWhiteSpace();
 
-        Guid? userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
+        var userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
 
         if (!userId.HasValue)
         {
@@ -65,13 +64,14 @@ public class TokenService : ITokenService
 
         await ValidateRefreshToken(refreshToken);
 
-        User user = await userService.GetUserAsync(userId.Value);
+        User user = ( await userRepository.GetByIdAsync(userId.Value) )!;
+
         Tokens tokens = GenerateTokens(user);
 
         await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
         return tokens;
     }
-    
+
     public async Task RemoveTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();

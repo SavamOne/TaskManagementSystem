@@ -1,0 +1,24 @@
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    @if (Calendars.Any())
+    {
+        foreach (CalendarInfo calendar in Calendars)
+        {
+            string path = Path.Combine("calendar", calendar.Id.ToString());
+            string style = $"background:{StringHelper.GetHexColorForText(calendar.Name)}";
+            <div class="col p-4">
+                <NavLink href="@path" class="card text-white mb-3 h-100 text-decoration-none" style="@style">
+                    <div class="card-header">
+                        <h5 class="card-title mt-2 mb-2">@calendar.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@calendar.Description</p>
+                    </div>
+                </NavLink>
+            </div>
+        }
+    }
+    else
+    {
+        <LoaderComponent/>
+    }
+</div>

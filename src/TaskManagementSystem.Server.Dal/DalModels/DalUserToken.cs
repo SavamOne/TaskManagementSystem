@@ -10,7 +10,7 @@ public class DalUserToken
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Column("user_id")]
     public Guid UserId { get; set; }
-    
+
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Column("refresh_token")]
