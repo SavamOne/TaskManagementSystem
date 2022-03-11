@@ -1,5 +1,4 @@
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
-using TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
@@ -8,18 +7,18 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
-public class CalendarService
+public class CalendarService : ICalendarService
 {
     private readonly IUnitOfWork unitOfWork;
     private readonly IUserRepository userRepository;
-    private readonly CalendarRepository calendarRepository;
-    private readonly CalendarParticipantRepository calendarParticipantRepository;
+    private readonly ICalendarRepository calendarRepository;
+    private readonly ICalendarParticipantRepository calendarParticipantRepository;
 
     public CalendarService(
         IUnitOfWork unitOfWork,
         IUserRepository userRepository,
-        CalendarRepository calendarRepository,
-        CalendarParticipantRepository calendarParticipantRepository)
+        ICalendarRepository calendarRepository,
+        ICalendarParticipantRepository calendarParticipantRepository)
     {
         this.unitOfWork = unitOfWork;
         this.userRepository = userRepository;

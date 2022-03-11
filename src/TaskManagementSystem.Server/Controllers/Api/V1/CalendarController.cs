@@ -18,22 +18,22 @@ public class CalendarController : ControllerBase
 {
     private readonly ITokenService tokenService;
     private readonly IUserService userService;
-    private readonly CalendarService calendarService;
-    
-    public CalendarController(ITokenService tokenService, IUserService userService, CalendarService calendarService)
+    private readonly ICalendarService calendarService;
+
+    public CalendarController(ITokenService tokenService, IUserService userService, ICalendarService calendarService)
     {
         this.tokenService = tokenService;
         this.userService = userService;
         this.calendarService = calendarService;
     }
-    
+
     [HttpPost("GetMyList")]
     public async Task<IActionResult> GetUserCalendarListAsync()
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
 
         var result = await calendarService.GetUserCalendars(userId);
-        
+
         return Ok(result.Select(x => new CalendarInfo(x.Id, x.Name, x.Description, x.CreationDateUtc)));
     }
 
@@ -46,56 +46,65 @@ public class CalendarController : ControllerBase
 
         return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
     }
-    
+
     [HttpPost("Edit")]
     public async Task<IActionResult> EditCalendarAsync(EditCalendarRequest request)
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
-        
+
         Calendar result = await calendarService.EditCalendarAsync(new EditCalendarData(
-        userId,  request.CalendarId, request.Name, request.Description));
-        
+        userId, request.CalendarId, request.Name, request.Description));
+
         return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
     }
-    
+
     [HttpPost("AddParticipants")]
     public async Task<IActionResult> AddParticipantsAsync(AddCalendarParticipantsRequest request)
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
-        
-        CalendarWithParticipants result = await calendarService.AddParticipantsAsync(new AddCalendarParticipantsData(
-            userId, request.CalendarId, 
-            request.Users.Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role)).ToHashSet()
+
+        CalendarWithParticipants result = await calendarService.AddParticipantsAsync(
+        new AddCalendarParticipantsData(
+        userId, request.CalendarId,
+        request.Users
+            .Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role))
+            .ToHashSet()
         ));
-         
+
         return Ok(await ConvertAsync(result));
     }
-    
+
     [HttpPost("ChangeParticipantsRole")]
     public async Task<IActionResult> ChangeParticipantsRoleAsync(ChangeCalendarParticipantsRoleRequest request)
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
-        
-        CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(new ChangeParticipantsRoleData(
-        userId, request.CalendarId, 
-        request.Participants.Select(x => new ChangeParticipantRoleData(x.ParticipantId, (CalendarRole)x.Role)).ToHashSet()
+
+        CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(
+        new ChangeParticipantsRoleData(
+        userId, request.CalendarId,
+        request.Participants
+            .Select(x => new ChangeParticipantRoleData(x.ParticipantId, (CalendarRole)x.Role))
+            .ToHashSet()
         ));
-         
+
         return Ok(await ConvertAsync(result));
     }
-    
+
     [HttpPost("DeleteParticipants")]
     public async Task<IActionResult> DeleteParticipantsAsync(DeleteParticipantsRequest request)
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
-        
-        CalendarWithParticipants result = await calendarService.DeleteParticipantsAsync(new DeleteParticipantsData(
-        userId, request.CalendarId, request.ParticipantIds.ToHashSet()));
-        
+
+        CalendarWithParticipants result = await calendarService.DeleteParticipantsAsync(
+        new DeleteParticipantsData(
+        userId, request.CalendarId,
+        request.ParticipantIds.ToHashSet()
+        ));
+
         return Ok(await ConvertAsync(result));
     }
-    
-    
+
+
     [HttpPost("GetInfo")]
     public async Task<IActionResult> GetCalendarInfoAsync(GetCalendarInfoRequest request)
     {
@@ -112,14 +121,14 @@ public class CalendarController : ControllerBase
         var participantsUsers = request.Participants.Select(participant =>
         {
             User user = userDict[participant.UserId];
-            return new CalendarParticipantUser(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc, 
-                (CalendarParticipantRole)participant.Role, user.Name, user.Email, user.DateJoinedUtc);
+            return new CalendarParticipantUser(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc,
+            (CalendarParticipantRole)participant.Role, user.Name, user.Email, user.DateJoinedUtc);
         });
-        
+
         return new CalendarWithParticipantUsers(
-            new CalendarInfo(request.Calendar.Id, request.Calendar.Name, request.Calendar.Description, request.Calendar.CreationDateUtc),
-            participantsUsers
+        new CalendarInfo(request.Calendar.Id, request.Calendar.Name, request.Calendar.Description, request.Calendar.CreationDateUtc),
+        participantsUsers
         );
     }
-    
+
 }
