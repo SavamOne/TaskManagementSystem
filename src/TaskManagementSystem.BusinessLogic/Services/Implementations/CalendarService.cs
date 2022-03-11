@@ -9,10 +9,10 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
 public class CalendarService : ICalendarService
 {
+    private readonly ICalendarParticipantRepository calendarParticipantRepository;
+    private readonly ICalendarRepository calendarRepository;
     private readonly IUnitOfWork unitOfWork;
     private readonly IUserRepository userRepository;
-    private readonly ICalendarRepository calendarRepository;
-    private readonly ICalendarParticipantRepository calendarParticipantRepository;
 
     public CalendarService(
         IUnitOfWork unitOfWork,
@@ -82,11 +82,11 @@ public class CalendarService : ICalendarService
         var userIds = data.Users.Select(x => x.UserId).ToHashSet();
         CheckUsersAreNotInCalendar(userIds, calendarInfo.Participants);
         await CheckUsersExist(userIds);
-        
+
         //TODO: Здесь задается Guid.NewGuid() для удаленных участников, хотя они восстанавливаются со старым Id.
         var participantsToAdd = data.Users.Select(x =>
             new CalendarParticipant(Guid.NewGuid(), calendarInfo.Calendar.Id, x.UserId, DateTime.UtcNow, x.Role)).ToHashSet();
-        
+
         await calendarParticipantRepository.InsertAllAsync(participantsToAdd);
 
         var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
@@ -99,21 +99,21 @@ public class CalendarService : ICalendarService
         CheckRolesAreAdminOrParticipant(data.Participants);
         CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
         CheckRequestInitiatorIsAdminOrCreator(data.ChangerId, calendarInfo.Participants);
-        
+
         var participantsToChange = ValidateAndGetUpdatedCalendarParticipantsWithNewRoles(data, calendarInfo);
 
         await calendarParticipantRepository.UpdateAllAsync(participantsToChange);
-        
+
         var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
         return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
     }
-    
+
     public async Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data)
     {
         data.AssertNotNull();
 
         CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
-        
+
         CheckRequestInitiatorIsAdminOrCreator(data.RemoverId, calendarInfo.Participants);
         CheckUsersAreInCalendar(data.ParticipantsIds, calendarInfo.Participants);
         CheckNotRemovingCreator(data.ParticipantsIds, calendarInfo.Participants);
@@ -122,11 +122,11 @@ public class CalendarService : ICalendarService
         var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
         return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
     }
-    
+
     public async Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id)
     {
         Calendar? calendar = await calendarRepository.GetByIdAsync(id);
-        
+
         if (calendar is null)
         {
             throw new BusinessLogicException($"Календарь с таким Id '{id}' не найден.");
@@ -136,8 +136,8 @@ public class CalendarService : ICalendarService
 
         return new CalendarWithParticipants(calendar, participants);
     }
-    
-    private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds,  IEnumerable<CalendarParticipant> allParticipants)
+
+    private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
     {
         //Проверка, что нельзя удалить создателя календаря
         CalendarParticipant creator = allParticipants.Single(x => x.Role == CalendarRole.Creator);
@@ -146,7 +146,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Нельзя удалять создателя календаря");
         }
     }
-    
+
     private static void CheckUsersAreInCalendar(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
     {
         //Проверка, что удаляемые участники принадлежат этому календарю
@@ -156,7 +156,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Не все пользователи принадлежат этому календарю");
         }
     }
-    
+
     private static HashSet<CalendarParticipant> ValidateAndGetUpdatedCalendarParticipantsWithNewRoles(ChangeParticipantsRoleData data, CalendarWithParticipants calendarInfo)
     {
         var toChange = new HashSet<CalendarParticipant>();
@@ -171,17 +171,17 @@ public class CalendarService : ICalendarService
 
             if (participant.UserId == data.ChangerId)
             {
-                throw new BusinessLogicException($"Нельзя изменить роль самого себя");
+                throw new BusinessLogicException("Нельзя изменить роль самого себя");
             }
 
             if (participant.Role == CalendarRole.Creator)
             {
-                throw new BusinessLogicException($"Нельзя изменить роль создателя");
+                throw new BusinessLogicException("Нельзя изменить роль создателя");
             }
 
             toChange.Add(new CalendarParticipant(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc, changeParticipantRoleData.Role));
         }
-        
+
         return toChange;
     }
 
@@ -200,7 +200,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Пользователь не является создателем или администратором календаря");
         }
     }
-    
+
     private static void CheckUsersAreNotInCalendar(IEnumerable<Guid> userIds, IEnumerable<CalendarParticipant> allParticipants)
     {
         //Проверка, что какие-то пользователи уже могут быть в календаре
@@ -210,7 +210,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Некоторые пользователи уже добавлены в календарь");
         }
     }
-    
+
     private static void CheckRolesAreAdminOrParticipant(IEnumerable<AddCalendarParticipantData> users)
     {
         if (!users.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
@@ -219,7 +219,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Обнаружена некорректная роль");
         }
     }
-    
+
     private static void CheckRolesAreAdminOrParticipant(IEnumerable<ChangeParticipantRoleData> participants)
     {
         if (!participants.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
@@ -228,7 +228,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Обнаружена некорректная роль");
         }
     }
-    
+
     private async Task CheckUsersExist(ISet<Guid> userIds)
     {
         //Проверка, что добавляемые пользователи вообще существуют
