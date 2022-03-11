@@ -10,9 +10,7 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
 {
     public CalendarRepository(DatabaseConnectionProvider connectionProvider)
-        : base(connectionProvider)
-    {
-    }
+        : base(connectionProvider) {}
 
     public async Task<Calendar?> GetByIdAsync(Guid id)
     {
@@ -24,19 +22,19 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
     public async Task<Calendar?> GetByNameAsync(string name)
     {
         name.AssertNotNullOrWhiteSpace();
-        
+
         //TODO: CaseSensitive
         DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Name == name && !x.IsDeleted);
-        
+
         return dalCalendar?.ToCalendar();
     }
 
     public async Task<ISet<Calendar>> GetByUserId(Guid userId)
     {
         const string getSql = "SELECT C.* FROM Calendar_Participant CP "
-        + "INNER JOIN Calendar C ON CP.Calendar_Id = C.id "
-        + "WHERE Cp.User_Id = @UserId AND C.Is_Deleted = FALSE AND CP.Is_Deleted = FALSE; ";
-        
+                              + "INNER JOIN Calendar C ON CP.Calendar_Id = C.id "
+                              + "WHERE Cp.User_Id = @UserId AND C.Is_Deleted = FALSE AND CP.Is_Deleted = FALSE; ";
+
         var dalCalendars = await GetConnection().QueryAsync<DalCalendar>(getSql, new
         {
             userId
@@ -51,7 +49,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
 
         await InsertAsync(calendar.ToDalCalendar());
     }
-    
+
     public async Task UpdateAsync(Calendar calendar)
     {
         calendar.AssertNotNull();

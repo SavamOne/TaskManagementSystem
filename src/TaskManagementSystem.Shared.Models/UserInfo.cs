@@ -11,7 +11,7 @@ public class UserInfo
         Email = email.AssertNotNullOrWhiteSpace();
         DateJoined = dateJoined;
     }
-    
+
     public Guid Id { get; }
 
     public string Name { get; }

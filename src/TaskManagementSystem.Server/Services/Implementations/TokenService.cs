@@ -18,10 +18,10 @@ public class TokenService : ITokenService
     private static readonly JwtSecurityTokenHandler JwtSecurityTokenHandler = new();
 
     private readonly IOptions<JwtOptions> options;
-    private readonly IUserRepository userRepository;
-    private readonly IRefreshTokenRepository tokenRepository;
     private readonly TokenValidationParameters refreshTokenValidationParams;
-    
+    private readonly IRefreshTokenRepository tokenRepository;
+    private readonly IUserRepository userRepository;
+
     public TokenService(IOptions<JwtOptions> options, IUserRepository userRepository, IRefreshTokenRepository tokenRepository)
     {
         this.options = options;
@@ -54,8 +54,8 @@ public class TokenService : ITokenService
     public async Task<Tokens> RefreshAccessTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();
-        
-        Guid? userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
+
+        var userId = await tokenRepository.GetUserIdFromTokenAsync(refreshToken);
 
         if (!userId.HasValue)
         {
@@ -64,14 +64,14 @@ public class TokenService : ITokenService
 
         await ValidateRefreshToken(refreshToken);
 
-        User user = (await userRepository.GetByIdAsync(userId.Value))!;
-        
+        User user = ( await userRepository.GetByIdAsync(userId.Value) )!;
+
         Tokens tokens = GenerateTokens(user);
 
         await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
         return tokens;
     }
-    
+
     public async Task RemoveTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();

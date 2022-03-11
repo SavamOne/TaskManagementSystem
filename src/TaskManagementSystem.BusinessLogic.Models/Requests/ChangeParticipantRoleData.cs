@@ -11,6 +11,6 @@ public class ChangeParticipantRoleData
     }
 
     public Guid ParticipantId { get; }
-    
+
     public CalendarRole Role { get; }
 }

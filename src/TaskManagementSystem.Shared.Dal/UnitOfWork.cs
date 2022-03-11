@@ -5,14 +5,14 @@ namespace TaskManagementSystem.Shared.Dal;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DatabaseConnectionProvider connectionProvider;
-    
+
     private IDbTransaction? transaction;
-    
+
     public UnitOfWork(DatabaseConnectionProvider connectionProvider)
     {
         this.connectionProvider = connectionProvider;
     }
-    
+
     public void BeginTransaction()
     {
         transaction = connectionProvider.GetConnection().BeginTransaction();

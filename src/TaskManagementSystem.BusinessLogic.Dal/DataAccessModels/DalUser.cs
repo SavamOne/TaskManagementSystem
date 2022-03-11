@@ -8,7 +8,7 @@ public class DalUser
     [Column("id")]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Guid Id { get; set; }
-    
+
     [Column("name")]
     public string Name { get; set; }
 
@@ -20,7 +20,7 @@ public class DalUser
 
     [Column("password_hash")]
     public byte[] PasswordHash { get; set; }
-    
+
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
 }

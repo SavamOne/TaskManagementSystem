@@ -11,6 +11,6 @@ public class CalendarWithParticipantUsers
     }
 
     public CalendarInfo Calendar { get; }
-    
+
     public IEnumerable<CalendarParticipantUser> Participants { get; }
 }

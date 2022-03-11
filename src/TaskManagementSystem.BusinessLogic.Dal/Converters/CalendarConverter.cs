@@ -1,5 +1,4 @@
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
-using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 
@@ -25,7 +24,7 @@ public static class CalendarConverter
         {
             throw new BusinessLogicException("Этот календарь удален");
         }
-        
+
         return new Calendar(calendar.Id, calendar.Name, calendar.Description, calendar.CreationDate);
     }
 }

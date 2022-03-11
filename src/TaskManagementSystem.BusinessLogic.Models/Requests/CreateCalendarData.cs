@@ -12,8 +12,8 @@ public class CreateCalendarData
     }
 
     public Guid CreatorId { get; }
-    
+
     public string Name { get; }
-    
+
     public string Description { get; }
 }

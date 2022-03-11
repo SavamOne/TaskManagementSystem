@@ -13,10 +13,10 @@ public record Calendar
     }
 
     public Guid Id { get; }
-    
+
     public string Name { get; }
-    
+
     public string Description { get; }
-    
+
     public DateTime CreationDateUtc { get; }
 }

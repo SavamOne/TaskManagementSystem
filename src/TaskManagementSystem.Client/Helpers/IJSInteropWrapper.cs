@@ -11,6 +11,6 @@ public interface IJSInteropWrapper
     Task<string?> GetStringAsync(string key);
 
     Task RemoveAsync(string key);
-    
+
     Task<string> GetInnerTextByIdAsync(string id);
 }

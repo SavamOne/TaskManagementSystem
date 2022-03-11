@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <SupportedPlatform Include="browser"/>
+        <SupportedPlatform Include="browser" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj" />
     </ItemGroup>
 </Project>

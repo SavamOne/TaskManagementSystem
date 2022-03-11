@@ -1,5 +1,4 @@
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
-using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 
@@ -26,7 +25,7 @@ public static class UserConverter
         {
             throw new BusinessLogicException("Этот пользователь удален");
         }
-        
+
         return new User(user.Id, user.Name, user.Email, user.RegisterDate, user.PasswordHash);
     }
 }

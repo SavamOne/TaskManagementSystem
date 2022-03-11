@@ -13,8 +13,8 @@ public class EditCalendarData
     public Guid EditorId { get; }
 
     public Guid CalendarId { get; }
-    
+
     public string? Name { get; }
-    
+
     public string? Description { get; }
 }

@@ -8,7 +8,7 @@ public class Repository<TModel> where TModel : class
 {
     private readonly DatabaseConnectionProvider connectionProvider;
 
-    public Repository(DatabaseConnectionProvider connectionProvider) 
+    public Repository(DatabaseConnectionProvider connectionProvider)
     {
         this.connectionProvider = connectionProvider;
     }
@@ -27,12 +27,12 @@ public class Repository<TModel> where TModel : class
     {
         await GetConnection().InsertAsync(model);
     }
-    
+
     protected async Task InsertAllAsync(IEnumerable<TModel> model)
     {
         await GetConnection().InsertAllAsync(model);
     }
-    
+
     protected async Task UpdateAsync(TModel model)
     {
         await GetConnection().UpdateAsync(model);
@@ -47,5 +47,4 @@ public class Repository<TModel> where TModel : class
     {
         return await GetConnection().DeleteMultipleAsync(expression);
     }
-
 }

@@ -13,10 +13,10 @@ public class CalendarInfo
     }
 
     public Guid Id { get; }
-    
+
     public string Name { get; }
-    
+
     public string Description { get; }
-    
+
     public DateTimeOffset CreationDate { get; }
 }

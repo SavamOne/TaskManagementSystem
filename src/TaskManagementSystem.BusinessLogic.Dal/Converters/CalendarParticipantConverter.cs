@@ -1,5 +1,4 @@
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
-using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 
@@ -26,11 +25,11 @@ public static class CalendarParticipantConverter
         {
             throw new BusinessLogicException("Этот участник удален");
         }
-        
-        return new CalendarParticipant(calendarParticipant.Id, 
-        calendarParticipant.CalendarId, 
-        calendarParticipant.UserId, 
-        calendarParticipant.JoinDate, 
+
+        return new CalendarParticipant(calendarParticipant.Id,
+        calendarParticipant.CalendarId,
+        calendarParticipant.UserId,
+        calendarParticipant.JoinDate,
         (CalendarRole)calendarParticipant.Role);
     }
 }

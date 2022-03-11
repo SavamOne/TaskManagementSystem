@@ -17,9 +17,9 @@ public static class ServerAuthExtensions
 
         serviceCollection.AddServerDal();
         serviceCollection.AddScoped<ITokenService, TokenService>();
-        
+
         JwtOptions jwtOptions = ConfigureJwtOptions(serviceCollection, jwtSection);
-        
+
         serviceCollection.AddAuthorization();
         serviceCollection.AddAuthentication(options =>
         {
@@ -40,10 +40,10 @@ public static class ServerAuthExtensions
                 ClockSkew = TimeSpan.Zero
             };
         });
-        
+
         return serviceCollection;
     }
-    
+
     private static JwtOptions ConfigureJwtOptions(IServiceCollection serviceCollection, IConfigurationSection jwtSection)
     {
         jwtSection.AssertNotNull(nameof(jwtSection));

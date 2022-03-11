@@ -64,7 +64,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<UserInfo>> GetUserInfoAsync(GetUserInfoByIdRequest byIdRequest)
     {
         var result =
@@ -72,7 +72,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<UserInfo[]>> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
     {
         var result =
@@ -104,7 +104,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<IEnumerable<CalendarInfo>>> GetUserCalendars()
     {
         var result =
@@ -112,7 +112,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarInfo>> CreateCalendar(CreateCalendarRequest request)
     {
         var result =
@@ -120,7 +120,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarInfo>> EditCalendar(EditCalendarRequest request)
     {
         var result =
@@ -128,7 +128,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarWithParticipantUsers>> GetCalendarInfo(GetCalendarInfoRequest request)
     {
         var result =
@@ -136,7 +136,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarWithParticipantUsers>> AddCalendarParticipants(AddCalendarParticipantsRequest request)
     {
         var result =
@@ -144,7 +144,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarWithParticipantUsers>> ChangeParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
     {
         var result =
@@ -152,7 +152,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
     public async Task<Result<CalendarWithParticipantUsers>> DeleteCalendarParticipants(DeleteParticipantsRequest request)
     {
         var result =
@@ -160,7 +160,7 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
-    
+
 
     protected override async Task RefreshTokens()
     {

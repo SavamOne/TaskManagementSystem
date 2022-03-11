@@ -4,6 +4,10 @@ namespace TaskManagementSystem.Client.Components.Dropdowns;
 
 public partial class DropdownComponent<TItem>
 {
+    private string disabledClass = string.Empty;
+
+    private string showClass = string.Empty;
+
     [Parameter]
     public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
 
@@ -23,9 +27,6 @@ public partial class DropdownComponent<TItem>
         set => disabledClass = value ? "disabled" : string.Empty;
     }
 
-    private string showClass = string.Empty;
-    private string disabledClass = string.Empty;
-
     private bool ShowDropdown
     {
         get => showClass != string.Empty;
@@ -35,7 +36,7 @@ public partial class DropdownComponent<TItem>
             {
                 return;
             }
-            
+
             showClass = value ? "show" : string.Empty;
         }
     }
@@ -51,7 +52,7 @@ public partial class DropdownComponent<TItem>
         {
             return;
         }
-        
+
         ShowDropdown = false;
 
         SelectedItem = item;

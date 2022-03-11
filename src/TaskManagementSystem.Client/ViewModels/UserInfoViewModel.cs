@@ -4,10 +4,8 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public class UserInfoViewModel
 {
-    public UserInfoViewModel()
-    {
-    }
-    
+    public UserInfoViewModel() {}
+
     public UserInfoViewModel(UserInfo userInfo)
     {
         UserId = userInfo.Id;
@@ -15,9 +13,9 @@ public class UserInfoViewModel
         Email = userInfo.Email;
         RegisterDate = userInfo.DateJoined.ToLocalTime().ToString("d");
     }
-    
+
     public Guid UserId { get; }
-    
+
     public string? Name { get; set; }
 
     public string? Email { get; set; }

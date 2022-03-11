@@ -11,6 +11,6 @@ public record CalendarWithParticipants
     }
 
     public Calendar Calendar { get; }
-    
+
     public ISet<CalendarParticipant> Participants { get; }
 }

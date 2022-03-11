@@ -11,7 +11,7 @@ public static class BusinessLogicDalRegistrationExtensions
     public static IServiceCollection AddBusinessLogicDal(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDal();
-        
+
         serviceCollection.TryAddScoped<IUserRepository, UserRepository>();
         serviceCollection.TryAddScoped<ICalendarRepository, CalendarRepository>();
         serviceCollection.TryAddScoped<ICalendarParticipantRepository, CalendarParticipantRepository>();

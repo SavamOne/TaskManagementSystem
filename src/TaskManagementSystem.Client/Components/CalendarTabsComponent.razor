@@ -1,5 +1,3 @@
-<h3>CalendarTabsComponent</h3>
-
 <div class="row row-cols-1 row-cols-md-4 g-4">
     @if (Calendars.Any())
     {
@@ -24,32 +22,3 @@
         <LoaderComponent/>
     }
 </div>
-
-@code {
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
-    
-    [Inject]
-    public IToastService? ToastService { get; set; }
-
-    public IEnumerable<CalendarInfo> Calendars { get; set; } = Enumerable.Empty<CalendarInfo>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshCalendarsStateAsync();
-    }
-
-    public async Task RefreshCalendarsStateAsync()
-    {
-        var result = await ServerProxy!.GetUserCalendars();
-
-        if (!result.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-            return;
-        }
-
-        Calendars = result.Value!;
-        StateHasChanged();
-    }
-}

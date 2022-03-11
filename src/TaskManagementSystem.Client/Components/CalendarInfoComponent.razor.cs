@@ -1,6 +1,4 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Components;
-using TaskManagementSystem.Client.Components.Modals;
 using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
@@ -13,7 +11,22 @@ public partial class CalendarInfoComponent
 {
     private const string CalendarDescriptionId = "CalendarDescriptionId";
     private const string CalendarNameId = "CalendarNameId";
-    
+
+    private readonly IEnumerable<CalendarParticipantRole> roles =
+        Enum.GetValues<CalendarParticipantRole>()
+            .Where(x => x != CalendarParticipantRole.Creator)
+            .ToList();
+
+    private CalendarViewModel calendar = new();
+    private CalendarViewModel calendarForEdit = new();
+
+    private bool changed, isNameEditing, isDescriptionEditing;
+
+    private string filter = string.Empty;
+    private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
+
+    private ICollection<UserInfoWithRoleViewModel> possibleParticipants = new List<UserInfoWithRoleViewModel>();
+
     [Parameter]
     public Guid CalendarId { get; set; }
 
@@ -22,16 +35,10 @@ public partial class CalendarInfoComponent
 
     [Inject]
     public IToastService? ToastService { get; set; }
-    
+
     [Inject]
     public IJSInteropWrapper? JsInteropWrapper { get; set; }
-    
-    private readonly IEnumerable<CalendarParticipantRole> roles =
-        Enum.GetValues<CalendarParticipantRole>()
-            .Where(x => x != CalendarParticipantRole.Creator)
-            .ToList();
 
-    private bool changed, isNameEditing, isDescriptionEditing;
     private bool Changed
     {
         get => changed;
@@ -43,14 +50,6 @@ public partial class CalendarInfoComponent
     }
 
     private string ChangedState => Changed ? string.Empty : "disabled";
-
-    private ICollection<UserInfoWithRoleViewModel> possibleParticipants = new List<UserInfoWithRoleViewModel>();
-
-    private string filter = string.Empty;
-
-    private CalendarViewModel calendar = new();
-    private CalendarViewModel calendarForEdit = new();
-    private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -65,7 +64,7 @@ public partial class CalendarInfoComponent
 
         calendar = new CalendarViewModel(result.Value!.Calendar);
         calendarForEdit = new CalendarViewModel(result.Value!.Calendar);
-        
+
         participants = result.Value.Participants
             .Select(x => new CalendarParticipantViewModel(x))
             .ToDictionary(x => x.UserId);
@@ -93,7 +92,7 @@ public partial class CalendarInfoComponent
             .Where(x => !participants.ContainsKey(x.Id))
             .Select(x => new UserInfoWithRoleViewModel(x))
             .OrderBy(x => x.Role)
-            .ThenBy(x=> x.Name)
+            .ThenBy(x => x.Name)
             .ToList();
     }
 
@@ -110,7 +109,7 @@ public partial class CalendarInfoComponent
 
         Changed = false;
     }
-    
+
     private async Task<bool> TryChangeRoleOrDelete()
     {
         var participantsWithChangedRole = participants.Values
@@ -124,7 +123,7 @@ public partial class CalendarInfoComponent
 
         CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
         newParticipantsList = await TryDelete(participantsWithChangedRole) ?? newParticipantsList;
-        
+
 
         if (newParticipantsList is null)
         {
@@ -134,10 +133,10 @@ public partial class CalendarInfoComponent
         participants = newParticipantsList.Participants
             .Select(x => new CalendarParticipantViewModel(x))
             .ToDictionary(x => x.UserId);
-        
+
         return true;
     }
-    
+
     private async Task<CalendarWithParticipantUsers?> TryDelete(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
     {
         var toDeleteIds = participantsWithChangedRole
@@ -149,7 +148,7 @@ public partial class CalendarInfoComponent
         {
             return null;
         }
-        
+
         var deleteResult = await ServerProxy!.DeleteCalendarParticipants(new DeleteParticipantsRequest(CalendarId, toDeleteIds));
 
         if (!deleteResult.IsSuccess)
@@ -173,7 +172,7 @@ public partial class CalendarInfoComponent
         {
             return null;
         }
-        
+
         var changeRoleResult = await ServerProxy!.ChangeParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
 
         if (!changeRoleResult.IsSuccess)
@@ -181,7 +180,7 @@ public partial class CalendarInfoComponent
             ToastService!.AddSystemErrorToast(changeRoleResult.ErrorDescription!);
             return null;
         }
-        
+
         ToastService!.AddSystemToast("Календарь", "Роли успешно изменены");
         return changeRoleResult.Value;
     }
@@ -209,10 +208,10 @@ public partial class CalendarInfoComponent
         participants = addResult.Value!.Participants
             .Select(x => new CalendarParticipantViewModel(x))
             .ToDictionary(x => x.UserId);
-        
+
         filter = string.Empty;
         possibleParticipants.Clear();
-        
+
         ToastService!.AddSystemToast("Календарь", "Новые участники календаря добавлены");
     }
 
@@ -224,7 +223,7 @@ public partial class CalendarInfoComponent
         }
 
         var result = await ServerProxy!.EditCalendar(calendarForEdit.GetEditRequest());
-        
+
         if (!result.IsSuccess)
         {
             ToastService!.AddSystemErrorToast(result.ErrorDescription!);
@@ -232,19 +231,22 @@ public partial class CalendarInfoComponent
         }
 
         calendar = new CalendarViewModel(result.Value!);
-        
+
         ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
     }
 
-    public string RoleStr(CalendarParticipantRole role) => role switch
+    public string RoleStr(CalendarParticipantRole role)
     {
-        CalendarParticipantRole.Admin => "Администратор",
-        CalendarParticipantRole.Creator => "Создатель календаря",
-        CalendarParticipantRole.Participant => "Участник",
-        CalendarParticipantRole.NotSet => "Не участник",
-        _ => throw new ArgumentOutOfRangeException(nameof(RoleStr))
-        
-    };
+        return role switch
+        {
+            CalendarParticipantRole.Admin => "Администратор",
+            CalendarParticipantRole.Creator => "Создатель календаря",
+            CalendarParticipantRole.Participant => "Участник",
+            CalendarParticipantRole.NotSet => "Не участник",
+            _ => throw new ArgumentOutOfRangeException(nameof(RoleStr))
+
+        };
+    }
 
     private async Task ChangeCalendarName()
     {
@@ -255,11 +257,11 @@ public partial class CalendarInfoComponent
         }
 
         calendarForEdit.Name = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarNameId);
-        
+
         Changed |= !calendarForEdit.Equals(calendar);
         isNameEditing = false;
     }
-    
+
     private async Task ChangeCalendarDescription()
     {
         if (!isDescriptionEditing)
@@ -267,9 +269,9 @@ public partial class CalendarInfoComponent
             isDescriptionEditing = true;
             return;
         }
-        
+
         calendarForEdit.Description = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarDescriptionId);
-        
+
         Changed |= !calendarForEdit.Equals(calendar);
         isDescriptionEditing = false;
     }

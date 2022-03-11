@@ -5,17 +5,16 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Server.Dal.Repositories.Implementations;
 
-public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRepository {
+public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRepository
+{
 
     public RefreshTokenRepository(DatabaseConnectionProvider connectionProvider)
-        : base(connectionProvider)
-    {
-    }
+        : base(connectionProvider) {}
 
     public async Task InsertForUserAsync(Guid userId, string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();
-        
+
         DalUserToken entry = new()
         {
             UserId = userId,
@@ -35,7 +34,7 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
         await InsertForUserAsync(userId, newRefreshToken);
         transaction.Commit();
     }
-    
+
     public async Task<Guid?> GetUserIdFromTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();
@@ -44,7 +43,7 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
 
         return userToken?.UserId;
     }
-    
+
     public async Task RemoveTokenAsync(string refreshToken)
     {
         refreshToken.AssertNotNullOrWhiteSpace();

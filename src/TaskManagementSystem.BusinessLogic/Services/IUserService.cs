@@ -10,7 +10,7 @@ public interface IUserService
     Task<User> CheckUserCredentialsAsync(LoginData data);
 
     Task<User> GetUserAsync(Guid userId);
-    
+
     Task<ISet<User>> GetUsersAsync(ISet<Guid> userIds);
 
     Task<ISet<User>> GetUsersByFilter(string filter);

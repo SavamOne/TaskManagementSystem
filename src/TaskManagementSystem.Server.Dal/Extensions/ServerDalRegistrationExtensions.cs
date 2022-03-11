@@ -10,11 +10,9 @@ public static class ServerDalRegistrationExtensions
     public static IServiceCollection AddServerDal(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddDal();
-        
+
         serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-        
+
         return serviceCollection;
     }
-    
-    
 }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.BusinessLogic.Models;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
 using TaskManagementSystem.BusinessLogic.Services;
@@ -62,12 +61,12 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetInfoAsync()
     {
         Guid id = tokenService.GetUserIdFromClaims(User);
-        
+
         User user = await userService.GetUserAsync(id);
 
         return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
     }
-    
+
     [Authorize]
     [HttpPost("GetInfoById")]
     public async Task<IActionResult> GetInfoAsync(GetUserInfoByIdRequest byIdRequest)
@@ -90,7 +89,7 @@ public class UserController : ControllerBase
 
         return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
     }
-    
+
     [Authorize]
     [HttpPost("ChangeInfo")]
     public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)

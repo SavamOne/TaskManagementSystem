@@ -5,18 +5,18 @@
 
     <p class="m-0">Описание календаря</p>
     <InputText @bind-Value="Calendar.Description" type="text" class="mb-2 form-control"/>
-    
+
     </Body>
 </EditFormModal>
 
 @code {
-    
+
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
-    
+
     [Parameter]
     public Func<Task>? OnSuccess { get; set; }
 
@@ -37,7 +37,7 @@
         {
             ToastService!.AddSystemToast("Создание календаря", "Календарь создан успешно");
             Modal.Close();
-            await (OnSuccess?.Invoke() ?? Task.CompletedTask);
+            await ( OnSuccess?.Invoke() ?? Task.CompletedTask );
         }
         else
         {

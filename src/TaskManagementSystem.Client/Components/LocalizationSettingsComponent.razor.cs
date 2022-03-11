@@ -8,12 +8,12 @@ namespace TaskManagementSystem.Client.Components;
 public partial class LocalizationSettingsComponent
 {
     private bool cultureChanged;
-    private CultureViewModel? selectedCulture;
     private IEnumerable<CultureViewModel>? cultureItems;
-    
+
     private bool firstDayChanged;
-    private FirstDayOfWeekViewModel? selectedFirstDay;
     private IEnumerable<FirstDayOfWeekViewModel>? firstDayItems;
+    private CultureViewModel? selectedCulture;
+    private FirstDayOfWeekViewModel? selectedFirstDay;
 
     [Inject]
     public ILocalizationService? LocalizationService { get; set; }
@@ -56,13 +56,13 @@ public partial class LocalizationSettingsComponent
             await LocalizationService!.SetApplicationFirstDayOfWeekAsync(selectedFirstDay!.Value);
             firstDayChanged = false;
         }
-        
+
         if (cultureChanged)
         {
             await LocalizationService!.SetApplicationCultureAsync(selectedCulture!.Value);
             StateHasChanged();
         }
-        
+
         ToastService!.AddSystemToast(LocalizedResources.LocalizationSettingsComponent_SettingsChange, LocalizedResources.LocalizationSettingsComponent_SettingsSuccessfullyChanged);
 
         if (cultureChanged)

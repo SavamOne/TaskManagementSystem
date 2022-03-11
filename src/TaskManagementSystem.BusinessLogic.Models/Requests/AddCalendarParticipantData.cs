@@ -11,6 +11,6 @@ public record AddCalendarParticipantData
     }
 
     public Guid UserId { get; }
-    
+
     public CalendarRole Role { get; }
 }

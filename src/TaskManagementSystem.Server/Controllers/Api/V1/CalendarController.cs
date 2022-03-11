@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
 using TaskManagementSystem.BusinessLogic.Services;
-using TaskManagementSystem.BusinessLogic.Services.Implementations;
 using TaskManagementSystem.Server.Filters;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Shared.Models;
@@ -16,9 +15,9 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Route("Api/V1/[controller]")]
 public class CalendarController : ControllerBase
 {
+    private readonly ICalendarService calendarService;
     private readonly ITokenService tokenService;
     private readonly IUserService userService;
-    private readonly ICalendarService calendarService;
 
     public CalendarController(ITokenService tokenService, IUserService userService, ICalendarService calendarService)
     {
@@ -130,5 +129,4 @@ public class CalendarController : ControllerBase
         participantsUsers
         );
     }
-
 }

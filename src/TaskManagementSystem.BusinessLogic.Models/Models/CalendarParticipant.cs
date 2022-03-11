@@ -14,10 +14,10 @@ public record CalendarParticipant
     public Guid Id { get; }
 
     public Guid CalendarId { get; }
-    
+
     public Guid UserId { get; }
-    
+
     public DateTime JoinDateUtc { get; }
-    
+
     public CalendarRole Role { get; }
 }
