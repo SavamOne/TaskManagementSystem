@@ -1,8 +1,8 @@
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class CalendarEditData
+public class EditCalendarData
 {
-    public CalendarEditData(Guid editorId, Guid calendarId, string? name, string? description)
+    public EditCalendarData(Guid editorId, Guid calendarId, string? name, string? description)
     {
         EditorId = editorId;
         CalendarId = calendarId;

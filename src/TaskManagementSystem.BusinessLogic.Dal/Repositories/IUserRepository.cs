@@ -11,7 +11,7 @@ public interface IUserRepository
 
     Task<User?> GetByEmailAsync(string email);
     
-    Task<ISet<User>> GetByFilter(string filter);
+    Task<ISet<User>> GetByFilter(string filter, int limit);
 
     Task UpdateAsync(User user);
 

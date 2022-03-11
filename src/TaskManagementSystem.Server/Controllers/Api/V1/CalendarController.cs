@@ -52,7 +52,7 @@ public class CalendarController : ControllerBase
     {
         Guid userId = tokenService.GetUserIdFromClaims(User);
         
-        Calendar result = await calendarService.EditCalendarAsync(new CalendarEditData(
+        Calendar result = await calendarService.EditCalendarAsync(new EditCalendarData(
         userId,  request.CalendarId, request.Name, request.Description));
         
         return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));

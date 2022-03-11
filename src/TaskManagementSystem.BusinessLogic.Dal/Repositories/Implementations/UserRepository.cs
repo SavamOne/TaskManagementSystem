@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Dommel;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models;
@@ -17,7 +18,7 @@ public class UserRepository : Repository<DalUser>, IUserRepository
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        DalUser? dalUser = await FirstOrDefaultAsync(x => x.Id == id);
+        DalUser? dalUser = await FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         
         return dalUser?.ToUser();
     }
@@ -26,7 +27,7 @@ public class UserRepository : Repository<DalUser>, IUserRepository
     {
         ids.AssertNotNull();
         
-        var dalUsers = await SelectAsync(x => ids.Contains(x.Id));
+        var dalUsers = await SelectAsync(x => ids.Contains(x.Id) && !x.IsDeleted);
 
         return dalUsers.Select(x => x.ToUser()).ToHashSet();
     }
@@ -35,16 +36,21 @@ public class UserRepository : Repository<DalUser>, IUserRepository
     {
         email.AssertNotNullOrWhiteSpace();
         
-        DalUser? dalUser = await FirstOrDefaultAsync(x => x.Email == email);
+        //TODO: CaseSensitive
+        DalUser? dalUser = await FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted);
         
         return dalUser?.ToUser();
     }
-    public async Task<ISet<User>> GetByFilter(string filter)
+    public async Task<ISet<User>> GetByFilter(string filter, int limit)
     {
         filter.AssertNotNull();
 
-        var dalUsers = await SelectAsync(x => x.Name.StartsWith(filter) || x.Email.StartsWith(filter));
-
+        //TODO: CaseSensitive 
+        var dalUsers = await GetConnection().FromAsync<DalUser>(sql =>
+            sql.Select().
+                Where(x => ( x.Name.StartsWith(filter) || x.Email.StartsWith(filter) ) && !x.IsDeleted)
+                .Page(1, limit));
+        
         return dalUsers.Select(x => x.ToUser()).ToHashSet();
     }
 

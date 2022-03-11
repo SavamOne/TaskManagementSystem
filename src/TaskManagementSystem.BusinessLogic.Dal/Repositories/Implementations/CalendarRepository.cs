@@ -1,5 +1,4 @@
 using Dapper;
-using Dommel;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -13,7 +12,6 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
     public CalendarRepository(DatabaseConnectionProvider connectionProvider)
         : base(connectionProvider)
     {
-        
     }
 
     public async Task<Calendar?> GetByIdAsync(Guid id)
@@ -27,6 +25,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
     {
         name.AssertNotNullOrWhiteSpace();
         
+        //TODO: CaseSensitive
         DalCalendar? dalCalendar = await FirstOrDefaultAsync(x => x.Name == name && !x.IsDeleted);
         
         return dalCalendar?.ToCalendar();
@@ -34,9 +33,11 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
 
     public async Task<ISet<Calendar>> GetByUserId(Guid userId)
     {
-        var dalCalendars = await GetConnection().QueryAsync<DalCalendar>(
-        "SELECT c.* FROM calendar_participant cp inner join calendar c on cp.calendar_id = c.id where cp.user_id = @userId and cp.is_deleted = false", 
-        new
+        const string getSql = "SELECT C.* FROM Calendar_Participant CP "
+        + "INNER JOIN Calendar C ON CP.Calendar_Id = C.id "
+        + "WHERE Cp.User_Id = @UserId AND C.Is_Deleted = FALSE AND CP.Is_Deleted = FALSE; ";
+        
+        var dalCalendars = await GetConnection().QueryAsync<DalCalendar>(getSql, new
         {
             userId
         });

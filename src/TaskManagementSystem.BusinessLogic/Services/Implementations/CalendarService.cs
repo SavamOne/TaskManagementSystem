@@ -36,12 +36,7 @@ public class CalendarService
     {
         data.AssertNotNull();
 
-        // Проверка на существование с таким же именем.
-        Calendar? existed = await calendarRepository.GetByNameAsync(data.Name);
-        if (existed is not null)
-        {
-            throw new BusinessLogicException("Календарь с таким именем уже существует");
-        }
+        await CheckCalendarExistenceByName(data.Name);
 
         unitOfWork.BeginTransaction();
 
@@ -55,14 +50,12 @@ public class CalendarService
         return calendar;
     }
 
-    public async Task<Calendar> EditCalendarAsync(CalendarEditData data)
+    public async Task<Calendar> EditCalendarAsync(EditCalendarData data)
     {
         data.AssertNotNull();
 
         CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
-
-        //Проверка, что редактирует администратор или создатель календаря
-        CheckIsAdminOrCreator(data.EditorId, calendarInfo.Participants);
+        CheckRequestInitiatorIsAdminOrCreator(data.EditorId, calendarInfo.Participants);
 
         string name = calendarInfo.Calendar.Name;
         string description = calendarInfo.Calendar.Description;
@@ -84,60 +77,89 @@ public class CalendarService
     public async Task<CalendarWithParticipants> AddParticipantsAsync(AddCalendarParticipantsData data)
     {
         data.AssertNotNull();
-
-        if (!data.Users.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
-        {
-            //TODO: Выводить конкретный список некорректных ролей
-            throw new BusinessLogicException("Обнаружена некорректная роль");
-        }
-
+        CheckRolesAreAdminOrParticipant(data.Users);
         CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
-
-        //Проверка, что редактирует администратор или создатель календаря
-        CheckIsAdminOrCreator(data.AdderId, calendarInfo.Participants);
-
+        CheckRequestInitiatorIsAdminOrCreator(data.AdderId, calendarInfo.Participants);
         var userIds = data.Users.Select(x => x.UserId).ToHashSet();
-
-        //Проверка, что какие-то пользователи уже могут быть в календаре
-        if (userIds.Intersect(calendarInfo.Participants.Select(x => x.UserId)).Any())
-        {
-            //TODO: Выводить конкретный список пользователей
-            throw new BusinessLogicException("Некоторые пользователи уже добавлены в календарь");
-        }
-
-        //Проверка, что добавляемые пользователи вообще существуют
-        var users = await userRepository.GetByIdsAsync(userIds);
-        if (users.Count != userIds.Count)
-        {
-            //TODO: Выводить конкретный список пользователей
-            throw new BusinessLogicException("Найден не полный список участников");
-        }
-
-        //TODO: Баг, что удаленный и заново добавленный пользователь будет иметь разные Id
+        CheckUsersAreNotInCalendar(userIds, calendarInfo.Participants);
+        await CheckUsersExist(userIds);
+        
+        //TODO: Здесь задается Guid.NewGuid() для удаленных участников, хотя они восстанавливаются со старым Id.
         var participantsToAdd = data.Users.Select(x =>
             new CalendarParticipant(Guid.NewGuid(), calendarInfo.Calendar.Id, x.UserId, DateTime.UtcNow, x.Role)).ToHashSet();
+        
         await calendarParticipantRepository.InsertAllAsync(participantsToAdd);
 
         var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
-
         return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
     }
 
     public async Task<CalendarWithParticipants> ChangeParticipantRoleAsync(ChangeParticipantsRoleData data)
     {
         data.AssertNotNull();
+        CheckRolesAreAdminOrParticipant(data.Participants);
+        CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
+        CheckRequestInitiatorIsAdminOrCreator(data.ChangerId, calendarInfo.Participants);
+        
+        var participantsToChange = ValidateAndGetUpdatedCalendarParticipantsWithNewRoles(data, calendarInfo);
 
-        if (!data.Participants.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
-        {
-            //TODO: Выводить конкретный список некорректных ролей
-            throw new BusinessLogicException("Обнаружена некорректная роль");
-        }
+        await calendarParticipantRepository.UpdateAllAsync(participantsToChange);
+        
+        var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
+        return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
+    }
+    
+    public async Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data)
+    {
+        data.AssertNotNull();
 
         CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
+        
+        CheckRequestInitiatorIsAdminOrCreator(data.RemoverId, calendarInfo.Participants);
+        CheckUsersAreInCalendar(data.ParticipantsIds, calendarInfo.Participants);
+        CheckNotRemovingCreator(data.ParticipantsIds, calendarInfo.Participants);
 
-        //Проверка, что редактирует администратор или создатель календаря
-        CheckIsAdminOrCreator(data.ChangerId, calendarInfo.Participants);
+        await calendarParticipantRepository.DeleteByIds(data.ParticipantsIds);
+        var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
+        return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
+    }
+    
+    public async Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id)
+    {
+        Calendar? calendar = await calendarRepository.GetByIdAsync(id);
+        
+        if (calendar is null)
+        {
+            throw new BusinessLogicException($"Календарь с таким Id '{id}' не найден.");
+        }
 
+        var participants = await calendarParticipantRepository.GetByCalendarIdAsync(id);
+
+        return new CalendarWithParticipants(calendar, participants);
+    }
+    
+    private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds,  IEnumerable<CalendarParticipant> allParticipants)
+    {
+        //Проверка, что нельзя удалить создателя календаря
+        CalendarParticipant creator = allParticipants.Single(x => x.Role == CalendarRole.Creator);
+        if (participantIds.Contains(creator.Id))
+        {
+            throw new BusinessLogicException("Нельзя удалять создателя календаря");
+        }
+    }
+    
+    private static void CheckUsersAreInCalendar(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
+    {
+        //Проверка, что удаляемые участники принадлежат этому календарю
+        if (participantIds.Except(allParticipants.Select(x => x.Id)).Any())
+        {
+            //TODO: Выводить конкретный список пользователей
+            throw new BusinessLogicException("Не все пользователи принадлежат этому календарю");
+        }
+    }
+    
+    private static HashSet<CalendarParticipant> ValidateAndGetUpdatedCalendarParticipantsWithNewRoles(ChangeParticipantsRoleData data, CalendarWithParticipants calendarInfo)
+    {
         var toChange = new HashSet<CalendarParticipant>();
         foreach (ChangeParticipantRoleData changeParticipantRoleData in data.Participants)
         {
@@ -152,65 +174,21 @@ public class CalendarService
             {
                 throw new BusinessLogicException($"Нельзя изменить роль самого себя");
             }
-            
+
             if (participant.Role == CalendarRole.Creator)
             {
                 throw new BusinessLogicException($"Нельзя изменить роль создателя");
             }
-            
+
             toChange.Add(new CalendarParticipant(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc, changeParticipantRoleData.Role));
         }
-
-        await calendarParticipantRepository.UpdateAllAsync(toChange);
         
-        var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
-        return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
+        return toChange;
     }
 
-    public async Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data)
+    private static void CheckRequestInitiatorIsAdminOrCreator(Guid userId, IEnumerable<CalendarParticipant> participants)
     {
-        data.AssertNotNull();
-
-        CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
-
         //Проверка, что редактирует администратор или создатель календаря
-        CheckIsAdminOrCreator(data.RemoverId, calendarInfo.Participants);
-
-        //Проверка, что удаляемые участники принадлежат этому календарю
-        if (data.ParticipantsIds.Except(calendarInfo.Participants.Select(x => x.Id)).Any())
-        {
-            //TODO: Выводить конкретный список пользователей
-            throw new BusinessLogicException("Не все пользователи принадлежат этому календарю");
-        }
-
-        //Проверка, что нельзя удалить создателя календаря
-        CalendarParticipant creator = calendarInfo.Participants.Single(x => x.Role == CalendarRole.Creator);
-        if (data.ParticipantsIds.Contains(creator.Id))
-        {
-            throw new BusinessLogicException("Нельзя удалять создателя календаря");
-        }
-
-        await calendarParticipantRepository.DeleteByIds(data.ParticipantsIds);
-
-        var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
-        return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
-    }
-
-    public async Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id)
-    {
-        Calendar? calendar = await calendarRepository.GetByIdAsync(id);
-        if (calendar is null)
-        {
-            throw new BusinessLogicException($"Календарь с таким Id '{id}' не найден.");
-        }
-
-        var participants = await calendarParticipantRepository.GetByCalendarIdAsync(id);
-
-        return new CalendarWithParticipants(calendar, participants);
-    }
-
-    private static void CheckIsAdminOrCreator(Guid userId, IEnumerable<CalendarParticipant> participants)
-    {
         CalendarParticipant? participant = participants.FirstOrDefault(x => x.UserId == userId);
 
         if (participant is null)
@@ -221,6 +199,55 @@ public class CalendarService
         if (participant.Role is not (CalendarRole.Admin or CalendarRole.Creator))
         {
             throw new BusinessLogicException("Пользователь не является создателем или администратором календаря");
+        }
+    }
+    
+    private static void CheckUsersAreNotInCalendar(IEnumerable<Guid> userIds, IEnumerable<CalendarParticipant> allParticipants)
+    {
+        //Проверка, что какие-то пользователи уже могут быть в календаре
+        if (userIds.Intersect(allParticipants.Select(x => x.UserId)).Any())
+        {
+            //TODO: Выводить конкретный список пользователей
+            throw new BusinessLogicException("Некоторые пользователи уже добавлены в календарь");
+        }
+    }
+    
+    private static void CheckRolesAreAdminOrParticipant(IEnumerable<AddCalendarParticipantData> users)
+    {
+        if (!users.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
+        {
+            //TODO: Выводить конкретный список некорректных ролей
+            throw new BusinessLogicException("Обнаружена некорректная роль");
+        }
+    }
+    
+    private static void CheckRolesAreAdminOrParticipant(IEnumerable<ChangeParticipantRoleData> participants)
+    {
+        if (!participants.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
+        {
+            //TODO: Выводить конкретный список некорректных ролей
+            throw new BusinessLogicException("Обнаружена некорректная роль");
+        }
+    }
+    
+    private async Task CheckUsersExist(ISet<Guid> userIds)
+    {
+        //Проверка, что добавляемые пользователи вообще существуют
+        var users = await userRepository.GetByIdsAsync(userIds);
+        if (users.Count != userIds.Count)
+        {
+            //TODO: Выводить конкретный список пользователей
+            throw new BusinessLogicException("Найден не полный список участников");
+        }
+    }
+
+    private async Task CheckCalendarExistenceByName(string name)
+    {
+        // Проверка на существование с таким же именем.
+        Calendar? existed = await calendarRepository.GetByNameAsync(name);
+        if (existed is not null)
+        {
+            throw new BusinessLogicException("Календарь с таким именем уже существует");
         }
     }
 }
