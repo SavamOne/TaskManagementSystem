@@ -36,7 +36,7 @@ public class UserService : IUserService
     public async Task<User> CheckUserCredentialsAsync(LoginData data)
     {
         data.AssertNotNull();
-        
+
         User? existedUser = await userRepository.GetByEmailAsync(data.Email);
         if (existedUser is null)
         {
@@ -63,7 +63,7 @@ public class UserService : IUserService
 
         return user;
     }
-    
+
     public async Task<ISet<User>> GetUsersAsync(ISet<Guid> userIds)
     {
         userIds.AssertNotNull();
@@ -85,7 +85,7 @@ public class UserService : IUserService
 
         return await userRepository.GetByFilter(filter, 50);
     }
-    
+
     public async Task<User> ChangeUserInfoAsync(ChangeUserInfoData data)
     {
         data.AssertNotNull();
@@ -113,12 +113,12 @@ public class UserService : IUserService
         await userRepository.UpdateAsync(updatedUser);
         return updatedUser;
     }
-    
+
     public async Task<User> ChangePasswordAsync(ChangePasswordData data)
     {
         data.AssertNotNull();
 
-        User? user =  await userRepository.GetByIdAsync(data.UserId);
+        User? user = await userRepository.GetByIdAsync(data.UserId);
 
         if (user is null)
         {
@@ -138,7 +138,7 @@ public class UserService : IUserService
         }
 
         User updatedUser = new(data.UserId, user.Name, user.Email, user.DateJoinedUtc, newHash);
-        
+
         await userRepository.UpdateAsync(updatedUser);
         return updatedUser;
     }

@@ -11,9 +11,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 {
 
     public CalendarParticipantRepository(DatabaseConnectionProvider connectionProvider)
-        : base(connectionProvider)
-    {
-    }
+        : base(connectionProvider) {}
 
     public async Task<ISet<CalendarParticipant>> GetByCalendarIdAsync(Guid calendarId)
     {
@@ -27,18 +25,18 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
         calendar.AssertNotNull();
         await InsertAsync(calendar.ToDalCalendarParticipant());
     }
-    
+
     public async Task InsertAllAsync(ISet<CalendarParticipant> calendarParticipants)
     {
         const string insertSql = "INSERT INTO Calendar_Participant (Id, Calendar_Id, User_Id, Role, Join_Date) "
-        + "VALUES (@Id, @CalendarId, @UserId, @Role, @JoinDate) " 
-        + "ON CONFLICT (Calendar_Id, User_Id) " 
-        + "DO UPDATE SET Role = @Role, Join_Date = @JoinDate, Is_Deleted = FALSE;";
-        
+                                 + "VALUES (@Id, @CalendarId, @UserId, @Role, @JoinDate) "
+                                 + "ON CONFLICT (Calendar_Id, User_Id) "
+                                 + "DO UPDATE SET Role = @Role, Join_Date = @JoinDate, Is_Deleted = FALSE;";
+
         calendarParticipants.AssertNotNull();
-        await GetConnection().ExecuteAsync(insertSql, calendarParticipants.Select(x=> x.ToDalCalendarParticipant()).ToArray());
+        await GetConnection().ExecuteAsync(insertSql, calendarParticipants.Select(x => x.ToDalCalendarParticipant()).ToArray());
     }
-    
+
     public async Task UpdateAllAsync(ISet<CalendarParticipant> calendarParticipants)
     {
         calendarParticipants.AssertNotNull();
@@ -47,13 +45,13 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
             await UpdateAsync(calendarParticipant.ToDalCalendarParticipant());
         }
     }
-    
+
     public async Task DeleteByIds(ISet<Guid> calendarParticipantsIds)
     {
         const string deleteSql = "UPDATE calendar_participant SET is_deleted = TRUE WHERE id = ANY(@Ids);";
-        
+
         calendarParticipantsIds.AssertNotNull();
-        
+
         await GetConnection().ExecuteScalarAsync(deleteSql, new
         {
             Ids = calendarParticipantsIds.ToList()

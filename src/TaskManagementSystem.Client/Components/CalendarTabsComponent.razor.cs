@@ -9,7 +9,7 @@ public partial class CalendarTabsComponent
 {
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
 

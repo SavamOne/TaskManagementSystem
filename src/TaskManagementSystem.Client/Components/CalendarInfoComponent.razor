@@ -22,7 +22,7 @@
                 <button type="button" class="btn btn-warning w-100 @ChangedState" @onclick="SaveChanges">Сохранить изменения</button>
             </div>
             <div class="col col-sm-3">
-                @{string link = Path.Combine("events", CalendarId.ToString());}
+                @{ string link = Path.Combine("events", CalendarId.ToString()); }
                 <NavLink href="@link" class="btn btn-success w-100 text-decoration-none">Перейти к календарю</NavLink>
             </div>
         </div>
@@ -39,33 +39,33 @@
                 </div>
                 <div class="col col-sm-3">
                     <div class="h-100 d-flex align-items-center">
-                        <DropdownComponent Items="roles" SelectedItem="user.Role" 
+                        <DropdownComponent Items="roles" SelectedItem="user.Role"
                                            ItemToStringFunc="CalendarParticipantRoleExtensions.GetDescription"
                                            ItemSelectedFunc="role => { user.Role = role; Changed = true; }"/>
                     </div>
                 </div>
             </div>
         }
-                @foreach (CalendarParticipantViewModel user in participants.Values)
-                {
-                    <div class="row mb-1">
-                        <div class="col col-sm-4">
-                            <h5 class="h-100 d-flex align-items-center">@user.Name</h5>
-                        </div>
-                        <div class="col col-sm-3">
-                            <h5 class="h-100 d-flex align-items-center">@user.Email</h5>
-                        </div>
-                        <div class="col col-sm-2">
-                            <h5 class="h-100 d-flex align-items-center">@user.CalendarJoinDate</h5>
-                        </div>
-                        <div class="col col-sm-3">
-                            <div class="h-100 d-flex align-items-center">
-                                <DropdownComponent Disabled="user.Role == CalendarParticipantRole.Creator" Items="roles" 
-                                                   ItemToStringFunc="CalendarParticipantRoleExtensions.GetDescription"
-                                                   SelectedItem="user.Role" ItemSelectedFunc="role => { user.Role = role; Changed = true; }"/>
-                            </div>
-                        </div>
+        @foreach (CalendarParticipantViewModel user in participants.Values)
+        {
+            <div class="row mb-1">
+                <div class="col col-sm-4">
+                    <h5 class="h-100 d-flex align-items-center">@user.Name</h5>
+                </div>
+                <div class="col col-sm-3">
+                    <h5 class="h-100 d-flex align-items-center">@user.Email</h5>
+                </div>
+                <div class="col col-sm-2">
+                    <h5 class="h-100 d-flex align-items-center">@user.CalendarJoinDate</h5>
+                </div>
+                <div class="col col-sm-3">
+                    <div class="h-100 d-flex align-items-center">
+                        <DropdownComponent Disabled="user.Role == CalendarParticipantRole.Creator" Items="roles"
+                                           ItemToStringFunc="CalendarParticipantRoleExtensions.GetDescription"
+                                           SelectedItem="user.Role" ItemSelectedFunc="role => { user.Role = role; Changed = true; }"/>
                     </div>
-                }
+                </div>
+            </div>
+        }
     </div>
 </div>
