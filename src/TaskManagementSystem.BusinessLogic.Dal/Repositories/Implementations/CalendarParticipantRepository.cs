@@ -9,15 +9,29 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 
 public class CalendarParticipantRepository : Repository<DalCalendarParticipant>, ICalendarParticipantRepository
 {
-
     public CalendarParticipantRepository(DatabaseConnectionProvider connectionProvider)
         : base(connectionProvider) {}
 
-    public async Task<ISet<CalendarParticipant>> GetByCalendarIdAsync(Guid calendarId)
+    public async Task<ICollection<CalendarParticipant>> GetByCalendarIdAsync(Guid calendarId)
     {
         var dalParticipants = await SelectAsync(x => x.CalendarId == calendarId && !x.IsDeleted);
 
-        return dalParticipants.Select(x => x.ToCalendarParticipant()).ToHashSet();
+        return dalParticipants.Select(x => x.ToCalendarParticipant()).ToList();
+    }
+    public async Task<CalendarParticipant?> GetByUserAndCalendarId(Guid userId, Guid calendarId)
+    {
+        DalCalendarParticipant? dalParticipant = await FirstOrDefaultAsync(x => x.UserId == userId && x.CalendarId == calendarId && !x.IsDeleted);
+
+        return dalParticipant?.ToCalendarParticipant();
+    }
+    
+    public async Task<ICollection<CalendarParticipant>> GetByIdsAsync(ISet<Guid> ids)
+    {
+        ids.AssertNotNull();
+
+        var dalParticipants = await SelectAsync(x => ids.Contains(x.Id) && !x.IsDeleted);
+
+        return dalParticipants.Select(x => x.ToCalendarParticipant()).ToList();
     }
 
     public async Task InsertAsync(CalendarParticipant calendar)
@@ -46,7 +60,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
         }
     }
 
-    public async Task DeleteByIds(ISet<Guid> calendarParticipantsIds)
+    public async Task DeleteByIdsAsync(ISet<Guid> calendarParticipantsIds)
     {
         const string deleteSql = "UPDATE calendar_participant SET is_deleted = TRUE WHERE id = ANY(@Ids);";
 

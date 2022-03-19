@@ -4,7 +4,7 @@ namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public record CalendarWithParticipants
 {
-    public CalendarWithParticipants(Calendar calendar, ISet<CalendarParticipant> participants)
+    public CalendarWithParticipants(Calendar calendar, ICollection<CalendarParticipant> participants)
     {
         Calendar = calendar.AssertNotNull();
         Participants = participants.AssertNotNull();
@@ -12,5 +12,5 @@ public record CalendarWithParticipants
 
     public Calendar Calendar { get; }
 
-    public ISet<CalendarParticipant> Participants { get; }
+    public ICollection<CalendarParticipant> Participants { get; }
 }

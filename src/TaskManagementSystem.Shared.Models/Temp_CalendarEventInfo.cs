@@ -2,9 +2,9 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Shared.Models;
 
-public class CalendarEventInfo
+public class Temp_CalendarEventInfo
 {
-    public CalendarEventInfo(string name, DateTimeOffset startTime, DateTimeOffset endTime)
+    public Temp_CalendarEventInfo(string name, DateTimeOffset startTime, DateTimeOffset endTime)
     {
         Name = name.AssertNotNullOrWhiteSpace();
         StartTime = startTime;

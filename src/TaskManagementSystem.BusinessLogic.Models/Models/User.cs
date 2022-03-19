@@ -4,6 +4,7 @@ namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public class User
 {
+    //TODO: DateJoined -> RegisterDate 
     public User(Guid id, string name, string email, DateTime dateJoinedUtc, byte[] passwordHash)
     {
         Name = name.AssertNotNullOrWhiteSpace();

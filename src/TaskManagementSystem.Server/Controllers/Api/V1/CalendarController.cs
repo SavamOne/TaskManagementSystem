@@ -120,13 +120,24 @@ public class CalendarController : ControllerBase
         var participantsUsers = request.Participants.Select(participant =>
         {
             User user = userDict[participant.UserId];
-            return new CalendarParticipantUser(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc,
-            (CalendarParticipantRole)participant.Role, user.Name, user.Email, user.DateJoinedUtc);
+            return new CalendarParticipantUser(
+                participant.Id, 
+                participant.CalendarId, 
+                participant.UserId, 
+                participant.JoinDateUtc,
+                (CalendarParticipantRole)participant.Role, 
+                user.Name, 
+                user.Email, 
+                user.DateJoinedUtc);
         });
 
         return new CalendarWithParticipantUsers(
-        new CalendarInfo(request.Calendar.Id, request.Calendar.Name, request.Calendar.Description, request.Calendar.CreationDateUtc),
-        participantsUsers
+            new CalendarInfo(
+                request.Calendar.Id, 
+                request.Calendar.Name, 
+                request.Calendar.Description, 
+                request.Calendar.CreationDateUtc),
+            participantsUsers
         );
     }
 }

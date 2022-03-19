@@ -42,6 +42,11 @@ public class Repository<TModel> where TModel : class
     {
         return await GetConnection().FirstOrDefaultAsync(expression);
     }
+    
+    protected async Task<bool> AnyAsync(Expression<Func<TModel, bool>> expression)
+    {
+        return await GetConnection().AnyAsync(expression);
+    }
 
     protected async Task<int> DeleteMultipleAsync(Expression<Func<TModel, bool>> expression)
     {

@@ -1,20 +1,20 @@
 namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
-public class RecurrentEventSettings
+public class Temp_RecurrentEventSettings
 {
-    public RecurrentEventSettings(Func<DateTime, DateTime> periodFunc, DateTime until)
+    public Temp_RecurrentEventSettings(Func<DateTime, DateTime> periodFunc, DateTime until)
     {
         PeriodFunc = periodFunc;
         Until = until;
     }
 
-    public RecurrentEventSettings(Func<DateTime, DateTime> periodFunc, int eventCount)
+    public Temp_RecurrentEventSettings(Func<DateTime, DateTime> periodFunc, int eventCount)
     {
         PeriodFunc = periodFunc;
         EventCount = eventCount;
     }
 
-    public RecurrentEventSettings(Func<DateTime, DateTime> periodFunc)
+    public Temp_RecurrentEventSettings(Func<DateTime, DateTime> periodFunc)
     {
         PeriodFunc = periodFunc;
     }

@@ -5,7 +5,7 @@ namespace TaskManagementSystem.BusinessLogic.Services;
 
 public interface ICalendarService
 {
-    Task<ISet<Calendar>> GetUserCalendars(Guid userId);
+    Task<ICollection<Calendar>> GetUserCalendars(Guid userId);
 
     Task<Calendar> CreateCalendarAsync(CreateCalendarData data);
 

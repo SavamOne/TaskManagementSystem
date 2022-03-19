@@ -6,14 +6,21 @@ public record EventViewModel
 {
     public EventViewModel() {}
 
-    public EventViewModel(CalendarEventInfo eventInfo)
+    public EventViewModel(EventInfo eventInfo)
     {
         Name = eventInfo.Name;
-        StartDate = eventInfo.StartTime;
-        EndDate = eventInfo.EndTime;
+        Place = eventInfo.Place;
+        Description = eventInfo.Description;
+        StartDate = eventInfo.StartTime.ToLocalTime();
+        EndDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
     }
 
-    public string? Name { get; set; }
+    public string Name { get; set; }
+    
+    public string? Description { get; set; }
+    
+    public string? Place { get; set; }
+    
 
     public DateTimeOffset StartDate { get; set; }
 

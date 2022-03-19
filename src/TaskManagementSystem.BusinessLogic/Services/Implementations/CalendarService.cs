@@ -26,7 +26,7 @@ public class CalendarService : ICalendarService
         this.calendarParticipantRepository = calendarParticipantRepository;
     }
 
-    public async Task<ISet<Calendar>> GetUserCalendars(Guid userId)
+    public async Task<ICollection<Calendar>> GetUserCalendars(Guid userId)
     {
         return await calendarRepository.GetByUserId(userId);
     }
@@ -118,7 +118,7 @@ public class CalendarService : ICalendarService
         CheckUsersAreInCalendar(data.ParticipantsIds, calendarInfo.Participants);
         CheckNotRemovingCreator(data.ParticipantsIds, calendarInfo.Participants);
 
-        await calendarParticipantRepository.DeleteByIds(data.ParticipantsIds);
+        await calendarParticipantRepository.DeleteByIdsAsync(data.ParticipantsIds);
         var newParticipants = await calendarParticipantRepository.GetByCalendarIdAsync(calendarInfo.Calendar.Id);
         return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
     }

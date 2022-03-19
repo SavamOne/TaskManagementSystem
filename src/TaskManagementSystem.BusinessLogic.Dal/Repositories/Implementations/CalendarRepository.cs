@@ -29,7 +29,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
         return dalCalendar?.ToCalendar();
     }
 
-    public async Task<ISet<Calendar>> GetByUserId(Guid userId)
+    public async Task<ICollection<Calendar>> GetByUserId(Guid userId)
     {
         const string getSql = "SELECT C.* FROM Calendar_Participant CP "
                               + "INNER JOIN Calendar C ON CP.Calendar_Id = C.id "
@@ -40,7 +40,7 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
             userId
         });
 
-        return dalCalendars.Select(x => x.ToCalendar()).ToHashSet();
+        return dalCalendars.Select(x => x.ToCalendar()).ToList();
     }
 
     public async Task InsertAsync(Calendar calendar)

@@ -10,21 +10,21 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Authorize]
 [ServiceFilter(typeof(ApiResponseExceptionFilter))]
 [Route("Api/V1/[controller]")]
-public class CalendarEventsController : ControllerBase
+public class CalendarEventsController_Temp : ControllerBase
 {
-    private readonly CalendarEventsService calendarEventsService;
+    private readonly Temp_CalendarEventService calendarEventServiceTemp;
 
-    public CalendarEventsController(CalendarEventsService calendarEventsService)
+    public CalendarEventsController_Temp(Temp_CalendarEventService calendarEventServiceTemp)
     {
-        this.calendarEventsService = calendarEventsService;
+        this.calendarEventServiceTemp = calendarEventServiceTemp;
     }
 
     [HttpPost("GetEvents")]
     public async Task<IActionResult> GetEvents(CalendarGetEventsRequest request)
     {
-        var result = await calendarEventsService.GetEvents(request.StartTime.UtcDateTime, request.EndTime.UtcDateTime);
+        var result = await calendarEventServiceTemp.GetEvents(request.StartTime.UtcDateTime, request.EndTime.UtcDateTime);
 
-        var events = result.Select(x => new CalendarEventInfo(x.Name, x.UtcStartTime, x.UtcEndTime))
+        var events = result.Select(x => new Temp_CalendarEventInfo(x.Name, x.UtcStartTime, x.UtcEndTime))
             .ToArray();
 
         return Ok(events);
