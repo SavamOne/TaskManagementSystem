@@ -20,4 +20,6 @@ public record CalendarParticipant
     public DateTime JoinDateUtc { get; }
 
     public CalendarRole Role { get; }
+    
+    public User? User { get; set; }
 }

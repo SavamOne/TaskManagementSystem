@@ -17,4 +17,6 @@ public class CalendarEventParticipant
     public Guid CalendarParticipantId { get; }
     
     public CalendarEventParticipantRole Role { get; }
+    
+    public CalendarParticipant? CalendarParticipant { get; init; }
 }

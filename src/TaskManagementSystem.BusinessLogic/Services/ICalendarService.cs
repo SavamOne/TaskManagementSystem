@@ -18,4 +18,6 @@ public interface ICalendarService
     Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data);
 
     Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id);
+
+    Task<IEnumerable<CalendarParticipant>> GetParticipantByFilter(Guid calendarId, string filter);
 }

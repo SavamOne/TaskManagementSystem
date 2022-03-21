@@ -114,21 +114,17 @@ public class CalendarController : ControllerBase
 
     private async Task<CalendarWithParticipantUsers> ConvertAsync(CalendarWithParticipants request)
     {
-        var users = await userService.GetUsersAsync(request.Participants.Select(x => x.UserId).ToHashSet());
-        var userDict = users.ToDictionary(x => x.Id);
-
         var participantsUsers = request.Participants.Select(participant =>
         {
-            User user = userDict[participant.UserId];
             return new CalendarParticipantUser(
                 participant.Id, 
                 participant.CalendarId, 
                 participant.UserId, 
                 participant.JoinDateUtc,
                 (CalendarParticipantRole)participant.Role, 
-                user.Name, 
-                user.Email, 
-                user.DateJoinedUtc);
+                participant.User.Name, 
+                participant.User.Email, 
+                participant.User.DateJoinedUtc);
         });
 
         return new CalendarWithParticipantUsers(

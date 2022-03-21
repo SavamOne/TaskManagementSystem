@@ -1,20 +1,34 @@
+using TaskManagementSystem.Shared.Helpers;
+
 namespace TaskManagementSystem.Shared.Models;
 
 public class EventParticipantUser
 {
-    public EventParticipantUser(Guid id, Guid eventId, Guid calendarParticipantId, EventParticipantRole role)
+    public EventParticipantUser(string userName, string userEmail, Guid eventParticipantId, Guid calendarParticipantId, Guid userId, Guid eventId, Guid calendarId, EventParticipantRole role)
     {
-        Id = id;
-        EventId = eventId;
+        UserName = userName.AssertNotNull();
+        UserEmail = userEmail.AssertNotNull();
+        EventParticipantId = eventParticipantId;
         CalendarParticipantId = calendarParticipantId;
+        UserId = userId;
+        EventId = eventId;
+        CalendarId = calendarId;
         Role = role;
     }
 
-    public Guid Id { get; }
+    public string UserName { get; }
     
-    public Guid EventId { get; }
+    public string UserEmail { get; }
+    
+    public Guid EventParticipantId { get; }
     
     public Guid CalendarParticipantId { get; }
     
+    public Guid UserId { get; }
+    
+    public Guid EventId { get; }
+    
+    public Guid CalendarId { get; }
+
     public EventParticipantRole Role { get; }
 }

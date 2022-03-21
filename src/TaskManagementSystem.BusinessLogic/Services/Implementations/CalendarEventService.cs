@@ -166,7 +166,7 @@ public class CalendarEventService : ICalendarEventService
             throw new BusinessLogicException("Не все пользователи принадлежат календарю");
         }
 
-        var participantsToAdd = data.CalendarParticipants.Select(x => new CalendarEventParticipant(Guid.NewGuid(), info.Event.Id, x.CalendarParticipantId, x.Role));
+        var participantsToAdd = data.CalendarParticipants.Select(x => new CalendarEventParticipant(Guid.NewGuid(), info.Event.Id, x.CalendarParticipantId, x.Role)).ToList();
 
         await eventParticipantRepository.InsertAllAsync(participantsToAdd);
         
@@ -176,8 +176,8 @@ public class CalendarEventService : ICalendarEventService
     public async Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data)
     {
         CalendarEventWithParticipants eventsInfo = await GetEventInfo(data.EventId);
-
-        if (!eventsInfo.Event.IsPrivate || await eventParticipantRepository.ContainsCalendarParticipantInEvent(data.UserId, data.EventId))
+        
+        if (eventsInfo.Event.IsPrivate && await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId) != null)
         {
             return eventsInfo;
         }
@@ -196,7 +196,7 @@ public class CalendarEventService : ICalendarEventService
 
     private async Task<CalendarEventWithParticipants> GetEventInfo(Guid eventId)
     {
-        CalendarEvent @event = await eventRepository.GetById(eventId);
+        CalendarEvent? @event = await eventRepository.GetById(eventId);
         if (@event is null)
         {
             throw new BusinessLogicException("События и/или Участника события с таким Id не существует или этот пользователь не участвует в этом событии.");

@@ -22,6 +22,7 @@
     <ItemGroup>
         <Watch Include="../TaskManagementSystem.Client/**/*.cs" />
         <Watch Include="../TaskManagementSystem.Client/**/*.css" />
+        <Watch Include="../TaskManagementSystem.Client/**/*.scss" />
         <Watch Include="../TaskManagementSystem.Client/**/*.razor" />
     </ItemGroup>
 

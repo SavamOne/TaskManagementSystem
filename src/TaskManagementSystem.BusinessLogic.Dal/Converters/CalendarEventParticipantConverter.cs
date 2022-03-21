@@ -19,10 +19,12 @@ public static class CalendarEventParticipantConverter
     public static CalendarEventParticipant ToEventParticipant(this DalEventParticipant dalEventParticipant)
     {
         return new CalendarEventParticipant(
-        dalEventParticipant.Id, 
-        dalEventParticipant.EventId, 
-        dalEventParticipant.CalendarParticipantId, 
-        (CalendarEventParticipantRole)dalEventParticipant.Role
-        );
+        dalEventParticipant.Id,
+        dalEventParticipant.EventId,
+        dalEventParticipant.CalendarParticipantId,
+        (CalendarEventParticipantRole)dalEventParticipant.Role)
+        {
+            CalendarParticipant = dalEventParticipant.CalendarParticipant?.ToCalendarParticipant(),
+        };
     }
 }

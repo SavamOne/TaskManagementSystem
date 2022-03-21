@@ -18,4 +18,7 @@ public class DalEventParticipant
     
     [Column("role")]
     public int Role { get; set; }
+
+    [ForeignKey("CalendarParticipantId")]
+    public DalCalendarParticipant? CalendarParticipant { get; set; }
 }

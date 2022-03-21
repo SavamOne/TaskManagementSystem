@@ -2,17 +2,23 @@
 
 <!-- Calendar -->
 <div class="calendar">
-    <div class="d-flex justify-content-between w-100">
-        <button class="btn btn-outline-primary text-capitalize" @onclick="RemoveMonth">
-            @LocalizedResources.CalendarComponent_PreviousMonth
+    <div class="d-flex position-fixed">
+        <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.CreateNew">
+            <span class="oi oi-plus"></span>
         </button>
+        <button class="btn btn-outline-primary m-lg-1" @onclick="RemoveMonth">
+            <span class="oi oi-arrow-left"></span>
+        </button>
+        <button class="btn btn-outline-primary m-lg-1" @onclick="AppendMonth">
+            <span class="oi oi-arrow-right"></span>
+        </button>
+        <NavLink href="@(Path.Combine("calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none m-lg-1">О календаре</NavLink>
+    </div>
+    <div class="d-flex justify-content-center w-100">
         @if (IsLoaded)
         {
             <h2 class="month font-weight-bold mb-0 text-capitalize">@Month @Year</h2>
         }
-        <button class="btn btn-outline-primary text-capitalize" @onclick="AppendMonth">
-            @LocalizedResources.CalendarComponent_NextMonth
-        </button>
     </div>
 
     @if (IsLoaded)
@@ -33,7 +39,7 @@
                             @{
                                 foreach (EventViewModel ev in dayNum.Events)
                                 {
-                                    <div class="event all-day end bg-success" @onclick="() => EditEventModal.Open(ev)">@ev.Name</div>
+                                    <div class="event all-day end bg-success cursor-pointer" @onclick="async () => await EditEventModal.EditAsync(ev.Id)">@ev.Name</div>
                                 }
                             }
                         </div>

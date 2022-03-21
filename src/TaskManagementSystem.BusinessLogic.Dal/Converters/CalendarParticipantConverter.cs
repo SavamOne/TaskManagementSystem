@@ -27,9 +27,12 @@ public static class CalendarParticipantConverter
         }
 
         return new CalendarParticipant(calendarParticipant.Id,
-        calendarParticipant.CalendarId,
-        calendarParticipant.UserId,
-        calendarParticipant.JoinDate,
-        (CalendarRole)calendarParticipant.Role);
+            calendarParticipant.CalendarId,
+            calendarParticipant.UserId,
+            calendarParticipant.JoinDate,
+            (CalendarRole)calendarParticipant.Role)
+        {
+            User = calendarParticipant.User?.ToUser()
+        };
     }
 }

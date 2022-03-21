@@ -248,31 +248,15 @@ public partial class CalendarInfoComponent
         };
     }
 
-    private async Task ChangeCalendarName()
+    private void ChangeCalendarName(string newName)
     {
-        if (!isNameEditing)
-        {
-            isNameEditing = true;
-            return;
-        }
-
-        calendarForEdit.Name = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarNameId);
-
+        calendarForEdit.Name = newName;
         Changed |= !calendarForEdit.Equals(calendar);
-        isNameEditing = false;
     }
 
-    private async Task ChangeCalendarDescription()
+    private void ChangeCalendarDescription(string newDescription)
     {
-        if (!isDescriptionEditing)
-        {
-            isDescriptionEditing = true;
-            return;
-        }
-
-        calendarForEdit.Description = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarDescriptionId);
-
+        calendarForEdit.Description = newDescription;
         Changed |= !calendarForEdit.Equals(calendar);
-        isDescriptionEditing = false;
     }
 }

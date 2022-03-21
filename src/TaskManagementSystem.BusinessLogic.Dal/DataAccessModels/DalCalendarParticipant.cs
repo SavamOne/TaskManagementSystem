@@ -23,4 +23,7 @@ public class DalCalendarParticipant
 
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
+    
+    [ForeignKey("UserId")]
+    public DalUser? User { get; set; }
 }
