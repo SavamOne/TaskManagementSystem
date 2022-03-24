@@ -18,5 +18,5 @@ public interface ICalendarParticipantRepository
 
     Task DeleteByIdsAsync(ISet<Guid> calendarParticipantsIds);
     
-    Task<IEnumerable<CalendarParticipant>> GetByFilter(Guid calendarId, string filter, int limit);
+    Task<ICollection<CalendarParticipant>> GetByFilter(Guid calendarId, string filter, int limit);
 }

@@ -9,9 +9,6 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarInfoComponent
 {
-    private const string CalendarDescriptionId = "CalendarDescriptionId";
-    private const string CalendarNameId = "CalendarNameId";
-
     private readonly IEnumerable<CalendarParticipantRole> roles =
         Enum.GetValues<CalendarParticipantRole>()
             .Where(x => x != CalendarParticipantRole.Creator)
@@ -25,7 +22,7 @@ public partial class CalendarInfoComponent
     private string filter = string.Empty;
     private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
 
-    private ICollection<UserInfoWithRoleViewModel> possibleParticipants = new List<UserInfoWithRoleViewModel>();
+    private ICollection<UserInfoWithParticipantRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithParticipantRoleViewModel>();
 
     [Parameter]
     public Guid CalendarId { get; set; }
@@ -90,7 +87,7 @@ public partial class CalendarInfoComponent
 
         possibleParticipants = result.Value!
             .Where(x => !participants.ContainsKey(x.Id))
-            .Select(x => new UserInfoWithRoleViewModel(x))
+            .Select(x => new UserInfoWithParticipantRoleViewModel(x))
             .OrderBy(x => x.Role)
             .ThenBy(x => x.Name)
             .ToList();

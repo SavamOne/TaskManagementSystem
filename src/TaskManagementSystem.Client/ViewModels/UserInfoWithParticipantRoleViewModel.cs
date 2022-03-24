@@ -2,9 +2,9 @@ using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
-public class UserInfoWithRoleViewModel : UserInfoViewModel
+public class UserInfoWithParticipantRoleViewModel : UserInfoViewModel
 {
-    public UserInfoWithRoleViewModel(UserInfo userInfo)
+    public UserInfoWithParticipantRoleViewModel(UserInfo userInfo)
         : base(userInfo)
     {
         Role = CalendarParticipantRole.NotSet;
@@ -14,7 +14,7 @@ public class UserInfoWithRoleViewModel : UserInfoViewModel
 
     public AddCalendarParticipantRequest GetAddParticipantRequest()
     {
-        if (Role == CalendarParticipantRole.NotSet)
+        if (Role is CalendarParticipantRole.NotSet or CalendarParticipantRole.Creator)
         {
             throw new Exception();
         }

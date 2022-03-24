@@ -136,15 +136,14 @@ public class CalendarService : ICalendarService
 
         return new CalendarWithParticipants(calendar, participants);
     }
-    public Task<IEnumerable<CalendarParticipant>> GetParticipantByFilter(string filter)
-    {
-        throw new NotImplementedException();
-    }
-    public async Task<IEnumerable<CalendarParticipant>> GetParticipantByFilter(Guid calendarId, string filter)
-    {
-        filter.AssertNotNull();
 
-        return await calendarParticipantRepository.GetByFilter(calendarId, filter, 50);
+    public async Task<ICollection<CalendarParticipant>> GetParticipantsByFilter(GetCalendarParticipantsByFilter data)
+    {
+        data.AssertNotNull();
+        
+        //TODO: Проверять, что список запрашивает участник календаря
+        
+        return await calendarParticipantRepository.GetByFilter(data.CalendarId, data.Filter, 50);
     }
 
     private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)

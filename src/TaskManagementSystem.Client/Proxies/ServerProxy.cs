@@ -160,6 +160,14 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
+    
+    public async Task<Result<ICollection<CalendarParticipantUser>>> GetCalendarParticipantsByFilter(GetCalendarParticipantsByFilterRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetCalendarParticipantsByFilterRequest, ICollection<CalendarParticipantUser>>(new Uri("Api/V1/Calendar/GetInfosByFilter", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
 
     public async Task<Result<EventInfo>> CreateEvent(CreateEventRequest request)
     {

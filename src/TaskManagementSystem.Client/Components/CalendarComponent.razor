@@ -1,9 +1,9 @@
-<EventEditFormModal @ref="EditEventModal"/>
+<EventEditFormModal @ref="EditEventModal" CalendarId="CalendarId" />
 
 <!-- Calendar -->
 <div class="calendar">
     <div class="d-flex position-fixed">
-        <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.CreateNew">
+        <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.CreateAsync">
             <span class="oi oi-plus"></span>
         </button>
         <button class="btn btn-outline-primary m-lg-1" @onclick="RemoveMonth">

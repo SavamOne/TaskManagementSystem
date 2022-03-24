@@ -27,7 +27,6 @@ public record EventViewModel
     
     public string? Place { get; set; }
     
-
     public DateTimeOffset StartDate { get; set; } = DateTimeOffset.Now;
 
     public DateTimeOffset EndDate { get; set; } = DateTimeOffset.Now.AddHours(1);
@@ -54,5 +53,29 @@ public record EventViewModel
                 EndDate = date;
             }
         }
+    }
+
+    public CreateEventRequest GetCreateRequest(Guid calendarId)
+    {
+        return new CreateEventRequest(calendarId,
+            Name,
+            Description,
+            Place,
+            CalendarEventType.Unknown,
+            StartDate,
+            EndDate,
+            false);
+    }
+
+    public EditEventRequest GetEditRequest(Guid calendarId)
+    {
+        return new EditEventRequest(calendarId,
+            Name,
+            Description,
+            Place,
+            CalendarEventType.Unknown,
+            StartDate,
+            EndDate,
+            false);
     }
 }

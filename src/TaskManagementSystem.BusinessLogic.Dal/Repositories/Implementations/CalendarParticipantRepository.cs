@@ -77,7 +77,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 					Ids = calendarParticipantsIds.ToList()
 				});
 	}
-	public async Task<IEnumerable<CalendarParticipant>> GetByFilter(Guid calendarId, string filter, int limit)
+	public async Task<ICollection<CalendarParticipant>> GetByFilter(Guid calendarId, string filter, int limit)
 	{
 		const string getSql = "SELECT * FROM calendar_participant cp "
 							+ "INNER JOIN \"user\" u on u.id = cp.user_id "
@@ -97,7 +97,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 					Limit = limit
 				});
 
-		return dalParticipants.Select(x => x.ToCalendarParticipant());
+		return dalParticipants.Select(x => x.ToCalendarParticipant()).ToList();
 	}
 
 	private static DalCalendarParticipant StandardMap(DalCalendarParticipant participant, DalUser user)

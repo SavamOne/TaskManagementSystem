@@ -1,4 +1,5 @@
-<EditFormModal @ref="Modal" Item="Event" Submit="x => Submit(x)" Title="@LocalizedResources.EventEditFormModal_EventEditing">
+@using System.Text.Json
+<EditFormModal @ref="Modal" Item="Event" Submit="x => _ = SubmitAsync()">
     <Body>
     <div class="row">
         <div class="col-sm-6">
@@ -54,7 +55,26 @@
                 </div>
             </div>
 
-            @foreach (EventParticipantUser participant in Participants)
+            @foreach (UserInfoWithEventRoleViewModel user in possibleParticipants)
+            {
+                <div class="row mb-1">
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@user.Name</p>
+                    </div>
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@user.Email</p>
+                    </div>
+                    <div class="col col-sm-6">
+                        <div class="h-100 d-flex align-items-center">
+                            <DropdownComponent Items="roles" SelectedItem="EventParticipantRole.NotSet"
+                                               ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
+                                               ItemSelectedFunc="role => { user.Role = role; }"/>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            @foreach (EventParticipantUser participant in participants)
             {
                 <div class="row mb-1">
                     <div class="col col-sm-3">
@@ -86,19 +106,30 @@
 
     [Inject]
     public IToastService? ToastService { get; set; }
+    
+    [Parameter]
+    public Guid CalendarId { get; set; }
 
     private EditFormModal<EventViewModel> Modal { get; set; } = new();
 
-    private string? filter = string.Empty;
+    private string filter = string.Empty;
 
     private EventViewModel Event { get; set; } = new();
 
-    private IEnumerable<EventParticipantUser> Participants { get; set; } = Enumerable.Empty<EventParticipantUser>();
+    private ICollection<EventParticipantUser> participants = Array.Empty<EventParticipantUser>();
+    private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
 
-    private IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>();
+    private IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
+        .Where(x => x != EventParticipantRole.Creator)
+        .ToList();
+
+    private bool isEditMode;
 
     public async Task EditAsync(Guid eventId)
     {
+        isEditMode = true;
+        Modal.Title = "Редактирование события";
+        
         var result = await ServerProxy!.GetEventInfo(new GetEventInfoRequest(eventId));
 
         if (!result.IsSuccess)
@@ -107,28 +138,60 @@
             return;
         }
 
-        Event = new(result.Value!.EventInfo);
-        Participants = result.Value!.Participants.ToList();
+        Event = new EventViewModel(result.Value!.EventInfo);
+        participants = result.Value!.Participants.ToList();
+        possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
+        filter = string.Empty;
 
         Modal.Open();
     }
 
-    public async Task CreateNew()
+    public async Task CreateAsync()
     {
+        isEditMode = false;
+        Modal.Title = "Создание события";
+        
         Event = new EventViewModel();
-        Participants = Enumerable.Empty<EventParticipantUser>();
+        participants = Array.Empty<EventParticipantUser>();
+        possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
+        filter = string.Empty;
 
         Modal.Open();
     }
 
-    public void Submit(EventViewModel eventViewModel)
+    private async Task SubmitAsync()
     {
-        Console.WriteLine(eventViewModel.ToString());
+        Result<EventInfo> result;
+        if (isEditMode)
+        {
+            result = await ServerProxy!.EditEvent(Event.GetEditRequest(CalendarId));
+        }
+        else
+        {
+            result = await ServerProxy!.CreateEvent(Event.GetCreateRequest(CalendarId));
+        }
+
+        if (!result.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+            return;
+        }
     }
-    
-    
-    private void FilterParticipants()
+
+    private async Task FilterParticipants()
     {
-        // ServerProxy
+        var result = await ServerProxy!.GetCalendarParticipantsByFilter(new GetCalendarParticipantsByFilterRequest(CalendarId, filter));
+
+        if (!result.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+        }
+
+        possibleParticipants = result.Value!
+            .Where(x => participants.All(y => x.Id != y.CalendarParticipantId))
+            .Select(x => new UserInfoWithEventRoleViewModel(x))
+            .ToList();
+        
+        Console.WriteLine(JsonSerializer.Serialize(result.Value));
     }
 }

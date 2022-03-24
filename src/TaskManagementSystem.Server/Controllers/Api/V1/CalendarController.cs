@@ -5,6 +5,7 @@ using TaskManagementSystem.BusinessLogic.Models.Requests;
 using TaskManagementSystem.BusinessLogic.Services;
 using TaskManagementSystem.Server.Filters;
 using TaskManagementSystem.Server.Services;
+using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Server.Controllers.Api.V1;
@@ -111,21 +112,41 @@ public class CalendarController : ControllerBase
 
         return Ok(await ConvertAsync(result));
     }
+    
+    [Authorize]
+    [HttpPost("GetInfosByFilter")]
+    public async Task<IActionResult> GetUsersByFilterAsync(GetCalendarParticipantsByFilterRequest request)
+    {
+        Guid userId = tokenService.GetUserIdFromClaims(User);
+        
+        request.AssertNotNull();
+
+        var result = await calendarService.GetParticipantsByFilter(new GetCalendarParticipantsByFilter(userId, request.CalendarId, request.Filter));
+
+        var participantsUsers = result.Select(participant => new CalendarParticipantUser(
+            participant.Id, 
+            participant.CalendarId, 
+            participant.UserId, 
+            participant.JoinDateUtc,
+            (CalendarParticipantRole)participant.Role, 
+            participant.User!.Name, 
+            participant.User.Email, 
+            participant.User.DateJoinedUtc)).ToList();
+        
+        return Ok(participantsUsers);
+    }
 
     private async Task<CalendarWithParticipantUsers> ConvertAsync(CalendarWithParticipants request)
     {
-        var participantsUsers = request.Participants.Select(participant =>
-        {
-            return new CalendarParticipantUser(
-                participant.Id, 
-                participant.CalendarId, 
-                participant.UserId, 
-                participant.JoinDateUtc,
-                (CalendarParticipantRole)participant.Role, 
-                participant.User.Name, 
-                participant.User.Email, 
-                participant.User.DateJoinedUtc);
-        });
+        var participantsUsers = request.Participants.Select(participant => new CalendarParticipantUser(
+            participant.Id, 
+            participant.CalendarId, 
+            participant.UserId, 
+            participant.JoinDateUtc,
+            (CalendarParticipantRole)participant.Role, 
+            participant.User!.Name, 
+            participant.User.Email, 
+            participant.User.DateJoinedUtc));
 
         return new CalendarWithParticipantUsers(
             new CalendarInfo(
