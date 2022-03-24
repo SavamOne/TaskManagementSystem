@@ -1,4 +1,5 @@
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
+using TaskManagementSystem.BusinessLogic.Extensions;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
@@ -149,7 +150,7 @@ public class CalendarService : ICalendarService
     private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
     {
         //Проверка, что нельзя удалить создателя календаря
-        CalendarParticipant creator = allParticipants.Single(x => x.Role == CalendarRole.Creator);
+        CalendarParticipant creator = allParticipants.Single(x => x.Role.IsCreator());
         if (participantIds.Contains(creator.Id))
         {
             throw new BusinessLogicException("Нельзя удалять создателя календаря");
@@ -204,7 +205,7 @@ public class CalendarService : ICalendarService
             throw new BusinessLogicException("Пользователь не является участником календаря");
         }
 
-        if (participant.Role is not (CalendarRole.Admin or CalendarRole.Creator))
+        if (!participant.IsAdminOrCreator())
         {
             throw new BusinessLogicException("Пользователь не является создателем или администратором календаря");
         }
@@ -222,7 +223,7 @@ public class CalendarService : ICalendarService
 
     private static void CheckRolesAreAdminOrParticipant(IEnumerable<AddCalendarParticipantData> users)
     {
-        if (!users.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
+        if (!users.All(x => x.Role.IsAdminOrParticipant()))
         {
             //TODO: Выводить конкретный список некорректных ролей
             throw new BusinessLogicException("Обнаружена некорректная роль");
@@ -231,7 +232,7 @@ public class CalendarService : ICalendarService
 
     private static void CheckRolesAreAdminOrParticipant(IEnumerable<ChangeParticipantRoleData> participants)
     {
-        if (!participants.All(x => x.Role is CalendarRole.Admin or CalendarRole.Participant))
+        if (!participants.All(x => x.Role.IsAdminOrParticipant()))
         {
             //TODO: Выводить конкретный список некорректных ролей
             throw new BusinessLogicException("Обнаружена некорректная роль");
