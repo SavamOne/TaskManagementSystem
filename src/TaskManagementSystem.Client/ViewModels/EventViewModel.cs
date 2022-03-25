@@ -5,11 +5,13 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
-    private readonly ServerProxy serverProxy;
-    
+    public bool CanEditEvent { get; }
+
+    public bool CanChangeParticipants { get; }
+
     public EventViewModel() {}
 
-    public EventViewModel(EventInfo eventInfo)
+    public EventViewModel(EventInfo eventInfo, bool canEditEvent, bool canChangeParticipants)
     {
         Id = eventInfo.Id;
         Name = eventInfo.Name;
@@ -17,15 +19,24 @@ public record EventViewModel
         Description = eventInfo.Description;
         StartDate = eventInfo.StartTime.ToLocalTime();
         EndDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
+        IsPrivate = eventInfo.IsPrivate;
+        EventType = eventInfo.EventType;
+        
+        CanEditEvent = canEditEvent;
+        CanChangeParticipants = canChangeParticipants;
     }
 
-    public Guid Id { get; set; }
+    public Guid Id { get; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
     
     public string? Description { get; set; }
     
     public string? Place { get; set; }
+    
+    public bool IsPrivate { get; set; }
+    
+    public CalendarEventType EventType { get; set; }
     
     public DateTimeOffset StartDate { get; set; } = DateTimeOffset.Now;
 
@@ -38,7 +49,7 @@ public record EventViewModel
         {
             if (DateTimeOffset.TryParse(value, out DateTimeOffset date))
             {
-                StartDate = date;
+                StartDate = date.ToOffset(DateTimeOffset.Now.Offset);
             }
         }
     }
@@ -61,21 +72,21 @@ public record EventViewModel
             Name,
             Description,
             Place,
-            CalendarEventType.Unknown,
+            EventType,
             StartDate,
             EndDate,
             false);
     }
 
-    public EditEventRequest GetEditRequest(Guid calendarId)
+    public EditEventRequest GetEditRequest()
     {
-        return new EditEventRequest(calendarId,
+        return new EditEventRequest(Id,
             Name,
             Description,
             Place,
-            CalendarEventType.Unknown,
+            EventType,
             StartDate,
             EndDate,
-            false);
+            IsPrivate);
     }
 }

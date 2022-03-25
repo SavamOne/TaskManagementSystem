@@ -37,7 +37,7 @@ public class DateRangeViewModel
             toastService.AddSystemErrorToast(result.ErrorDescription!);
         }
 
-        var events = result.Value!.Select(x => new EventViewModel(x)).ToList();
+        var events = result.Value!.Select(x => new EventViewModel(x, false, false)).ToList();
 
         foreach (DayViewModel dayViewModel in Days)
         {

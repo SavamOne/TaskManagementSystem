@@ -2,49 +2,52 @@
 <EditFormModal @ref="Modal" Item="Event" Submit="x => _ = SubmitAsync()">
     <Body>
     <div class="row">
-        <div class="col-sm-6">
-            <div class="d-flex flex-row align-items-baseline">
+        <div class="col-sm-6 disabled">
+            <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
                     <span class="oi oi-calendar m-lg-1"></span>
                 </span>
 
-                <InputText @bind-Value="Event.Name" type="text" class="mb-2 form-control" placeholder="Название события"/>
+                <InputText @bind-Value="Event.Name" type="text" class="form-control" placeholder="Название события"/>
             </div>
-            <div class="d-flex flex-row align-items-baseline">
+            <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
                     <span class="oi oi-copywriting m-lg-1"></span>
                 </span>
-                <InputText @bind-Value="Event.Description" type="text" class="mb-2 form-control" placeholder="Описание события"/>
+                <InputText @bind-Value="Event.Description" type="text" class="form-control" placeholder="Описание события"/>
             </div>
-
-
-            <div class="d-flex flex-row align-items-baseline">
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px"></span>
+                <DropdownComponent Items="eventTypes" SelectedItem="Event.EventType"
+                                   ItemSelectedFunc="type => { Event.EventType = type; }"/>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
                     <span class="oi oi-map-marker m-lg-1"></span>
                 </span>
-                <InputText @bind-Value="Event.Place" type="text" class="mb-2 form-control" placeholder="Место"/>
+                <InputText @bind-Value="Event.Place" type="text" class="form-control" placeholder="Место"/>
             </div>
-
-            <div class="d-flex flex-row align-items-baseline">
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-lock-locked m-lg-1"></span>
+                </span>
+                <label>
+                    <InputCheckbox @bind-Value="Event.IsPrivate"/> Приватное событие
+                </label>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
                     <span class="oi oi-clock m-lg-1"></span>
                 </span>
                 <span class="w-100 d-flex flex-row align-items-baseline">
-                    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2 form-control" placeholder="Начало"/>
+                    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="form-control" placeholder="Начало"/>
                     <p class="m-lg-1">-</p>
-                    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2 form-control" placeholder="Окончание"/>
+                    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="form-control" placeholder="Окончание"/>
                 </span>
-
             </div>
         </div>
         <div class="col-sm-6">
-            @*<div class="row">
-                <div class="d-flex flex-row align-items-baseline">
-                    <span class="oi oi-people"></span>
-                    <p>Участники</p>
-                </div>
-            </div>*@
-            <div class="row">
+            <div class="row mb-1">
                 <div class="col col-sm-10">
                     <input type="text" class="form-control" @bind="filter">
                 </div>
@@ -66,28 +69,30 @@
                     </div>
                     <div class="col col-sm-6">
                         <div class="h-100 d-flex align-items-center">
-                            <DropdownComponent Items="roles" SelectedItem="EventParticipantRole.NotSet"
+                            <DropdownComponent Items="roles" SelectedItem="user.Role"
+                                               Disabled="!Event.CanChangeParticipants"
                                                ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
                                                ItemSelectedFunc="role => { user.Role = role; }"/>
                         </div>
                     </div>
                 </div>
             }
-            
-            @foreach (EventParticipantUser participant in participants)
+
+            @foreach (EventParticipantViewModel participant in participants)
             {
                 <div class="row mb-1">
                     <div class="col col-sm-3">
-                        <p class="h-100 d-flex align-items-center">@participant.UserName</p>
+                        <p class="h-100 d-flex align-items-center">@participant.Name</p>
                     </div>
                     <div class="col col-sm-3">
-                        <p class="h-100 d-flex align-items-center">@participant.UserEmail</p>
+                        <p class="h-100 d-flex align-items-center">@participant.Email</p>
                     </div>
                     <div class="col col-sm-6">
                         <div class="h-100 d-flex align-items-center">
                             <DropdownComponent Items="roles" SelectedItem="participant.Role"
+                                               Disabled="!Event.CanChangeParticipants || participant.Role == EventParticipantRole.Creator"
                                                ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
-                                               ItemSelectedFunc="role => {}"/>
+                                               ItemSelectedFunc="role => {participant.Role = role; }"/>
                         </div>
                     </div>
                 </div>
@@ -106,7 +111,7 @@
 
     [Inject]
     public IToastService? ToastService { get; set; }
-    
+
     [Parameter]
     public Guid CalendarId { get; set; }
 
@@ -116,12 +121,14 @@
 
     private EventViewModel Event { get; set; } = new();
 
-    private ICollection<EventParticipantUser> participants = Array.Empty<EventParticipantUser>();
+    private ICollection<EventParticipantViewModel> participants = Array.Empty<EventParticipantViewModel>();
     private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
 
     private IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
         .Where(x => x != EventParticipantRole.Creator)
         .ToList();
+
+    private IEnumerable<CalendarEventType> eventTypes = Enum.GetValues<CalendarEventType>();
 
     private bool isEditMode;
 
@@ -129,7 +136,7 @@
     {
         isEditMode = true;
         Modal.Title = "Редактирование события";
-        
+
         var result = await ServerProxy!.GetEventInfo(new GetEventInfoRequest(eventId));
 
         if (!result.IsSuccess)
@@ -138,21 +145,22 @@
             return;
         }
 
-        Event = new EventViewModel(result.Value!.EventInfo);
-        participants = result.Value!.Participants.ToList();
+        Event = new EventViewModel(result.Value!.EventInfo, result.Value.CanUserEditEvent, result.Value.CanUserEditParticipants);
+        participants = result.Value!.Participants.Select(x => new EventParticipantViewModel(x)).ToList();
         possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
         filter = string.Empty;
 
-        Modal.Open();
+        Modal.Open(); 
     }
 
     public async Task CreateAsync()
     {
         isEditMode = false;
         Modal.Title = "Создание события";
-        
+
         Event = new EventViewModel();
-        participants = Array.Empty<EventParticipantUser>();
+        await ServerProxy!.GetUserInfoAsync();
+        participants = Array.Empty<EventParticipantViewModel>();
         possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
         filter = string.Empty;
 
@@ -164,7 +172,7 @@
         Result<EventInfo> result;
         if (isEditMode)
         {
-            result = await ServerProxy!.EditEvent(Event.GetEditRequest(CalendarId));
+            result = await ServerProxy!.EditEvent(Event.GetEditRequest());
         }
         else
         {
@@ -176,6 +184,30 @@
             ToastService!.AddSystemErrorToast(result.ErrorDescription!);
             return;
         }
+
+        var addRequests = possibleParticipants
+            .Where(x=> x.Role != EventParticipantRole.NotSet)
+            .Select(x => x.GetAddParticipantRequest())
+            .ToList();
+
+        if (!addRequests.Any())
+        {
+            return;
+        }
+        
+        var addResult = await ServerProxy!.AddEventParticipants(new AddEventParticipantsRequest(Event.Id, addRequests));
+        if (!addResult.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+            return;
+        }
+
+        Event = new EventViewModel(addResult.Value!.EventInfo, Event.CanEditEvent, Event.CanChangeParticipants);
+        participants = addResult.Value!.Participants.Select(x => new EventParticipantViewModel(x)).ToList();
+        possibleParticipants.Clear();
+        filter = string.Empty;
+        
+        StateHasChanged();
     }
 
     private async Task FilterParticipants()
@@ -188,10 +220,10 @@
         }
 
         possibleParticipants = result.Value!
-            .Where(x => participants.All(y => x.Id != y.CalendarParticipantId))
+            .Where(x => participants.All(y => x.UserId != y.UserId))
             .Select(x => new UserInfoWithEventRoleViewModel(x))
             .ToList();
-        
+
         Console.WriteLine(JsonSerializer.Serialize(result.Value));
     }
 }

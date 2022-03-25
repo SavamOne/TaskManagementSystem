@@ -15,10 +15,10 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Route("Api/V1/[controller]")]
 public class CalendarEventController : ControllerBase
 {
-	private readonly ITokenService tokenService;
-	private readonly IUserService userService;
 	private readonly ICalendarService calendarService;
 	private readonly ICalendarEventService eventService;
+	private readonly ITokenService tokenService;
+	private readonly IUserService userService;
 
 
 	public CalendarEventController(ITokenService tokenService,
@@ -37,7 +37,7 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEvent result = await eventService.CreateEventAsync(new(userId,
+		CalendarEvent result = await eventService.CreateEventAsync(new AddCalendarEventData(userId,
 			request.CalendarId,
 			request.Name,
 			request.Description,
@@ -64,7 +64,7 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		await eventService.DeleteEventAsync(new(userId, request.EventId));
+		await eventService.DeleteEventAsync(new DeleteEventData(userId, request.EventId));
 
 		return Ok();
 	}
@@ -73,7 +73,7 @@ public class CalendarEventController : ControllerBase
 	public async Task<IActionResult> EditEventAsync(EditEventRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
-		
+
 		CalendarEvent result = await eventService.EditEventAsync(new ChangeCalendarEventData(userId,
 			request.EventId,
 			request.Name,
@@ -154,7 +154,8 @@ public class CalendarEventController : ControllerBase
 				eventWithParticipants.Event.EndTimeUtc,
 				eventWithParticipants.Event.IsPrivate,
 				eventWithParticipants.Event.CreationTimeUtc),
-			eventWithParticipants.Participants.Select(x =>
+			eventWithParticipants.Participants
+			   .Select(x =>
 					new EventParticipantUser(x.CalendarParticipant!.User!.Name,
 						x.CalendarParticipant!.User!.Email,
 						x.Id,
@@ -163,6 +164,8 @@ public class CalendarEventController : ControllerBase
 						x.EventId,
 						x.CalendarParticipant!.CalendarId,
 						(EventParticipantRole)x.Role))
-			   .ToList());
+			   .ToList(),
+			eventWithParticipants.CanUserEditEvent,
+			eventWithParticipants.CanUserEditParticipants);
 	}
 }

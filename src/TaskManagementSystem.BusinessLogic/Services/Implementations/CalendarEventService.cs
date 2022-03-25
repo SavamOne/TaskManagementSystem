@@ -185,7 +185,7 @@ public class CalendarEventService : ICalendarEventService
         }
 
         CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
-        if (eventsInfo.Event.IsPrivate && (eventParticipant != null || calendarParticipant.IsAdminOrCreator()))
+        if (!eventsInfo.Event.IsPrivate || eventParticipant != null || calendarParticipant.IsAdminOrCreator())
         {
             return eventsInfo;
         }

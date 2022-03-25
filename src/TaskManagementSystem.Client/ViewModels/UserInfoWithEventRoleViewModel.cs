@@ -7,8 +7,10 @@ public class UserInfoWithEventRoleViewModel  : UserInfoViewModel
 	public UserInfoWithEventRoleViewModel(CalendarParticipantUser user) 
 		: base(new UserInfo(user.UserId, user.Username, user.Email, user.RegisterDate))
 	{
-		
+		CalendarParticipantId = user.Id;
 	}
+	
+	public Guid CalendarParticipantId { get; }
 	
 	public EventParticipantRole Role { get; set; }
 
@@ -19,6 +21,6 @@ public class UserInfoWithEventRoleViewModel  : UserInfoViewModel
 			throw new Exception();
 		}
 
-		return new AddEventParticipantRequest(UserId, Role);
+		return new AddEventParticipantRequest(CalendarParticipantId, Role);
 	}
 }

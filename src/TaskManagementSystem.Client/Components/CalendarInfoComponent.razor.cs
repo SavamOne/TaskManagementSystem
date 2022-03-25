@@ -232,19 +232,6 @@ public partial class CalendarInfoComponent
         ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
     }
 
-    public string RoleStr(CalendarParticipantRole role)
-    {
-        return role switch
-        {
-            CalendarParticipantRole.Admin => "Администратор",
-            CalendarParticipantRole.Creator => "Создатель календаря",
-            CalendarParticipantRole.Participant => "Участник",
-            CalendarParticipantRole.NotSet => "Не участник",
-            _ => throw new ArgumentOutOfRangeException(nameof(RoleStr))
-
-        };
-    }
-
     private void ChangeCalendarName(string newName)
     {
         calendarForEdit.Name = newName;

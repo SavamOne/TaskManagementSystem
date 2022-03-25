@@ -4,8 +4,6 @@ namespace TaskManagementSystem.BusinessLogic.Extensions;
 
 public static class CalendarParticipantRoleExtensions
 {
-	private static readonly ICollection<CalendarRole> Roles = Enum.GetValues<CalendarRole>();
-
 	public static bool IsAdminOrCreator(this CalendarParticipant? calendarParticipant)
 	{
 		return calendarParticipant != null && IsAdminOrCreator(calendarParticipant.Role);
