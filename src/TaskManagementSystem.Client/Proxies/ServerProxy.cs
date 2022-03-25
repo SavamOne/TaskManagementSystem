@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Providers;
 using TaskManagementSystem.Client.Services;
-using TaskManagementSystem.Contracts;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
@@ -23,11 +22,6 @@ public class ServerProxy : BaseProxy
     {
         this.navigationManager = navigationManager.AssertNotNull();
         this.stateProvider = stateProvider.AssertNotNull();
-    }
-
-    public async Task<WeatherForecast[]> Get()
-    {
-        return ( await SendRequestAsync<WeatherForecast[]>(new Uri("WeatherForecast", UriKind.Relative), HttpMethod.Get) ).Value!;
     }
 
     public async Task<Result<Tokens>> RegisterUserAsync(RegisterRequest request)
@@ -93,14 +87,6 @@ public class ServerProxy : BaseProxy
     {
         var result =
             await SendRequestAsync<ChangeUserInfoRequest, UserInfo>(new Uri("Api/V1/User/ChangeInfo", UriKind.Relative), HttpMethod.Post, request);
-
-        return result;
-    }
-
-    public async Task<Result<Temp_CalendarEventInfo[]>> GetEventsForMonth(CalendarGetEventsRequest request)
-    {
-        var result =
-            await SendRequestAsync<CalendarGetEventsRequest, Temp_CalendarEventInfo[]>(new Uri("Api/V1/CalendarEventsController_Temp/GetEvents", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
