@@ -2,7 +2,7 @@ namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public enum CalendarEventParticipantRole
 {
-    Creator,
-    Participant,
-    Inform
+    Inform = 0,
+    Participant = 1,
+    Creator = 2
 }

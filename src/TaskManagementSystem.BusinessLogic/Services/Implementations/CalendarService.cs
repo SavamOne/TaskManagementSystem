@@ -184,9 +184,9 @@ public class CalendarService : ICalendarService
                 throw new BusinessLogicException("Нельзя изменить роль самого себя");
             }
 
-            if (participant.Role == CalendarRole.Creator)
+            if (participant.Role.IsCreator())
             {
-                throw new BusinessLogicException("Нельзя изменить роль создателя");
+                throw new BusinessLogicException("Нельзя изменить роль создателя календаря");
             }
 
             toChange.Add(new CalendarParticipant(participant.Id, participant.CalendarId, participant.UserId, participant.JoinDateUtc, changeParticipantRoleData.Role));

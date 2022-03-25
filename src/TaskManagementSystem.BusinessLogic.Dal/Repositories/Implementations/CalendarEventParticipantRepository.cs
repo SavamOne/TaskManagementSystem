@@ -79,4 +79,27 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 
 		return dalParticipants.Select(x => x.ToEventParticipant()).ToList();
 	}
+
+	public async Task UpdateAllAsync(ICollection<CalendarEventParticipant> eventParticipants)
+	{
+		eventParticipants.AssertNotNull();
+		foreach (CalendarEventParticipant calendarParticipant in eventParticipants)
+		{
+			await UpdateAsync(calendarParticipant.ToDalEventParticipant());
+		}
+	}
+	
+	public async Task DeleteByIdsAsync(ISet<Guid> eventParticipantsIds)
+	{
+		const string deleteSql = "UPDATE event_participant SET is_deleted = TRUE WHERE id = ANY(@Ids);";
+
+		eventParticipantsIds.AssertNotNull();
+
+		await GetConnection()
+		   .ExecuteScalarAsync(deleteSql,
+				new
+				{
+					Ids = eventParticipantsIds.ToList()
+				});
+	}
 }

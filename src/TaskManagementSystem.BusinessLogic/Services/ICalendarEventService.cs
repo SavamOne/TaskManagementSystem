@@ -13,6 +13,8 @@ public interface ICalendarEventService
 
     Task<CalendarEventWithParticipants> AddEventParticipant(AddEventParticipantsData data);
     
+    Task<CalendarEventWithParticipants> ChangeEventParticipants(ChangeEventParticipantsData data);
+    
     Task<ICollection<CalendarEvent>> GetEventsInPeriodAsync(GetEventsInPeriodData data);
 
     Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data);
