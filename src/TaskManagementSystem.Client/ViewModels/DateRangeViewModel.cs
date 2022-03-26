@@ -10,11 +10,13 @@ public class DateRangeViewModel
 {
     private readonly ServerProxy serverProxy;
     private readonly IToastService toastService;
+    private readonly Guid calendarId;
 
-    public DateRangeViewModel(ServerProxy serverProxy, IToastService toastService, IEnumerable<DayViewModel> days)
+    public DateRangeViewModel(ServerProxy serverProxy, IToastService toastService, IEnumerable<DayViewModel> days, Guid calendarId)
     {
         this.serverProxy = serverProxy;
         this.toastService = toastService;
+        this.calendarId = calendarId;
         Days = days;
     }
 
@@ -26,7 +28,9 @@ public class DateRangeViewModel
 
     public async Task GetEventsAsync()
     {
-        var result = await serverProxy.GetEventsForMonth(new CalendarGetEventsRequest(FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
+        ClearEvents();
+        
+        var result = await serverProxy.GetEventsInPeriod(new GetEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
         Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
 
@@ -35,7 +39,7 @@ public class DateRangeViewModel
             toastService.AddSystemErrorToast(result.ErrorDescription!);
         }
 
-        var events = result.Value!.Select(x => new EventViewModel(x)).ToList();
+        var events = result.Value!.Select(x => new EventViewModel(x, false, false, false)).ToList();
 
         foreach (DayViewModel dayViewModel in Days)
         {
@@ -44,7 +48,7 @@ public class DateRangeViewModel
         }
     }
 
-    public void ClearEvents()
+    private void ClearEvents()
     {
         foreach (DayViewModel dayViewModel in Days)
         {

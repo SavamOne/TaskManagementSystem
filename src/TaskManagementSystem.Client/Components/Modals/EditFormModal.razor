@@ -1,7 +1,7 @@
 @typeparam TItem
 
 <div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay; overflow-y: auto;">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@Title</h5>
@@ -13,9 +13,16 @@
                 <div class="modal-body">
                     @Body
                 </div>
-                <div class="modal-footТer">
-                    <button class="btn btn-primary" type="submit">Подтвердить</button>
-                </div>
+                <div class="modal-footer">
+                    @if (Footer != null)
+                    {
+                        @Footer
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">Подтвердить</button>
+                    }
+                    </div>
             </EditForm>
         </div>
     </div>

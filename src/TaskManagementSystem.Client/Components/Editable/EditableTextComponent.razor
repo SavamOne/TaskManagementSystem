@@ -1,0 +1,62 @@
+<div class="d-flex flex-row align-items-baseline ">
+    <div id="@textId" class="h@(TextSize)-size editable-text form-control" contenteditable="@(isTextEditing)">@text</div>
+    <div class="cursor-pointer mx-2 oi oi-pencil" @onclick="ChangeValue"></div>
+</div>
+
+@code {
+    [Inject]
+    public IJSInteropWrapper? JsInteropWrapper { get; set; }
+    
+    [Parameter]
+    public string Value {
+        set
+        {
+            originalText = value;
+            text = value;
+        }
+    }
+
+    [Parameter]
+    public int TextSize { get; set; } = 6;
+    
+    [Parameter]
+    public Func<string, Task>? OnValueEditedAsync { get; set; }
+    
+    [Parameter]
+    public Action<string>? OnValueEdited { get; set; }
+
+    private readonly string textId = Guid.NewGuid().ToString("N");
+
+    private string? originalText;
+    private string? text;
+    
+    private bool isTextEditing;
+
+
+    private async Task ChangeValue()
+    {
+        if (!isTextEditing)
+        {
+            isTextEditing = true;
+            return;
+        }
+
+        text = await JsInteropWrapper!.GetInnerTextByIdAsync(textId);
+
+        if (!string.Equals(originalText, text))
+        {
+            originalText = text;
+            if (OnValueEditedAsync is not null)
+            {
+                await OnValueEditedAsync(originalText);
+            }
+            else
+            {
+                OnValueEdited?.Invoke(originalText);
+            }
+        }
+        
+        isTextEditing = false;
+    }
+
+}

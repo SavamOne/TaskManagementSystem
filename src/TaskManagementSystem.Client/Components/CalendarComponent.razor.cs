@@ -11,6 +11,9 @@ public partial class CalendarComponent
 {
     [Parameter]
     public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
+    
+    [Parameter]
+    public Guid CalendarId { get; set; }
 
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
@@ -116,7 +119,12 @@ public partial class CalendarComponent
             .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
             .ToList();
 
-        DateRangeViewModel = new DateRangeViewModel(ServerProxy!, ToastService!, previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList());
+        DateRangeViewModel = new DateRangeViewModel(
+            ServerProxy!, 
+            ToastService!, 
+            previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(), 
+            CalendarId);
+        
         await DateRangeViewModel.GetEventsAsync();
     }
 

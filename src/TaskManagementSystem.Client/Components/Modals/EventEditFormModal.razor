@@ -1,30 +1,361 @@
-<EditFormModal @ref="Modal" Item="Event" Submit="x => Submit(x)" Title="@LocalizedResources.EventEditFormModal_EventEditing">
+@using System.Text.Json
+@using TaskManagementSystem.Shared.Helpers
+<EditFormModal @ref="Modal" Item="Event" SubmitAsync="async x => await SubmitAsync()">
     <Body>
-    <p class="m-0">@LocalizedResources.EventEditFormModal_EventName:</p>
-    <InputText @bind-Value="Event.Name" type="text" class="mb-2 form-control"/>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-calendar m-lg-1"></span>
+                </span>
+                <InputText @bind-Value="Event.Name" type="text" class="form-control" placeholder="Название события" disabled="@(!CanUserChangeEvent)"/>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-copywriting m-lg-1"></span>
+                </span>
+                <InputTextArea @bind-Value="Event.Description" type="text" class="form-control" placeholder="Описание события" disabled="@(!CanUserChangeEvent)" />
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px"></span>
+                <DropdownComponent Items="eventTypes" SelectedItem="Event.EventType"
+                                   Disabled="@(!CanUserChangeEvent)"
+                                   ItemToStringFunc="CalendarEventTypeExtensions.GetDescription"
+                                   ItemSelectedFunc="type => { Event.EventType = type; Console.WriteLine(Event.EventType);}"/>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-map-marker m-lg-1"></span>
+                </span>
+                <InputText @bind-Value="Event.Place" type="text" class="form-control" placeholder="Место" disabled="@(!CanUserChangeEvent)"/>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-lock-locked m-lg-1"></span>
+                </span>
+                <label>
+                    <InputCheckbox @bind-Value="Event.IsPrivate" disabled="@(!CanUserChangeEvent)"/> Приватное событие
+                </label>
+            </div>
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px">
+                    <span class="oi oi-clock m-lg-1"></span>
+                </span>
+                <span class="w-100 d-flex flex-row align-items-baseline">
+                    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="form-control" placeholder="Начало" disabled="@(!CanUserChangeEvent)"/>
+                    <p class="m-lg-1">-</p>
+                    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="form-control" placeholder="Окончание" disabled="@(!CanUserChangeEvent)"/>
+                </span>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="row mb-1">
+                <div class="col col-sm-10">
+                    <input type="text" class="form-control" @bind="filter" disabled="@(!CanUserChangeParticipants)">
+                </div>
+                <div class="col col-sm-2">
+                    <button type="button" class="btn btn-outline-primary w-100" @onclick="FilterParticipantsAsync" disabled="@(!CanUserChangeParticipants)">
+                        <span class="oi oi-magnifying-glass"></span>
+                    </button>
+                </div>
+            </div>
 
-    <p class="m-0">@LocalizedResources.EventEditFormModal_EventStartTime:</p>
-    <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="mb-2 form-control"/>
+            @foreach (UserInfoWithEventRoleViewModel user in possibleParticipants)
+            {
+                <div class="row mb-1">
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@user.Name</p>
+                    </div>
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@user.Email</p>
+                    </div>
+                    <div class="col col-sm-6">
+                        <div class="h-100 d-flex align-items-center">
+                            <DropdownComponent Items="roles" SelectedItem="user.Role"
+                                               Disabled="!CanUserChangeParticipants"
+                                               ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
+                                               ItemSelectedFunc="role => { user.Role = role; ParticipantsChanged = true; }"/>
+                        </div>
+                    </div>
+                </div>
+            }
 
-    <p class="m-0">@LocalizedResources.EventEditFormModal_EventEndTime:</p>
-    <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="mb-2 form-control"/>
+            @foreach (EventParticipantViewModel participant in participants)
+            {
+                <div class="row mb-1">
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@participant.Name</p>
+                    </div>
+                    <div class="col col-sm-3">
+                        <p class="h-100 d-flex align-items-center">@participant.Email</p>
+                    </div>
+                    <div class="col col-sm-6">
+                        <div class="h-100 d-flex align-items-center">
+                            <DropdownComponent Items="roles" SelectedItem="participant.Role"
+                                               Disabled="!CanUserChangeParticipants || participant.Role == EventParticipantRole.Creator"
+                                               ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
+                                               ItemSelectedFunc="role => {participant.Role = role; ParticipantsChanged = true; }"/>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
     </Body>
+    <Footer>
+        <button class="btn btn-outline-danger" type="button" @onclick="DeleteEventAsync" disabled="@(!CanUserDeleteEvent)">Удалить событие</button>
+        <button class="btn btn-primary" type="submit" disabled="@(!Event.Changed && !ParticipantsChanged)">Подтвердить</button>
+    </Footer>
 </EditFormModal>
 
 @code {
 
+    [Inject]
+    public ServerProxy? ServerProxy { get; set; }
+
+    [Inject]
+    public IToastService? ToastService { get; set; }
+
+    [Parameter]
+    public Guid CalendarId { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnEventChanged { get; set; } = () => Task.CompletedTask;
+
     private EditFormModal<EventViewModel> Modal { get; set; } = new();
+
+    private string filter = string.Empty;
 
     private EventViewModel Event { get; set; } = new();
 
-    public void Open(EventViewModel eventViewModel)
+    private ICollection<EventParticipantViewModel> participants = Array.Empty<EventParticipantViewModel>();
+    private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
+
+    private IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
+        .Where(x => x != EventParticipantRole.Creator)
+        .ToList();
+
+    private IEnumerable<CalendarEventType> eventTypes = Enum.GetValues<CalendarEventType>();
+
+    private bool isEditMode, participantsChanged;
+
+    private bool ParticipantsChanged
     {
-        Event = eventViewModel with { };
+        get => participantsChanged;
+        set
+        {
+            participantsChanged = true;
+            StateHasChanged();
+        }
+    }
+
+    private bool CanUserChangeEvent => Event.CanEditEvent;
+    private bool CanUserChangeParticipants => Event.CanChangeParticipants;
+    private bool CanUserDeleteEvent => Event.CanDeleteEvent;
+
+    public async Task EditAsync(Guid eventId)
+    {
+        isEditMode = true;
+        Modal.Title = "Редактирование события";
+        participantsChanged = false;
+
+        EventWithParticipants? result = await GetEventInfoAsync(eventId);
+
+        if (result is null)
+        {
+            return;
+        }
+
+        Fill(result);
+        Modal.Open(); 
+    }
+
+    public void Create()
+    {
+        isEditMode = false;
+        Modal.Title = "Создание события";
+        participantsChanged = false;
+
+        Event = new EventViewModel();
+        participants.ClearIfPossible();
+        possibleParticipants.ClearIfPossible();
+        filter = string.Empty;
+
         Modal.Open();
     }
 
-    public void Submit(EventViewModel eventViewModel)
+    private async Task SubmitAsync()
     {
-        Console.WriteLine(eventViewModel.ToString());
+        if (CanUserChangeEvent && Event.Changed)
+        {
+            var eventInfo = await CreateOrEditEventAsync();
+
+            if (eventInfo is not null)
+            {
+                Event = new EventViewModel(eventInfo, true, true, false);
+                isEditMode = true;
+            }
+        }
+
+        EventWithParticipants? eventWithParticipants = null;
+        if (CanUserChangeParticipants && participantsChanged)
+        {
+            eventWithParticipants = await AddParticipantsAsync();
+            eventWithParticipants = await ChangeParticipantsAsync() ?? eventWithParticipants;
+
+            participantsChanged = false;
+        }
+        else if(Event.Id != default)
+        {
+            eventWithParticipants = await GetEventInfoAsync(Event.Id);
+        }
+
+        if (eventWithParticipants is not null)
+        {
+            Fill(eventWithParticipants);
+            StateHasChanged();
+            await OnEventChanged();
+        }
+    }
+    
+    private async Task<EventWithParticipants?> ChangeParticipantsAsync()
+    {
+        if (!CanUserChangeParticipants)
+        {
+            return null;
+        }
+        
+        var changeRequests = participants
+            .Where(x => x.RoleChanged)
+            .Select(x => x.GetChangeRequest())
+            .ToList();
+
+        if (!changeRequests.Any())
+        {
+            return null;
+        }
+        
+        var changeResult = await ServerProxy!.ChangeEventParticipants(new ChangeEventParticipantsRequest(Event.Id, changeRequests));
+        if (!changeResult.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(changeResult.ErrorDescription!);
+            return null;
+        }
+
+        ToastService!.AddSystemToast(Modal.Title!, "Успешно изменены участники события");
+        
+        return changeResult.Value;
+    }
+
+    private async Task<EventWithParticipants?> AddParticipantsAsync()
+    {
+        if (!CanUserChangeParticipants)
+        {
+            return null;
+        }
+        
+        var addRequests = possibleParticipants
+            .Where(x => x.Role != EventParticipantRole.NotSet)
+            .Select(x => x.GetAddParticipantRequest())
+            .ToList();
+
+        if (!addRequests.Any())
+        {
+            return null;
+        }
+        
+        var addResult = await ServerProxy!.AddEventParticipants(new AddEventParticipantsRequest(Event.Id, addRequests));
+        if (!addResult.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(addResult.ErrorDescription!);
+            return null;
+        }
+        
+        ToastService!.AddSystemToast(Modal.Title!, "Успешно добавлены участники события");
+
+        return addResult.Value;
+    }
+
+    private async Task<EventWithParticipants?> GetEventInfoAsync(Guid eventId)
+    {
+        var getInfoResult = await ServerProxy!.GetEventInfo(new GetEventInfoRequest(eventId));
+        if (!getInfoResult.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(getInfoResult.ErrorDescription!);
+            return null;
+        }
+
+        return getInfoResult.Value;
+    }
+    
+    private async Task<EventInfo?> CreateOrEditEventAsync()
+    {
+        if (!CanUserChangeEvent)
+        {
+            return null;
+        }
+        
+        Result<EventInfo> result;
+
+        if (isEditMode)
+        {
+            result = await ServerProxy!.EditEvent(Event.GetEditRequest());
+        }
+        else
+        {
+            result = await ServerProxy!.CreateEvent(Event.GetCreateRequest(CalendarId));
+        }
+
+        if (!result.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+            return null;
+        }
+        
+        ToastService!.AddSystemToast(Modal.Title!, "Успешно завершено");
+        
+        return result.Value;
+    }
+
+    private async Task FilterParticipantsAsync()
+    {
+        var result = await ServerProxy!.GetCalendarParticipantsByFilter(new GetCalendarParticipantsByFilterRequest(CalendarId, filter));
+
+        if (!result.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+        }
+
+        possibleParticipants = result.Value!
+            .Where(x => participants.All(y => x.UserId != y.UserId))
+            .Select(x => new UserInfoWithEventRoleViewModel(x))
+            .ToList();
+    }
+
+    private void Fill(EventWithParticipants eventWithParticipants)
+    {
+        Event = new EventViewModel(eventWithParticipants.EventInfo, eventWithParticipants.CanUserEditEvent, eventWithParticipants.CanUserEditParticipants, eventWithParticipants.CanUserDeleteEvent);
+        participants = eventWithParticipants.Participants
+            .OrderByDescending(x => x.Role)
+            .ThenBy(x=> x.UserName)
+            .Select(x => new EventParticipantViewModel(x))
+            .ToList();
+            
+        possibleParticipants.ClearIfPossible();
+        filter = string.Empty;
+    }
+    
+    private async Task DeleteEventAsync()
+    {
+        var result = await ServerProxy!.DeleteEvent(new DeleteEventRequest(Event.Id));
+        if (!result.IsSuccess)
+        {
+            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+            return;
+        }
+        
+        ToastService!.AddSystemToast(Modal.Title!, "Событие удалено успешно");
+        await OnEventChanged();
+        Modal.Close();
     }
 }

@@ -1,39 +1,145 @@
+using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
-    public EventViewModel() {}
+    private string? name;
+    private string? description;
+    private string? place;
+    private bool isPrivate;
+    private CalendarEventType eventType;
+    private DateTimeOffset startDate = DateTimeOffset.Now;
+    private DateTimeOffset endDate = DateTimeOffset.Now.AddHours(1);
+    private bool changed;
 
-    public EventViewModel(CalendarEventInfo eventInfo)
+    public EventViewModel()
     {
-        Name = eventInfo.Name;
-        StartDate = eventInfo.StartTime;
-        EndDate = eventInfo.EndTime;
+        CanEditEvent = true;
+        CanChangeParticipants = true;
+        CanDeleteEvent = false;
     }
 
-    public string? Name { get; set; }
+    public EventViewModel(EventInfo eventInfo, bool canEditEvent, bool canChangeParticipants, bool canDeleteEvent)
+    {
+        Id = eventInfo.Id;
+        name = eventInfo.Name;
+        place = eventInfo.Place;
+        description = eventInfo.Description;
+        startDate = eventInfo.StartTime.ToLocalTime();
+        endDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
+        isPrivate = eventInfo.IsPrivate;
+        eventType = eventInfo.EventType;
+        
+        CanEditEvent = canEditEvent;
+        CanChangeParticipants = canChangeParticipants;
+        CanDeleteEvent = canDeleteEvent;
+    }
 
-    public DateTimeOffset StartDate { get; set; }
+    public bool Changed
+    {
+        get => changed;
+        private set
+        {
+            changed = value;
+            Console.WriteLine(value);
+        }
+    }
 
-    public DateTimeOffset EndDate { get; set; }
+    public bool CanEditEvent { get; }
+
+    public bool CanChangeParticipants { get; }
+
+    public bool CanDeleteEvent { get; }
+
+    public Guid Id { get; }
+
+    public string? Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            Changed = true;
+        }
+    }
+
+    public string? Description
+    {
+        get => description;
+        set
+        {
+            description = value;
+            Changed = true;
+        }
+    }
+
+    public string? Place
+    {
+        get => place;
+        set
+        {
+            place = value;
+            Changed = true;
+        }
+    }
+
+    public bool IsPrivate
+    {
+        get => isPrivate;
+        set
+        {
+            isPrivate = value;
+            Changed = true;
+        }
+    }
+
+    public CalendarEventType EventType
+    {
+        get => eventType;
+        set
+        {
+            eventType = value;
+            Changed = true;
+        }
+    }
+
+    public DateTimeOffset StartDate
+    {
+        get => startDate;
+        set
+        {
+            startDate = value;
+            Changed = true;
+        }
+    }
+
+    public DateTimeOffset EndDate
+    {
+        get => endDate;
+        set
+        {
+            endDate = value;
+            Changed = true;
+        }
+    }
 
     public string StartDateStr
     {
-        get => StartDate.ToLocalTime().ToString("yyyy-MM-ddThh:mm");
+        get => StartDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm");
         set
         {
             if (DateTimeOffset.TryParse(value, out DateTimeOffset date))
             {
-                StartDate = date;
+                StartDate = date.ToOffset(DateTimeOffset.Now.Offset);
             }
         }
     }
 
     public string EndDateStr
     {
-        get => EndDate.ToLocalTime().ToString("yyyy-MM-ddThh:mm");
+        get => EndDate.ToLocalTime().ToString("yyyy-MM-ddTHH:mm");
         set
         {
             if (DateTimeOffset.TryParse(value, out DateTimeOffset date))
@@ -41,5 +147,29 @@ public record EventViewModel
                 EndDate = date;
             }
         }
+    }
+
+    public CreateEventRequest GetCreateRequest(Guid calendarId)
+    {
+        return new CreateEventRequest(calendarId,
+            Name,
+            Description,
+            Place,
+            EventType,
+            StartDate,
+            EndDate,
+            IsPrivate);
+    }
+
+    public EditEventRequest GetEditRequest()
+    {
+        return new EditEventRequest(Id,
+            Name,
+            Description,
+            Place,
+            EventType,
+            StartDate,
+            EndDate,
+            IsPrivate);
     }
 }

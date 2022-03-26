@@ -3,10 +3,10 @@
     {
         foreach (CalendarInfo calendar in Calendars)
         {
-            string path = Path.Combine("calendar", calendar.Id.ToString());
-            string style = $"background:{StringHelper.GetHexColorForText(calendar.Name)}";
             <div class="col p-4">
-                <NavLink href="@path" class="card text-white mb-3 h-100 text-decoration-none" style="@style">
+                <NavLink href="@(Path.Combine("events", calendar.Id.ToString()))" 
+                         class="card text-white mb-3 h-100 text-decoration-none" 
+                         style="@($"background:{StringHelper.GetHexColorForText(calendar.Name)}")">
                     <div class="card-header">
                         <h5 class="card-title mt-2 mb-2">@calendar.Name</h5>
                     </div>

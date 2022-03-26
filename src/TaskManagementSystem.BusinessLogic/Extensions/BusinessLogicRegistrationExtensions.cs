@@ -12,7 +12,9 @@ public static class BusinessLogicRegistrationExtensions
         serviceCollection.AddBusinessLogicDal();
         serviceCollection.AddScoped<IUserService, UserService>();
         serviceCollection.AddScoped<ICalendarService, CalendarService>();
-        serviceCollection.AddScoped<CalendarEventsService>();
+        serviceCollection.AddScoped<ICalendarEventService, CalendarEventService>();
+        serviceCollection.AddScoped<Temp_CalendarEventService>();
+        
 
         return serviceCollection;
     }

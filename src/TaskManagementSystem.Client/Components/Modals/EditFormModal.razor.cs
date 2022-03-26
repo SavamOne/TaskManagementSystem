@@ -16,10 +16,16 @@ public partial class EditFormModal<TItem>
     public RenderFragment? Body { get; set; }
 
     [Parameter]
+    public RenderFragment? Footer { get; set; }
+    
+    [Parameter]
     public TItem? Item { get; set; }
 
     [Parameter]
     public Action<TItem>? Submit { get; set; }
+    
+    [Parameter]
+    public Func<TItem, Task>? SubmitAsync { get; set; }
 
     public void Open()
     {
@@ -39,10 +45,15 @@ public partial class EditFormModal<TItem>
         StateHasChanged();
     }
 
-    private void OnValidSubmit()
+    private async Task OnValidSubmit()
     {
-        Submit?.Invoke(Item!);
-
-        //Close();
+        if (SubmitAsync != null)
+        {
+            await SubmitAsync(Item!);
+        }
+        else
+        {
+            Submit?.Invoke(Item!);
+        }
     }
 }

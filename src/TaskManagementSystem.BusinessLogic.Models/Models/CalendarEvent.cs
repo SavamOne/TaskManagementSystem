@@ -2,41 +2,39 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
-public record CalendarEvent
+public class CalendarEvent
 {
-    public CalendarEvent(Guid eventId, string name, string? description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime)
+    public CalendarEvent(Guid id, Guid calendarId, string name, string? description, EventType eventType, string? place, DateTime startTimeUtc, DateTime? endTimeUtc, bool isPrivate, DateTime creationTimeUtc)
     {
-        EventId = eventId;
+        Id = id;
+        CalendarId = calendarId;
         Name = name.AssertNotNullOrWhiteSpace();
         Description = description;
-        UtcStartTime = utcStartTime;
-        UtcEndTime = utcEndTime;
-        UtcCreationTime = utcCreationTime;
-        RecurrentSettings = null;
+        EventType = eventType;
+        Place = place;
+        StartTimeUtc = startTimeUtc;
+        EndTimeUtc = endTimeUtc;
+        IsPrivate = isPrivate;
+        CreationTimeUtc = creationTimeUtc;
     }
-
-    public CalendarEvent(Guid eventId, string name, string? description, DateTime utcStartTime, DateTime utcEndTime, DateTime utcCreationTime, RecurrentEventSettings recurrentSettings)
-    {
-        EventId = eventId;
-        Name = name.AssertNotNullOrWhiteSpace();
-        Description = description;
-        UtcStartTime = utcStartTime;
-        UtcEndTime = utcEndTime;
-        UtcCreationTime = utcCreationTime;
-        RecurrentSettings = recurrentSettings.AssertNotNull();
-    }
-
-    public Guid EventId { get; }
-
-    public string Name { get; }
-
-    public string? Description { get; }
-
-    public DateTime UtcStartTime { get; init; }
-
-    public DateTime UtcEndTime { get; init; }
-
-    public DateTime UtcCreationTime { get; }
-
-    public RecurrentEventSettings? RecurrentSettings { get; }
+    
+    public Guid Id { get; }
+    
+    public Guid CalendarId { get; }
+    
+    public string Name { get; set; }
+    
+    public string? Description { get; set; }
+    
+    public EventType EventType { get; set; }
+    
+    public string? Place { get; set; }
+    
+    public DateTime StartTimeUtc { get; set; }
+    
+    public DateTime? EndTimeUtc { get; set; }
+    
+    public bool IsPrivate { get; set; }
+    
+    public DateTime CreationTimeUtc { get; }
 }

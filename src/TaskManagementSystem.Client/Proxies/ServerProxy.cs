@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Providers;
 using TaskManagementSystem.Client.Services;
-using TaskManagementSystem.Contracts;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
@@ -23,11 +22,6 @@ public class ServerProxy : BaseProxy
     {
         this.navigationManager = navigationManager.AssertNotNull();
         this.stateProvider = stateProvider.AssertNotNull();
-    }
-
-    public async Task<WeatherForecast[]> Get()
-    {
-        return ( await SendRequestAsync<WeatherForecast[]>(new Uri("WeatherForecast", UriKind.Relative), HttpMethod.Get) ).Value!;
     }
 
     public async Task<Result<Tokens>> RegisterUserAsync(RegisterRequest request)
@@ -97,14 +91,6 @@ public class ServerProxy : BaseProxy
         return result;
     }
 
-    public async Task<Result<CalendarEventInfo[]>> GetEventsForMonth(CalendarGetEventsRequest request)
-    {
-        var result =
-            await SendRequestAsync<CalendarGetEventsRequest, CalendarEventInfo[]>(new Uri("Api/V1/CalendarEvents/GetEvents", UriKind.Relative), HttpMethod.Post, request);
-
-        return result;
-    }
-
     public async Task<Result<IEnumerable<CalendarInfo>>> GetUserCalendars()
     {
         var result =
@@ -160,8 +146,71 @@ public class ServerProxy : BaseProxy
 
         return result;
     }
+    
+    public async Task<Result<ICollection<CalendarParticipantUser>>> GetCalendarParticipantsByFilter(GetCalendarParticipantsByFilterRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetCalendarParticipantsByFilterRequest, ICollection<CalendarParticipantUser>>(new Uri("Api/V1/Calendar/GetInfosByFilter", UriKind.Relative), HttpMethod.Post, request);
 
+        return result;
+    }
 
+    public async Task<Result<EventInfo>> CreateEvent(CreateEventRequest request)
+    {
+        var result =
+            await SendRequestAsync<CreateEventRequest, EventInfo>(new Uri("Api/V1/CalendarEvent/Create", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<Result<EventInfo>> EditEvent(EditEventRequest request)
+    {
+        var result =
+            await SendRequestAsync<EditEventRequest, EventInfo>(new Uri("Api/V1/CalendarEvent/Edit", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<bool>> DeleteEvent(DeleteEventRequest request)
+    {
+        var result =
+            await SendRequestAsync<DeleteEventRequest, bool>(new Uri("Api/V1/CalendarEvent/Delete", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+
+    public async Task<Result<EventWithParticipants>> AddEventParticipants(AddEventParticipantsRequest request)
+    {
+        var result =
+            await SendRequestAsync<AddEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/AddParticipants", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<Result<EventWithParticipants>> ChangeEventParticipants(ChangeEventParticipantsRequest request)
+    {
+        var result =
+            await SendRequestAsync<ChangeEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeParticipants", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<Result<EventWithParticipants>> GetEventInfo(GetEventInfoRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetEventInfoRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/GetInfo", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<Result<IEnumerable<EventInfo>>> GetEventsInPeriod(GetEventsInPeriodRequest request)
+    {
+        var result =
+            await SendRequestAsync<GetEventsInPeriodRequest, IEnumerable<EventInfo>>(new Uri("Api/V1/CalendarEvent/GetInPeriod", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
     protected override async Task RefreshTokens()
     {
         string? refreshToken = await StorageService.GetRefreshTokenAsync();

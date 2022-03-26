@@ -15,3 +15,5 @@ public record ChangeCalendarParticipantsRoleRequest(Guid CalendarId, IEnumerable
 public record DeleteParticipantsRequest(Guid CalendarId, IEnumerable<Guid> ParticipantIds);
 
 public record GetCalendarInfoRequest(Guid CalendarId);
+
+public record GetCalendarParticipantsByFilterRequest(Guid CalendarId, string Filter);

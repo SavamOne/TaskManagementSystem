@@ -3,15 +3,13 @@ using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
+using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarInfoComponent
 {
-    private const string CalendarDescriptionId = "CalendarDescriptionId";
-    private const string CalendarNameId = "CalendarNameId";
-
     private readonly IEnumerable<CalendarParticipantRole> roles =
         Enum.GetValues<CalendarParticipantRole>()
             .Where(x => x != CalendarParticipantRole.Creator)
@@ -24,8 +22,7 @@ public partial class CalendarInfoComponent
 
     private string filter = string.Empty;
     private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
-
-    private ICollection<UserInfoWithRoleViewModel> possibleParticipants = new List<UserInfoWithRoleViewModel>();
+    private ICollection<UserInfoWithParticipantRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithParticipantRoleViewModel>();
 
     [Parameter]
     public Guid CalendarId { get; set; }
@@ -72,9 +69,9 @@ public partial class CalendarInfoComponent
 
     private async Task GetUsersByFilter()
     {
-        possibleParticipants.Clear();
+        possibleParticipants.ClearIfPossible();
 
-        var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter ?? string.Empty));
+        var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter));
 
         if (!result.IsSuccess)
         {
@@ -90,7 +87,7 @@ public partial class CalendarInfoComponent
 
         possibleParticipants = result.Value!
             .Where(x => !participants.ContainsKey(x.Id))
-            .Select(x => new UserInfoWithRoleViewModel(x))
+            .Select(x => new UserInfoWithParticipantRoleViewModel(x))
             .OrderBy(x => x.Role)
             .ThenBy(x => x.Name)
             .ToList();
@@ -235,44 +232,15 @@ public partial class CalendarInfoComponent
         ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
     }
 
-    public string RoleStr(CalendarParticipantRole role)
+    private void ChangeCalendarName(string newName)
     {
-        return role switch
-        {
-            CalendarParticipantRole.Admin => "Администратор",
-            CalendarParticipantRole.Creator => "Создатель календаря",
-            CalendarParticipantRole.Participant => "Участник",
-            CalendarParticipantRole.NotSet => "Не участник",
-            _ => throw new ArgumentOutOfRangeException(nameof(RoleStr))
-
-        };
+        calendarForEdit.Name = newName;
+        Changed |= !calendarForEdit.Equals(calendar);
     }
 
-    private async Task ChangeCalendarName()
+    private void ChangeCalendarDescription(string newDescription)
     {
-        if (!isNameEditing)
-        {
-            isNameEditing = true;
-            return;
-        }
-
-        calendarForEdit.Name = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarNameId);
-
+        calendarForEdit.Description = newDescription;
         Changed |= !calendarForEdit.Equals(calendar);
-        isNameEditing = false;
-    }
-
-    private async Task ChangeCalendarDescription()
-    {
-        if (!isDescriptionEditing)
-        {
-            isDescriptionEditing = true;
-            return;
-        }
-
-        calendarForEdit.Description = await JsInteropWrapper!.GetInnerTextByIdAsync(CalendarDescriptionId);
-
-        Changed |= !calendarForEdit.Equals(calendar);
-        isDescriptionEditing = false;
     }
 }

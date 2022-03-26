@@ -1,32 +1,25 @@
-<div class="d-flex flex-row align-items-baseline ">
-    <div id="@CalendarNameId" class="h3-size editable-text form-control" contenteditable="@(isNameEditing)">@calendarForEdit.Name</div>
-    <div class="cursor-pointer mx-2 oi oi-pencil oi-" @onclick="ChangeCalendarName"></div>
-</div>
-
-<div class="d-flex flex-row align-items-baseline ">
-    <div id="@CalendarDescriptionId" class="h4-size editable-text form-control" contenteditable="@(isDescriptionEditing)">@calendarForEdit.Description</div>
-    <div class="cursor-pointer mx-2 oi oi-pencil" @onclick="ChangeCalendarDescription"></div>
-</div>
-
+<EditableTextComponent Value="@(calendarForEdit.Name!)" TextSize="3" OnValueEdited="ChangeCalendarName"/>
+<EditableTextComponent Value="@(calendarForEdit.Description!)" TextSize="3" OnValueEdited="ChangeCalendarDescription"/>
 
 <div class="w-100 d-flex justify-content-center mt-4">
     <div class="w-75">
         <div class="row mb-4">
-            <div class="col col-sm-3">
+            <div class="col col-sm-5">
                 <input type="text" @bind="filter" class="form-control">
             </div>
-            <div class="col col-sm-3">
-                <button type="button" class="btn btn-primary w-100" @onclick="GetUsersByFilter">Поиск</button>
+            <div class="col col-sm-1">
+                <button type="button" class="btn btn-outline-primary w-100" @onclick="GetUsersByFilter">
+                    <span class="oi oi-magnifying-glass"></span>
+                </button>
             </div>
             <div class="col col-sm-3">
                 <button type="button" class="btn btn-warning w-100 @ChangedState" @onclick="SaveChanges">Сохранить изменения</button>
             </div>
             <div class="col col-sm-3">
-                @{ string link = Path.Combine("events", CalendarId.ToString()); }
-                <NavLink href="@link" class="btn btn-success w-100 text-decoration-none">Перейти к календарю</NavLink>
+                <NavLink href="@(Path.Combine("events", CalendarId.ToString()))" class="btn btn-success w-100 text-decoration-none">Перейти к событиям</NavLink>
             </div>
         </div>
-        @foreach (UserInfoWithRoleViewModel user in possibleParticipants)
+        @foreach (UserInfoWithParticipantRoleViewModel user in possibleParticipants)
         {
             <div class="row mb-1">
                 <div class="col col-sm-4">
