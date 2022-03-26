@@ -6,11 +6,11 @@ namespace TaskManagementSystem.Server.Services;
 
 public interface ITokenService
 {
-    Task<Tokens> GenerateAccessAndRefreshTokensAsync(User user);
+	Task<Tokens> GenerateAccessAndRefreshTokensAsync(User user);
 
-    Task<Tokens> RefreshAccessTokenAsync(string refreshToken);
+	Task<Tokens> RefreshAccessTokenAsync(string refreshToken);
 
-    Task RemoveTokenAsync(string refreshToken);
+	Task RemoveTokenAsync(string refreshToken);
 
-    Guid GetUserIdFromClaims(ClaimsPrincipal principal);
+	Guid GetUserIdFromClaims(ClaimsPrincipal principal);
 }

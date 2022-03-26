@@ -12,8 +12,8 @@ public class ChangeEventParticipantData
 	}
 
 	public Guid EventParticipantId { get; }
-	
+
 	public CalendarEventParticipantRole? Role { get; }
-	
+
 	public bool Delete { get; }
 }

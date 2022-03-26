@@ -10,136 +10,148 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository userRepository;
+	private readonly IUserRepository userRepository;
 
-    public UserService(IUserRepository userRepository)
-    {
-        this.userRepository = userRepository.AssertNotNull();
-    }
+	public UserService(IUserRepository userRepository)
+	{
+		this.userRepository = userRepository.AssertNotNull();
+	}
 
-    public async Task<User> RegisterUserAsync(RegisterData data)
-    {
-        data.AssertNotNull();
+	public async Task<User> RegisterUserAsync(RegisterData data)
+	{
+		data.AssertNotNull();
 
-        User? existedUser = await userRepository.GetByEmailAsync(data.Email);
-        if (existedUser is not null)
-        {
-            throw new BusinessLogicException(LocalizedResources.UserAlreadyExists);
-        }
+		User? existedUser = await userRepository.GetByEmailAsync(data.Email);
+		if (existedUser is not null)
+		{
+			throw new BusinessLogicException(LocalizedResources.UserAlreadyExists);
+		}
 
-        User user = new(Guid.NewGuid(), data.Name, data.Email, DateTime.UtcNow, PasswordHelper.GetHash(data.Password));
+		User user = new(Guid.NewGuid(),
+			data.Name,
+			data.Email,
+			DateTime.UtcNow,
+			PasswordHelper.GetHash(data.Password));
 
-        await userRepository.InsertAsync(user);
-        return user;
-    }
+		await userRepository.InsertAsync(user);
+		return user;
+	}
 
-    public async Task<User> CheckUserCredentialsAsync(LoginData data)
-    {
-        data.AssertNotNull();
+	public async Task<User> CheckUserCredentialsAsync(LoginData data)
+	{
+		data.AssertNotNull();
 
-        User? existedUser = await userRepository.GetByEmailAsync(data.Email);
-        if (existedUser is null)
-        {
-            throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
-        }
+		User? existedUser = await userRepository.GetByEmailAsync(data.Email);
+		if (existedUser is null)
+		{
+			throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
+		}
 
-        byte[] loginUserHash = PasswordHelper.GetHash(data.Password);
-        if (!loginUserHash.SequenceEqual(existedUser.PasswordHash))
-        {
-            throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
-        }
+		byte[] loginUserHash = PasswordHelper.GetHash(data.Password);
+		if (!loginUserHash.SequenceEqual(existedUser.PasswordHash))
+		{
+			throw new BusinessLogicException(LocalizedResources.WrongEmailOrPassword);
+		}
 
-        return existedUser;
-    }
+		return existedUser;
+	}
 
-    public async Task<User> GetUserAsync(Guid userId)
-    {
-        User? user = await userRepository.GetByIdAsync(userId);
+	public async Task<User> GetUserAsync(Guid userId)
+	{
+		User? user = await userRepository.GetByIdAsync(userId);
 
-        if (user is null)
-        {
-            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
-        }
+		if (user is null)
+		{
+			throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
+		}
 
-        return user;
-    }
+		return user;
+	}
 
-    public async Task<ISet<User>> GetUsersAsync(ISet<Guid> userIds)
-    {
-        userIds.AssertNotNull();
+	public async Task<ISet<User>> GetUsersAsync(ISet<Guid> userIds)
+	{
+		userIds.AssertNotNull();
 
-        var result = await userRepository.GetByIdsAsync(userIds);
+		var result = await userRepository.GetByIdsAsync(userIds);
 
-        if (result.Count != userIds.Count)
-        {
-            // TODO: Определять конкретный список.
-            throw new BusinessLogicException("Найдены не все пользователи");
-        }
+		if (result.Count != userIds.Count)
+		{
+			// TODO: Определять конкретный список.
+			throw new BusinessLogicException("Найдены не все пользователи");
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public async Task<ISet<User>> GetUsersByFilter(string filter)
-    {
-        filter.AssertNotNull();
+	public async Task<ISet<User>> GetUsersByFilter(string filter)
+	{
+		filter.AssertNotNull();
 
-        return await userRepository.GetByFilter(filter, 50);
-    }
+		return await userRepository.GetByFilter(filter, 50);
+	}
 
-    public async Task<User> ChangeUserInfoAsync(ChangeUserInfoData data)
-    {
-        data.AssertNotNull();
+	public async Task<User> ChangeUserInfoAsync(ChangeUserInfoData data)
+	{
+		data.AssertNotNull();
 
-        User? user = await userRepository.GetByIdAsync(data.UserId);
+		User? user = await userRepository.GetByIdAsync(data.UserId);
 
-        if (user is null)
-        {
-            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
-        }
+		if (user is null)
+		{
+			throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
+		}
 
-        string email = user.Email;
-        string name = user.Name;
-        if (!string.IsNullOrWhiteSpace(data.Email))
-        {
-            email = data.Email;
-        }
-        if (!string.IsNullOrWhiteSpace(data.Name))
-        {
-            name = data.Name;
-        }
+		string email = user.Email;
+		string name = user.Name;
+		if (!string.IsNullOrWhiteSpace(data.Email))
+		{
+			email = data.Email;
+		}
+		if (!string.IsNullOrWhiteSpace(data.Name))
+		{
+			name = data.Name;
+		}
 
-        User updatedUser = new(data.UserId, name, email, user.DateJoinedUtc, user.PasswordHash);
+		User updatedUser = new(data.UserId,
+			name,
+			email,
+			user.DateJoinedUtc,
+			user.PasswordHash);
 
-        await userRepository.UpdateAsync(updatedUser);
-        return updatedUser;
-    }
+		await userRepository.UpdateAsync(updatedUser);
+		return updatedUser;
+	}
 
-    public async Task<User> ChangePasswordAsync(ChangePasswordData data)
-    {
-        data.AssertNotNull();
+	public async Task<User> ChangePasswordAsync(ChangePasswordData data)
+	{
+		data.AssertNotNull();
 
-        User? user = await userRepository.GetByIdAsync(data.UserId);
+		User? user = await userRepository.GetByIdAsync(data.UserId);
 
-        if (user is null)
-        {
-            throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
-        }
+		if (user is null)
+		{
+			throw new BusinessLogicException(LocalizedResources.UserDoesNotExists);
+		}
 
-        byte[] oldHash = PasswordHelper.GetHash(data.OldPassword);
-        if (!oldHash.SequenceEqual(user.PasswordHash))
-        {
-            throw new BusinessLogicException(LocalizedResources.OldPasswordIsIncorrect);
-        }
+		byte[] oldHash = PasswordHelper.GetHash(data.OldPassword);
+		if (!oldHash.SequenceEqual(user.PasswordHash))
+		{
+			throw new BusinessLogicException(LocalizedResources.OldPasswordIsIncorrect);
+		}
 
-        byte[] newHash = PasswordHelper.GetHash(data.NewPassword);
-        if (newHash.SequenceEqual(oldHash))
-        {
-            throw new BusinessLogicException(LocalizedResources.NewPasswordIsTheSame);
-        }
+		byte[] newHash = PasswordHelper.GetHash(data.NewPassword);
+		if (newHash.SequenceEqual(oldHash))
+		{
+			throw new BusinessLogicException(LocalizedResources.NewPasswordIsTheSame);
+		}
 
-        User updatedUser = new(data.UserId, user.Name, user.Email, user.DateJoinedUtc, newHash);
+		User updatedUser = new(data.UserId,
+			user.Name,
+			user.Email,
+			user.DateJoinedUtc,
+			newHash);
 
-        await userRepository.UpdateAsync(updatedUser);
-        return updatedUser;
-    }
+		await userRepository.UpdateAsync(updatedUser);
+		return updatedUser;
+	}
 }

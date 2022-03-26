@@ -4,14 +4,14 @@ namespace TaskManagementSystem.Client.Components;
 
 public class RedirectComponent : ComponentBase
 {
-    [Inject]
-    public NavigationManager NavigationManager { get; set; } = null!;
+	[Inject]
+	public NavigationManager NavigationManager { get; set; } = null!;
 
-    [Parameter]
-    public string Uri { get; set; } = "Login";
+	[Parameter]
+	public string Uri { get; set; } = "Login";
 
-    protected override void OnInitialized()
-    {
-        NavigationManager.NavigateTo(Uri);
-    }
+	protected override void OnInitialized()
+	{
+		NavigationManager.NavigateTo(Uri);
+	}
 }

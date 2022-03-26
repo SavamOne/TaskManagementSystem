@@ -14,41 +14,43 @@ builder.Services.AddBusinessLogic();
 builder.Services.AddServerAuth(builder.Configuration.GetSection(nameof(JwtOptions)));
 
 builder.Services.AddSingleton<ApiResponseExceptionFilter>();
-builder.Services.AddControllersWithViews().ConfigureApiBehaviorOptions(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-    options.SuppressMapClientErrors = true;
-}).AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.Encoder = ApplicationJsonOptions.Encoder;
-    options.JsonSerializerOptions.DefaultIgnoreCondition = ApplicationJsonOptions.DefaultIgnoreCondition;
-    options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
-    options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
-    options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
-});
+builder.Services.AddControllersWithViews()
+   .ConfigureApiBehaviorOptions(options =>
+	{
+		options.SuppressModelStateInvalidFilter = true;
+		options.SuppressMapClientErrors = true;
+	})
+   .AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.Encoder = ApplicationJsonOptions.Encoder;
+		options.JsonSerializerOptions.DefaultIgnoreCondition = ApplicationJsonOptions.DefaultIgnoreCondition;
+		options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
+		options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
+		options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
+	});
 
 builder.Services.AddRazorPages();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddSwaggerGen();
+	builder.Services.AddSwaggerGen();
 }
 
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 
-    app.UseWebAssemblyDebugging();
+	app.UseWebAssemblyDebugging();
 }
 
 app.UseRequestLocalization(options =>
 {
-    options.DefaultRequestCulture = new RequestCulture(LocalizationOptions.DefaultCultureInfo);
-    options.SupportedCultures = LocalizationOptions.AvailableCultureInfos;
-    options.SupportedUICultures = LocalizationOptions.AvailableCultureInfos;
+	options.DefaultRequestCulture = new RequestCulture(LocalizationOptions.DefaultCultureInfo);
+	options.SupportedCultures = LocalizationOptions.AvailableCultureInfos;
+	options.SupportedUICultures = LocalizationOptions.AvailableCultureInfos;
 });
 
 app.UseBlazorFrameworkFiles();

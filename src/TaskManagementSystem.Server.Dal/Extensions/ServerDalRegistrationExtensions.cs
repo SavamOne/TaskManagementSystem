@@ -7,12 +7,12 @@ namespace TaskManagementSystem.Server.Dal.Extensions;
 
 public static class ServerDalRegistrationExtensions
 {
-    public static IServiceCollection AddServerDal(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddDal();
+	public static IServiceCollection AddServerDal(this IServiceCollection serviceCollection)
+	{
+		serviceCollection.AddDal();
 
-        serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+		serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        return serviceCollection;
-    }
+		return serviceCollection;
+	}
 }

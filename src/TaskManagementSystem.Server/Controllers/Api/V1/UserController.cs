@@ -15,101 +15,101 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Route("Api/V1/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly ITokenService tokenService;
-    private readonly IUserService userService;
+	private readonly ITokenService tokenService;
+	private readonly IUserService userService;
 
-    public UserController(IUserService userService, ITokenService tokenService)
-    {
-        this.userService = userService.AssertNotNull();
-        this.tokenService = tokenService.AssertNotNull();
-    }
+	public UserController(IUserService userService, ITokenService tokenService)
+	{
+		this.userService = userService.AssertNotNull();
+		this.tokenService = tokenService.AssertNotNull();
+	}
 
-    [HttpPost("Register")]
-    public async Task<IActionResult> RegisterUserAsync(RegisterRequest request)
-    {
-        request.AssertNotNull();
+	[HttpPost("Register")]
+	public async Task<IActionResult> RegisterUserAsync(RegisterRequest request)
+	{
+		request.AssertNotNull();
 
-        User registeredUser = await userService.RegisterUserAsync(new RegisterData(request.Name, request.Email, request.Password));
-        Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(registeredUser);
+		User registeredUser = await userService.RegisterUserAsync(new RegisterData(request.Name, request.Email, request.Password));
+		Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(registeredUser);
 
-        return Ok(tokens);
-    }
+		return Ok(tokens);
+	}
 
-    [HttpPost("Login")]
-    public async Task<IActionResult> LoginAsync(LoginRequest request)
-    {
-        request.AssertNotNull();
+	[HttpPost("Login")]
+	public async Task<IActionResult> LoginAsync(LoginRequest request)
+	{
+		request.AssertNotNull();
 
-        User user = await userService.CheckUserCredentialsAsync(new LoginData(request.Email, request.Password));
-        Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(user);
+		User user = await userService.CheckUserCredentialsAsync(new LoginData(request.Email, request.Password));
+		Tokens tokens = await tokenService.GenerateAccessAndRefreshTokensAsync(user);
 
-        return Ok(tokens);
-    }
+		return Ok(tokens);
+	}
 
-    [HttpPost("Refresh")]
-    public async Task<IActionResult> RefreshAsync(RefreshTokensRequest request)
-    {
-        request.AssertNotNull();
+	[HttpPost("Refresh")]
+	public async Task<IActionResult> RefreshAsync(RefreshTokensRequest request)
+	{
+		request.AssertNotNull();
 
-        Tokens tokens = await tokenService.RefreshAccessTokenAsync(request.RefreshToken);
+		Tokens tokens = await tokenService.RefreshAccessTokenAsync(request.RefreshToken);
 
-        return Ok(tokens);
-    }
+		return Ok(tokens);
+	}
 
-    [Authorize]
-    [HttpPost("GetInfo")]
-    public async Task<IActionResult> GetInfoAsync()
-    {
-        Guid id = tokenService.GetUserIdFromClaims(User);
+	[Authorize]
+	[HttpPost("GetInfo")]
+	public async Task<IActionResult> GetInfoAsync()
+	{
+		Guid id = tokenService.GetUserIdFromClaims(User);
 
-        User user = await userService.GetUserAsync(id);
+		User user = await userService.GetUserAsync(id);
 
-        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
-    }
+		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+	}
 
-    [Authorize]
-    [HttpPost("GetInfoById")]
-    public async Task<IActionResult> GetInfoAsync(GetUserInfoByIdRequest byIdRequest)
-    {
-        byIdRequest.AssertNotNull();
+	[Authorize]
+	[HttpPost("GetInfoById")]
+	public async Task<IActionResult> GetInfoAsync(GetUserInfoByIdRequest byIdRequest)
+	{
+		byIdRequest.AssertNotNull();
 
-        User user = await userService.GetUserAsync(byIdRequest.UserId);
+		User user = await userService.GetUserAsync(byIdRequest.UserId);
 
-        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
-    }
+		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+	}
 
-    [Authorize]
-    [HttpPost("ChangePassword")]
-    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request)
-    {
-        request.AssertNotNull();
+	[Authorize]
+	[HttpPost("ChangePassword")]
+	public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request)
+	{
+		request.AssertNotNull();
 
-        Guid id = tokenService.GetUserIdFromClaims(User);
-        User user = await userService.ChangePasswordAsync(new ChangePasswordData(id, request.OldPassword, request.NewPassword));
+		Guid id = tokenService.GetUserIdFromClaims(User);
+		User user = await userService.ChangePasswordAsync(new ChangePasswordData(id, request.OldPassword, request.NewPassword));
 
-        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
-    }
+		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+	}
 
-    [Authorize]
-    [HttpPost("ChangeInfo")]
-    public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)
-    {
-        request.AssertNotNull();
+	[Authorize]
+	[HttpPost("ChangeInfo")]
+	public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)
+	{
+		request.AssertNotNull();
 
-        Guid id = tokenService.GetUserIdFromClaims(User);
-        User user = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(id, request.Name, request.Email));
+		Guid id = tokenService.GetUserIdFromClaims(User);
+		User user = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(id, request.Name, request.Email));
 
-        return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
-    }
+		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+	}
 
-    [Authorize]
-    [HttpPost("GetInfosByFilter")]
-    public async Task<IActionResult> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
-    {
-        request.AssertNotNull();
+	[Authorize]
+	[HttpPost("GetInfosByFilter")]
+	public async Task<IActionResult> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
+	{
+		request.AssertNotNull();
 
-        var result = await userService.GetUsersByFilter(request.Filter);
+		var result = await userService.GetUsersByFilter(request.Filter);
 
-        return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
-    }
+		return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
+	}
 }

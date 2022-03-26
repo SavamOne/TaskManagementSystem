@@ -9,138 +9,138 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarComponent
 {
-    [Parameter]
-    public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
-    
-    [Parameter]
-    public Guid CalendarId { get; set; }
+	[Parameter]
+	public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
 
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
+	[Parameter]
+	public Guid CalendarId { get; set; }
 
-    [Inject]
-    public IToastService? ToastService { get; set; }
+	[Inject]
+	public ServerProxy? ServerProxy { get; set; }
 
-    [Inject]
-    public ILocalizationService? LocalizationService { get; set; }
+	[Inject]
+	public IToastService? ToastService { get; set; }
 
-    private DayOfWeek FirstDayOfWeek { get; set; }
+	[Inject]
+	public ILocalizationService? LocalizationService { get; set; }
 
-    private EventEditFormModal EditEventModal { get; set; } = new();
+	private DayOfWeek FirstDayOfWeek { get; set; }
 
-    private DateTimeFormatInfo? DateTimeFormat { get; set; }
+	private EventEditFormModal EditEventModal { get; set; } = new();
 
-    private DateRangeViewModel? DateRangeViewModel { get; set; }
+	private DateTimeFormatInfo? DateTimeFormat { get; set; }
 
-    private bool IsLoaded { get; set; }
+	private DateRangeViewModel? DateRangeViewModel { get; set; }
 
-    private string? Month { get; set; }
+	private bool IsLoaded { get; set; }
 
-    private int Year { get; set; }
+	private string? Month { get; set; }
 
-    private IEnumerable<string>? DayOfWeekNamesWithFirstDay { get; set; }
+	private int Year { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        IsLoaded = false;
+	private IEnumerable<string>? DayOfWeekNamesWithFirstDay { get; set; }
 
-        DateTimeFormat = await LocalizationService!.GetApplicationDateTimeFormatAsync();
-        FirstDayOfWeek = DateTimeFormat.FirstDayOfWeek;
+	protected override async Task OnInitializedAsync()
+	{
+		IsLoaded = false;
 
-        UpdateFirstDayOfWeekState();
-        UpdateFirstDayOfWeekState();
-        await UpdateCurrentMonthStateAsync();
+		DateTimeFormat = await LocalizationService!.GetApplicationDateTimeFormatAsync();
+		FirstDayOfWeek = DateTimeFormat.FirstDayOfWeek;
 
-        IsLoaded = true;
-    }
+		UpdateFirstDayOfWeekState();
+		UpdateFirstDayOfWeekState();
+		await UpdateCurrentMonthStateAsync();
 
-    private string GetDayName(DayOfWeek dayOfWeek)
-    {
-        return DateTimeFormat!.GetShortestDayName(dayOfWeek);
-    }
+		IsLoaded = true;
+	}
 
-    private async Task AppendMonth()
-    {
-        IsLoaded = false;
+	private string GetDayName(DayOfWeek dayOfWeek)
+	{
+		return DateTimeFormat!.GetShortestDayName(dayOfWeek);
+	}
 
-        WorkingDate = WorkingDate.AddMonths(1);
-        await UpdateCurrentMonthStateAsync();
+	private async Task AppendMonth()
+	{
+		IsLoaded = false;
 
-        IsLoaded = true;
-    }
+		WorkingDate = WorkingDate.AddMonths(1);
+		await UpdateCurrentMonthStateAsync();
 
-    private async Task RemoveMonth()
-    {
-        IsLoaded = false;
+		IsLoaded = true;
+	}
 
-        WorkingDate = WorkingDate.AddMonths(-1);
-        await UpdateCurrentMonthStateAsync();
+	private async Task RemoveMonth()
+	{
+		IsLoaded = false;
 
-        IsLoaded = true;
-    }
+		WorkingDate = WorkingDate.AddMonths(-1);
+		await UpdateCurrentMonthStateAsync();
 
-    private void ChangeFirstDayOfWeek(DayOfWeek day)
-    {
-        FirstDayOfWeek = day;
-        UpdateFirstDayOfWeekState();
-    }
+		IsLoaded = true;
+	}
 
-    private int GetDayOfWeek(DateOnly date)
-    {
-        int day = (int)date.DayOfWeek;
-        int calendarFirstDay = (int)DateTimeFormat!.FirstDayOfWeek;
-        int mod = ( day - calendarFirstDay ) % 7;
+	private void ChangeFirstDayOfWeek(DayOfWeek day)
+	{
+		FirstDayOfWeek = day;
+		UpdateFirstDayOfWeekState();
+	}
 
-        return mod >= 0 ? mod : mod + 7;
-    }
+	private int GetDayOfWeek(DateOnly date)
+	{
+		int day = (int)date.DayOfWeek;
+		int calendarFirstDay = (int)DateTimeFormat!.FirstDayOfWeek;
+		int mod = ( day - calendarFirstDay ) % 7;
 
-    private async Task UpdateCurrentMonthStateAsync()
-    {
-        Month = DateTimeFormat!.GetMonthName(WorkingDate.Month);
-        Year = WorkingDate.Year;
+		return mod >= 0 ? mod : mod + 7;
+	}
 
-        int daysInMonth = DateTime.DaysInMonth(WorkingDate.Year, WorkingDate.Month);
-        var monthDaysEnumerable = Enumerable.Range(1, daysInMonth)
-            .Select(day => new DayViewModel(new DateOnly(WorkingDate.Year, WorkingDate.Month, day), false))
-            .ToList();
+	private async Task UpdateCurrentMonthStateAsync()
+	{
+		Month = DateTimeFormat!.GetMonthName(WorkingDate.Month);
+		Year = WorkingDate.Year;
 
-        DateOnly previousMonth = WorkingDate.AddMonths(-1);
-        int daysInPreviousMonth = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
-        int previousDaysCount = GetDayOfWeek(WorkingDate) - 1;
+		int daysInMonth = DateTime.DaysInMonth(WorkingDate.Year, WorkingDate.Month);
+		var monthDaysEnumerable = Enumerable.Range(1, daysInMonth)
+		   .Select(day => new DayViewModel(new DateOnly(WorkingDate.Year, WorkingDate.Month, day), false))
+		   .ToList();
 
-        var previousMonthDaysEnumerable = Enumerable.Range(daysInPreviousMonth - previousDaysCount, previousDaysCount + 1)
-            .Select(day => new DayViewModel(new DateOnly(previousMonth.Year, previousMonth.Month, day), true))
-            .ToList();
+		DateOnly previousMonth = WorkingDate.AddMonths(-1);
+		int daysInPreviousMonth = DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month);
+		int previousDaysCount = GetDayOfWeek(WorkingDate) - 1;
 
-        DateOnly nextMonth = WorkingDate.AddMonths(1);
-        int nextMonthFirstDayOfWeek = GetDayOfWeek(nextMonth);
-        int nextDaysCount = ( 7 - nextMonthFirstDayOfWeek ) % 7;
-        var nextMonthDaysEnumerable = Enumerable.Range(1, nextDaysCount)
-            .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
-            .ToList();
+		var previousMonthDaysEnumerable = Enumerable.Range(daysInPreviousMonth - previousDaysCount, previousDaysCount + 1)
+		   .Select(day => new DayViewModel(new DateOnly(previousMonth.Year, previousMonth.Month, day), true))
+		   .ToList();
 
-        DateRangeViewModel = new DateRangeViewModel(
-            ServerProxy!, 
-            ToastService!, 
-            previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(), 
-            CalendarId);
-        
-        await DateRangeViewModel.GetEventsAsync();
-    }
+		DateOnly nextMonth = WorkingDate.AddMonths(1);
+		int nextMonthFirstDayOfWeek = GetDayOfWeek(nextMonth);
+		int nextDaysCount = ( 7 - nextMonthFirstDayOfWeek ) % 7;
+		var nextMonthDaysEnumerable = Enumerable.Range(1, nextDaysCount)
+		   .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
+		   .ToList();
 
-    private void UpdateFirstDayOfWeekState()
-    {
-        DayOfWeekNamesWithFirstDay = Enumerable.Range((int)DateTimeFormat!.FirstDayOfWeek, 7)
-            .Select(x => x % 7)
-            .Cast<DayOfWeek>()
-            .Select(GetDayName).ToList();
-    }
+		DateRangeViewModel = new DateRangeViewModel(ServerProxy!,
+			ToastService!,
+			previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(),
+			CalendarId);
 
-    private static DateOnly GetDefaultWorkingDate()
-    {
-        DateTime current = DateTime.UtcNow;
-        DateTime currentMonth = new(current.Year, current.Month, 1);
+		await DateRangeViewModel.GetEventsAsync();
+	}
 
-        return DateOnly.FromDateTime(currentMonth);
-    }
+	private void UpdateFirstDayOfWeekState()
+	{
+		DayOfWeekNamesWithFirstDay = Enumerable.Range((int)DateTimeFormat!.FirstDayOfWeek, 7)
+		   .Select(x => x % 7)
+		   .Cast<DayOfWeek>()
+		   .Select(GetDayName)
+		   .ToList();
+	}
+
+	private static DateOnly GetDefaultWorkingDate()
+	{
+		DateTime current = DateTime.UtcNow;
+		DateTime currentMonth = new(current.Year, current.Month, 1);
+
+		return DateOnly.FromDateTime(currentMonth);
+	}
 }

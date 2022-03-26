@@ -4,21 +4,21 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public class UserInfoWithParticipantRoleViewModel : UserInfoViewModel
 {
-    public UserInfoWithParticipantRoleViewModel(UserInfo userInfo)
-        : base(userInfo)
-    {
-        Role = CalendarParticipantRole.NotSet;
-    }
+	public UserInfoWithParticipantRoleViewModel(UserInfo userInfo)
+		: base(userInfo)
+	{
+		Role = CalendarParticipantRole.NotSet;
+	}
 
-    public CalendarParticipantRole Role { get; set; }
+	public CalendarParticipantRole Role { get; set; }
 
-    public AddCalendarParticipantRequest GetAddParticipantRequest()
-    {
-        if (Role is CalendarParticipantRole.NotSet or CalendarParticipantRole.Creator)
-        {
-            throw new Exception();
-        }
+	public AddCalendarParticipantRequest GetAddParticipantRequest()
+	{
+		if (Role is CalendarParticipantRole.NotSet or CalendarParticipantRole.Creator)
+		{
+			throw new Exception();
+		}
 
-        return new AddCalendarParticipantRequest(UserId, Role);
-    }
+		return new AddCalendarParticipantRequest(UserId, Role);
+	}
 }

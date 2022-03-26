@@ -1,6 +1,3 @@
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class CreateEventData
-{
-    
-}
+public class CreateEventData {}

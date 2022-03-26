@@ -8,40 +8,40 @@ namespace TaskManagementSystem.Client.Components.Toasts;
 public partial class ToastComponent : IDisposable
 {
 
-    private ICollection<ToastViewModel> toasts = new List<ToastViewModel>();
+	private ICollection<ToastViewModel> toasts = new List<ToastViewModel>();
 
-    [Inject]
-    public IToastService? ToastService { get; set; }
+	[Inject]
+	public IToastService? ToastService { get; set; }
 
-    public void Dispose()
-    {
-        ToastService!.NotifyAdded -= OnToastAdded;
-        ToastService!.NotifyDeleted -= OnToastDeleted;
-    }
+	public void Dispose()
+	{
+		ToastService!.NotifyAdded -= OnToastAdded;
+		ToastService!.NotifyDeleted -= OnToastDeleted;
+	}
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            return;
-        }
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (!firstRender)
+		{
+			return;
+		}
 
-        ToastService!.NotifyAdded += OnToastAdded;
-        ToastService!.NotifyDeleted += OnToastDeleted;
-    }
+		ToastService!.NotifyAdded += OnToastAdded;
+		ToastService!.NotifyDeleted += OnToastDeleted;
+	}
 
-    public void OnToastAdded(Toast toast)
-    {
-        ToastViewModel toastViewModel = new(ToastService!, toast);
-        toasts.Add(toastViewModel);
-        toastViewModel.RemoveAfterTimeout();
-        StateHasChanged();
-    }
+	public void OnToastAdded(Toast toast)
+	{
+		ToastViewModel toastViewModel = new(ToastService!, toast);
+		toasts.Add(toastViewModel);
+		toastViewModel.RemoveAfterTimeout();
+		StateHasChanged();
+	}
 
-    public void OnToastDeleted(Guid id)
-    {
-        ToastViewModel toastViewModel = toasts.First(x => x.Id == id);
-        toasts.Remove(toastViewModel);
-        StateHasChanged();
-    }
+	public void OnToastDeleted(Guid id)
+	{
+		ToastViewModel toastViewModel = toasts.First(x => x.Id == id);
+		toasts.Remove(toastViewModel);
+		StateHasChanged();
+	}
 }

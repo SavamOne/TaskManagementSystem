@@ -4,13 +4,13 @@ namespace TaskManagementSystem.Shared.Models;
 
 public class Tokens
 {
-    public Tokens(string accessToken, string refreshToken)
-    {
-        AccessToken = accessToken.AssertNotNullOrWhiteSpace();
-        RefreshToken = refreshToken.AssertNotNullOrWhiteSpace();
-    }
+	public Tokens(string accessToken, string refreshToken)
+	{
+		AccessToken = accessToken.AssertNotNullOrWhiteSpace();
+		RefreshToken = refreshToken.AssertNotNullOrWhiteSpace();
+	}
 
-    public string AccessToken { get; }
+	public string AccessToken { get; }
 
-    public string RefreshToken { get; }
+	public string RefreshToken { get; }
 }

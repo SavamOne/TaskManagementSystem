@@ -8,16 +8,16 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Extensions;
 
 public static class BusinessLogicDalRegistrationExtensions
 {
-    public static IServiceCollection AddBusinessLogicDal(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddDal();
+	public static IServiceCollection AddBusinessLogicDal(this IServiceCollection serviceCollection)
+	{
+		serviceCollection.AddDal();
 
-        serviceCollection.TryAddScoped<IUserRepository, UserRepository>();
-        serviceCollection.TryAddScoped<ICalendarRepository, CalendarRepository>();
-        serviceCollection.TryAddScoped<ICalendarParticipantRepository, CalendarParticipantRepository>();
-        serviceCollection.TryAddScoped<CalendarEventRepository>();
-        serviceCollection.TryAddScoped<CalendarEventParticipantRepository>();
-        
-        return serviceCollection;
-    }
+		serviceCollection.TryAddScoped<IUserRepository, UserRepository>();
+		serviceCollection.TryAddScoped<ICalendarRepository, CalendarRepository>();
+		serviceCollection.TryAddScoped<ICalendarParticipantRepository, CalendarParticipantRepository>();
+		serviceCollection.TryAddScoped<CalendarEventRepository>();
+		serviceCollection.TryAddScoped<CalendarEventParticipantRepository>();
+
+		return serviceCollection;
+	}
 }

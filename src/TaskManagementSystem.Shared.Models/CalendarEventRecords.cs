@@ -1,8 +1,22 @@
 namespace TaskManagementSystem.Shared.Models;
 
-public record CreateEventRequest(Guid CalendarId, string Name, string? Description, string? Place, CalendarEventType Type, DateTimeOffset StartTime, DateTimeOffset? EndTime, bool IsPrivate);
+public record CreateEventRequest(Guid CalendarId,
+	string Name,
+	string? Description,
+	string? Place,
+	CalendarEventType Type,
+	DateTimeOffset StartTime,
+	DateTimeOffset? EndTime,
+	bool IsPrivate);
 
-public record EditEventRequest(Guid EventId, string? Name, string? Description, string? Place, CalendarEventType Type, DateTimeOffset? StartTime, DateTimeOffset? EndTime, bool? IsPrivate);
+public record EditEventRequest(Guid EventId,
+	string? Name,
+	string? Description,
+	string? Place,
+	CalendarEventType Type,
+	DateTimeOffset? StartTime,
+	DateTimeOffset? EndTime,
+	bool? IsPrivate);
 
 public record DeleteEventRequest(Guid EventId);
 

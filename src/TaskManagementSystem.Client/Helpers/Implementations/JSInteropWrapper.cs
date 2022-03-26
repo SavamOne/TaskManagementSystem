@@ -6,56 +6,56 @@ namespace TaskManagementSystem.Client.Helpers.Implementations;
 
 public class JSInteropWrapper : IJSInteropWrapper
 {
-    private readonly IJSRuntime jsRuntime;
+	private readonly IJSRuntime jsRuntime;
 
-    public JSInteropWrapper(IJSRuntime jsRuntime)
-    {
-        this.jsRuntime = jsRuntime.AssertNotNull();
-    }
+	public JSInteropWrapper(IJSRuntime jsRuntime)
+	{
+		this.jsRuntime = jsRuntime.AssertNotNull();
+	}
 
-    public async Task SetStringAsync(string key, string value)
-    {
-        key.AssertNotNullOrWhiteSpace();
-        value.AssertNotNullOrWhiteSpace();
+	public async Task SetStringAsync(string key, string value)
+	{
+		key.AssertNotNullOrWhiteSpace();
+		value.AssertNotNullOrWhiteSpace();
 
-        await jsRuntime.InvokeVoidAsync("set", key, value);
-    }
+		await jsRuntime.InvokeVoidAsync("set", key, value);
+	}
 
-    public async Task SetAsync<T>(string key, T item)
-    {
-        item.AssertNotNull();
+	public async Task SetAsync<T>(string key, T item)
+	{
+		item.AssertNotNull();
 
-        string data = JsonSerializer.Serialize(item);
-        await SetStringAsync(key, data);
-    }
+		string data = JsonSerializer.Serialize(item);
+		await SetStringAsync(key, data);
+	}
 
-    public async Task<string?> GetStringAsync(string key)
-    {
-        key.AssertNotNullOrWhiteSpace();
+	public async Task<string?> GetStringAsync(string key)
+	{
+		key.AssertNotNullOrWhiteSpace();
 
-        return await jsRuntime.InvokeAsync<string>("get", key);
-    }
+		return await jsRuntime.InvokeAsync<string>("get", key);
+	}
 
-    public async Task<T?> GetAsync<T>(string key)
-    {
-        string? data = await GetStringAsync(key);
+	public async Task<T?> GetAsync<T>(string key)
+	{
+		string? data = await GetStringAsync(key);
 
-        if (string.IsNullOrEmpty(data))
-        {
-            return default;
-        }
+		if (string.IsNullOrEmpty(data))
+		{
+			return default;
+		}
 
-        return JsonSerializer.Deserialize<T>(data)!;
-    }
+		return JsonSerializer.Deserialize<T>(data)!;
+	}
 
-    public async Task RemoveAsync(string key)
-    {
-        key.AssertNotNullOrWhiteSpace();
+	public async Task RemoveAsync(string key)
+	{
+		key.AssertNotNullOrWhiteSpace();
 
-        await jsRuntime.InvokeAsync<string>("remove", key);
-    }
-    public async Task<string> GetInnerTextByIdAsync(string id)
-    {
-        return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
-    }
+		await jsRuntime.InvokeAsync<string>("remove", key);
+	}
+	public async Task<string> GetInnerTextByIdAsync(string id)
+	{
+		return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
+	}
 }

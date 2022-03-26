@@ -4,29 +4,29 @@ namespace TaskManagementSystem.Shared.Models;
 
 public record Result<T>
 {
-    private Result(string errorDescription)
-    {
-        ErrorDescription = errorDescription.AssertNotNull();
-    }
+	private Result(string errorDescription)
+	{
+		ErrorDescription = errorDescription.AssertNotNull();
+	}
 
-    private Result(T value)
-    {
-        Value = value.AssertNotNull();
-    }
+	private Result(T value)
+	{
+		Value = value.AssertNotNull();
+	}
 
-    public bool IsSuccess => ErrorDescription is null;
+	public bool IsSuccess => ErrorDescription is null;
 
-    public string? ErrorDescription { get; }
+	public string? ErrorDescription { get; }
 
-    public T? Value { get; }
+	public T? Value { get; }
 
-    public static Result<T> Success(T value)
-    {
-        return new Result<T>(value);
-    }
+	public static Result<T> Success(T value)
+	{
+		return new Result<T>(value);
+	}
 
-    public static Result<T> Error(string description)
-    {
-        return new Result<T>(description);
-    }
+	public static Result<T> Error(string description)
+	{
+		return new Result<T>(description);
+	}
 }

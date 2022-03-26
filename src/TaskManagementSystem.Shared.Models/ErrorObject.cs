@@ -4,10 +4,10 @@ namespace TaskManagementSystem.Shared.Models;
 
 public class ErrorObject
 {
-    public ErrorObject(string error)
-    {
-        Error = error.AssertNotNull();
-    }
+	public ErrorObject(string error)
+	{
+		Error = error.AssertNotNull();
+	}
 
-    public string Error { get; }
+	public string Error { get; }
 }

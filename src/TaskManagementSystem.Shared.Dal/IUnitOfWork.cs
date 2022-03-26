@@ -2,9 +2,9 @@ namespace TaskManagementSystem.Shared.Dal;
 
 public interface IUnitOfWork : IDisposable
 {
-    void BeginTransaction();
+	void BeginTransaction();
 
-    void CommitTransaction();
+	void CommitTransaction();
 
-    void RollbackTransaction();
+	void RollbackTransaction();
 }
