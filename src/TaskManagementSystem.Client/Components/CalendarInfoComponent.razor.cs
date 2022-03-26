@@ -3,6 +3,7 @@ using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
+using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.Components;
@@ -21,7 +22,6 @@ public partial class CalendarInfoComponent
 
     private string filter = string.Empty;
     private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
-
     private ICollection<UserInfoWithParticipantRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithParticipantRoleViewModel>();
 
     [Parameter]
@@ -69,9 +69,9 @@ public partial class CalendarInfoComponent
 
     private async Task GetUsersByFilter()
     {
-        possibleParticipants.Clear();
+        possibleParticipants.ClearIfPossible();
 
-        var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter ?? string.Empty));
+        var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter));
 
         if (!result.IsSuccess)
         {

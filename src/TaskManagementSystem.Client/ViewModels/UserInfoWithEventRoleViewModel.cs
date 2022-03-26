@@ -7,6 +7,7 @@ public class UserInfoWithEventRoleViewModel  : UserInfoViewModel
 	public UserInfoWithEventRoleViewModel(CalendarParticipantUser user) 
 		: base(new UserInfo(user.UserId, user.Username, user.Email, user.RegisterDate))
 	{
+		Role = EventParticipantRole.NotSet;
 		CalendarParticipantId = user.Id;
 	}
 	

@@ -5,42 +5,125 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
+    private string? name;
+    private string? description;
+    private string? place;
+    private bool isPrivate;
+    private CalendarEventType eventType;
+    private DateTimeOffset startDate = DateTimeOffset.Now;
+    private DateTimeOffset endDate = DateTimeOffset.Now.AddHours(1);
+    private bool changed;
+
+    public EventViewModel()
+    {
+        CanEditEvent = true;
+        CanChangeParticipants = true;
+        CanDeleteEvent = false;
+    }
+
+    public EventViewModel(EventInfo eventInfo, bool canEditEvent, bool canChangeParticipants, bool canDeleteEvent)
+    {
+        Id = eventInfo.Id;
+        name = eventInfo.Name;
+        place = eventInfo.Place;
+        description = eventInfo.Description;
+        startDate = eventInfo.StartTime.ToLocalTime();
+        endDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
+        isPrivate = eventInfo.IsPrivate;
+        eventType = eventInfo.EventType;
+        
+        CanEditEvent = canEditEvent;
+        CanChangeParticipants = canChangeParticipants;
+        CanDeleteEvent = canDeleteEvent;
+    }
+
+    public bool Changed
+    {
+        get => changed;
+        private set
+        {
+            changed = value;
+            Console.WriteLine(value);
+        }
+    }
+
     public bool CanEditEvent { get; }
 
     public bool CanChangeParticipants { get; }
 
-    public EventViewModel() {}
-
-    public EventViewModel(EventInfo eventInfo, bool canEditEvent, bool canChangeParticipants)
-    {
-        Id = eventInfo.Id;
-        Name = eventInfo.Name;
-        Place = eventInfo.Place;
-        Description = eventInfo.Description;
-        StartDate = eventInfo.StartTime.ToLocalTime();
-        EndDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
-        IsPrivate = eventInfo.IsPrivate;
-        EventType = eventInfo.EventType;
-        
-        CanEditEvent = canEditEvent;
-        CanChangeParticipants = canChangeParticipants;
-    }
+    public bool CanDeleteEvent { get; }
 
     public Guid Id { get; }
 
-    public string? Name { get; set; }
-    
-    public string? Description { get; set; }
-    
-    public string? Place { get; set; }
-    
-    public bool IsPrivate { get; set; }
-    
-    public CalendarEventType EventType { get; set; }
-    
-    public DateTimeOffset StartDate { get; set; } = DateTimeOffset.Now;
+    public string? Name
+    {
+        get => name;
+        set
+        {
+            name = value;
+            Changed = true;
+        }
+    }
 
-    public DateTimeOffset EndDate { get; set; } = DateTimeOffset.Now.AddHours(1);
+    public string? Description
+    {
+        get => description;
+        set
+        {
+            description = value;
+            Changed = true;
+        }
+    }
+
+    public string? Place
+    {
+        get => place;
+        set
+        {
+            place = value;
+            Changed = true;
+        }
+    }
+
+    public bool IsPrivate
+    {
+        get => isPrivate;
+        set
+        {
+            isPrivate = value;
+            Changed = true;
+        }
+    }
+
+    public CalendarEventType EventType
+    {
+        get => eventType;
+        set
+        {
+            eventType = value;
+            Changed = true;
+        }
+    }
+
+    public DateTimeOffset StartDate
+    {
+        get => startDate;
+        set
+        {
+            startDate = value;
+            Changed = true;
+        }
+    }
+
+    public DateTimeOffset EndDate
+    {
+        get => endDate;
+        set
+        {
+            endDate = value;
+            Changed = true;
+        }
+    }
 
     public string StartDateStr
     {
@@ -75,7 +158,7 @@ public record EventViewModel
             EventType,
             StartDate,
             EndDate,
-            false);
+            IsPrivate);
     }
 
     public EditEventRequest GetEditRequest()

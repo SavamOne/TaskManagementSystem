@@ -37,26 +37,9 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEvent result = await eventService.CreateEventAsync(new AddCalendarEventData(userId,
-			request.CalendarId,
-			request.Name,
-			request.Description,
-			(EventType)request.Type,
-			request.Place,
-			request.StartTime,
-			request.EndTime,
-			request.IsPrivate));
+		CalendarEvent result = await eventService.CreateEventAsync(Convert(request, userId));
 
-		return Ok(new EventInfo(result.Id,
-			result.CalendarId,
-			result.Name,
-			result.Description,
-			(CalendarEventType)result.EventType,
-			result.Place,
-			result.StartTimeUtc,
-			result.EndTimeUtc,
-			result.IsPrivate,
-			result.CreationTimeUtc));
+		return Ok(Convert(result));
 	}
 
 	[HttpPost("Delete")]
@@ -66,7 +49,7 @@ public class CalendarEventController : ControllerBase
 
 		await eventService.DeleteEventAsync(new DeleteEventData(userId, request.EventId));
 
-		return Ok();
+		return Ok(true);
 	}
 
 	[HttpPost("Edit")]
@@ -74,26 +57,9 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEvent result = await eventService.EditEventAsync(new ChangeCalendarEventData(userId,
-			request.EventId,
-			request.Name,
-			request.Description,
-			(EventType)request.Type,
-			request.Place,
-			request.StartTime,
-			request.EndTime,
-			request.IsPrivate));
+		CalendarEvent result = await eventService.ChangeEventAsync(Convert(request, userId));
 
-		return Ok(new EventInfo(result.Id,
-			result.CalendarId,
-			result.Name,
-			result.Description,
-			(CalendarEventType)result.EventType,
-			result.Place,
-			result.StartTimeUtc,
-			result.EndTimeUtc,
-			result.IsPrivate,
-			result.CreationTimeUtc));
+		return Ok(Convert(result));
 	}
 
 	[HttpPost("AddParticipants")]
@@ -101,13 +67,17 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEventWithParticipants result = await eventService.AddEventParticipant(new AddEventParticipantsData(userId,
-			request.EventId,
-			request.Participants
-			   .Select(x =>
-					new AddEventParticipantData(x.ParticipantId,
-						(CalendarEventParticipantRole)x.Role))
-			   .ToList()));
+		CalendarEventWithParticipants result = await eventService.AddEventParticipant(Convert(request, userId));
+
+		return Ok(Convert(result));
+	}
+	
+	[HttpPost("ChangeParticipants")]
+	public async Task<IActionResult> ChangeParticipantsAsync(ChangeEventParticipantsRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
+
+		CalendarEventWithParticipants result = await eventService.ChangeEventParticipants(Convert(request, userId));
 
 		return Ok(Convert(result));
 	}
@@ -129,7 +99,34 @@ public class CalendarEventController : ControllerBase
 
 		var result = await eventService.GetEventsInPeriodAsync(new GetEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
 
-		return Ok(result.Select(x => new EventInfo(x.Id,
+		return Ok(result.Select(Convert).ToList());
+	}
+
+
+	private static EventWithParticipants Convert(CalendarEventWithParticipants eventWithParticipants)
+	{
+		return new EventWithParticipants(Convert(eventWithParticipants.Event),
+			eventWithParticipants.Participants.Select(Convert).ToList(),
+			eventWithParticipants.CanUserEditEvent,
+			eventWithParticipants.CanUserEditParticipants,
+			eventWithParticipants.CanUserDeleteEvent);
+	}
+
+	private static EventParticipantUser Convert(CalendarEventParticipant x)
+	{
+		return new EventParticipantUser(x.CalendarParticipant!.User!.Name,
+			x.CalendarParticipant!.User!.Email,
+			x.Id,
+			x.CalendarParticipantId,
+			x.CalendarParticipant!.User!.Id,
+			x.EventId,
+			x.CalendarParticipant!.CalendarId,
+			(EventParticipantRole)x.Role);
+	}
+
+	private static EventInfo Convert(CalendarEvent x)
+	{
+		return new EventInfo(x.Id,
 			x.CalendarId,
 			x.Name,
 			x.Description,
@@ -138,34 +135,51 @@ public class CalendarEventController : ControllerBase
 			x.StartTimeUtc,
 			x.EndTimeUtc,
 			x.IsPrivate,
-			x.CreationTimeUtc)));
+			x.CreationTimeUtc);
 	}
 
-
-	private EventWithParticipants Convert(CalendarEventWithParticipants eventWithParticipants)
+	private static AddCalendarEventData Convert(CreateEventRequest request, Guid userId)
 	{
-		return new EventWithParticipants(new EventInfo(eventWithParticipants.Event.Id,
-				eventWithParticipants.Event.CalendarId,
-				eventWithParticipants.Event.Name,
-				eventWithParticipants.Event.Description,
-				(CalendarEventType)eventWithParticipants.Event.EventType,
-				eventWithParticipants.Event.Place,
-				eventWithParticipants.Event.StartTimeUtc,
-				eventWithParticipants.Event.EndTimeUtc,
-				eventWithParticipants.Event.IsPrivate,
-				eventWithParticipants.Event.CreationTimeUtc),
-			eventWithParticipants.Participants
-			   .Select(x =>
-					new EventParticipantUser(x.CalendarParticipant!.User!.Name,
-						x.CalendarParticipant!.User!.Email,
-						x.Id,
-						x.CalendarParticipantId,
-						x.CalendarParticipant!.User!.Id,
-						x.EventId,
-						x.CalendarParticipant!.CalendarId,
-						(EventParticipantRole)x.Role))
-			   .ToList(),
-			eventWithParticipants.CanUserEditEvent,
-			eventWithParticipants.CanUserEditParticipants);
+		return new AddCalendarEventData(userId,
+			request.CalendarId,
+			request.Name,
+			request.Description,
+			(EventType)request.Type,
+			request.Place,
+			request.StartTime,
+			request.EndTime,
+			request.IsPrivate);
+	}
+
+	private static ChangeCalendarEventData Convert(EditEventRequest request, Guid userId)
+	{
+		return new ChangeCalendarEventData(userId,
+			request.EventId,
+			request.Name,
+			request.Description,
+			(EventType)request.Type,
+			request.Place,
+			request.StartTime,
+			request.EndTime,
+			request.IsPrivate);
+	}
+
+	private static AddEventParticipantsData Convert(AddEventParticipantsRequest request, Guid userId)
+	{
+		return new AddEventParticipantsData(userId,
+			request.EventId,
+			request.Participants.Select(x => 
+					new AddEventParticipantData(x.ParticipantId,
+						(CalendarEventParticipantRole)x.Role))
+			   .ToList());
+	}
+
+	private static ChangeEventParticipantsData Convert(ChangeEventParticipantsRequest request, Guid userId)
+	{
+		return new ChangeEventParticipantsData(userId,
+			request.EventId,
+			request.Participants.Select(x =>
+					new ChangeEventParticipantData(x.EventParticipantId, (CalendarEventParticipantRole?)x.Role, x.Delete))
+			   .ToList());
 	}
 }

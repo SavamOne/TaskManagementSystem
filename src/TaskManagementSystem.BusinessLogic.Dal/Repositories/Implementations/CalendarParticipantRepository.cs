@@ -55,7 +55,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 		await GetConnection().ExecuteAsync(insertSql, calendarParticipants.Select(x => x.ToDalCalendarParticipant()).ToArray());
 	}
 
-	public async Task UpdateAllAsync(ICollection<CalendarParticipant> calendarParticipants)
+	public async Task UpdateAllAsync(ISet<CalendarParticipant> calendarParticipants)
 	{
 		calendarParticipants.AssertNotNull();
 		foreach (CalendarParticipant calendarParticipant in calendarParticipants)

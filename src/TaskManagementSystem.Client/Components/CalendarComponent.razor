@@ -1,9 +1,9 @@
-<EventEditFormModal @ref="EditEventModal" CalendarId="CalendarId" />
+<EventEditFormModal @ref="EditEventModal" CalendarId="CalendarId" OnEventChanged="async () => { await DateRangeViewModel!.GetEventsAsync(); StateHasChanged(); }" />
 
 <!-- Calendar -->
 <div class="calendar">
     <div class="d-flex position-fixed">
-        <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.CreateAsync">
+        <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.Create">
             <span class="oi oi-plus"></span>
         </button>
         <button class="btn btn-outline-primary m-lg-1" @onclick="RemoveMonth">
@@ -30,22 +30,18 @@
             }
         </div>
         <div class="days">
-            @{
-                foreach (DayViewModel dayNum in DateRangeViewModel!.Days)
-                {
-                    <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
-                        <div class="day-container">
-                            <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay ? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
-                            @{
-                                foreach (EventViewModel ev in dayNum.Events)
-                                {
-                                    <div class="event all-day end bg-success cursor-pointer" @onclick="async () => await EditEventModal.EditAsync(ev.Id)">@ev.Name</div>
-                                }
-                            }
-                        </div>
-                    </div>
-                }
-            }
+            @foreach (DayViewModel dayNum in DateRangeViewModel!.Days)
+              {
+                  <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
+                      <div class="day-container">
+                          <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay ? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
+                              @foreach (EventViewModel ev in dayNum.Events)
+                              {
+                                  <div class="event all-day end bg-success cursor-pointer" @onclick="async () => await EditEventModal.EditAsync(ev.Id)">@ev.Name</div>
+                              }
+                      </div>
+                  </div>
+              }
         </div>
     }
     else

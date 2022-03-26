@@ -77,6 +77,11 @@ public class CalendarEventService : ICalendarEventService
 
         var events = await eventRepository.GetStandardEventsInRange(data.CalendarId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
 
+        if (participant.IsAdminOrCreator())
+        {
+            return events;
+        }
+        
         foreach (CalendarEvent @event in events.Where(x => x.IsPrivate))
         {
             if (!await eventParticipantRepository.ContainsCalendarParticipantInEvent(participant.Id, @event.Id))
@@ -90,21 +95,40 @@ public class CalendarEventService : ICalendarEventService
 
     public async Task DeleteEventAsync(DeleteEventData data)
     {
-        CalendarEventParticipant? participant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
-        if (participant is null)
+        CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
+       
+        if (eventParticipant is not null)
         {
-            throw new BusinessLogicException("События и/или Участника события с таким Id не существует или этот пользователь не участвует в этом событии.");
+            if (!eventParticipant.IsCreator() && !eventParticipant.CalendarParticipant.IsAdminOrCreator())
+            {
+                throw new BusinessLogicException("Только создатель события или администратор календаря может удалять события.");
+            }
         }
-        
-        if (!participant.IsCreator() && !participant.CalendarParticipant.IsAdminOrCreator())
+        else
         {
-            throw new BusinessLogicException("Только создатель события или администратор календаря может удалять события.");
+            //TODO: Оптимизировать
+            CalendarEvent? @event = await eventRepository.GetById(data.EventId);
+            if (@event is null)
+            {
+                throw new BusinessLogicException("События с таким Id не существует");
+            }
+            
+            CalendarParticipant? calendarParticipant = await calendarParticipantRepository.GetByUserAndCalendarId(data.UserId, @event.CalendarId);
+            if (calendarParticipant is null)
+            {
+                throw new BusinessLogicException("Этого пользователя нет в календаре");
+            }
+
+            if (!calendarParticipant.IsAdminOrCreator())
+            {
+                throw new BusinessLogicException("Только создатель события или администратор календаря может удалять события.");
+            }
         }
-        
+
         await eventRepository.DeleteByIdAsync(data.EventId);
     }
     
-    public async Task<CalendarEvent> EditEventAsync(ChangeCalendarEventData data)
+    public async Task<CalendarEvent> ChangeEventAsync(ChangeCalendarEventData data)
     {
         CalendarEventParticipant? participant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
         if (participant is null)
@@ -170,13 +194,13 @@ public class CalendarEventService : ICalendarEventService
     
     public async Task<CalendarEventWithParticipants> ChangeEventParticipants(ChangeEventParticipantsData data)
     {
-        if(!data.Participants.All(x => x.Role?.IsParticipantOrInform() ?? x.Delete))
+        if(!data.EventParticipants.All(x => x.Role?.IsParticipantOrInform() ?? x.Delete))
         {
             //TODO: Выводить конкретный список некорректных ролей
             throw new BusinessLogicException("Обнаружена некорректная роль");
         }
         
-        CalendarEventWithParticipants info = await GetEventInfo(data.UserId, data.UserId);
+        CalendarEventWithParticipants info = await GetEventInfo(data.UserId, data.EventId);
         if (!info.CanUserEditParticipants)
         {
             throw new BusinessLogicException("Изменять участников может только создатель или участник события.");
@@ -185,7 +209,7 @@ public class CalendarEventService : ICalendarEventService
         var toChange = new List<CalendarEventParticipant>();
         var toDelete = new HashSet<Guid>();
         
-        foreach (var changeEventParticipantData in data.Participants)
+        foreach (ChangeEventParticipantData changeEventParticipantData in data.EventParticipants)
         {
             CalendarEventParticipant? participant = info.Participants
                .FirstOrDefault(x => x.Id == changeEventParticipantData.EventParticipantId);
@@ -225,22 +249,17 @@ public class CalendarEventService : ICalendarEventService
     
     public async Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data)
     {
-        CalendarEventWithParticipants eventsInfo = await GetEventInfo(data.UserId, data.EventId);
-
-        CalendarParticipant? calendarParticipant = await calendarParticipantRepository.GetByUserAndCalendarId(data.UserId, eventsInfo.Event.CalendarId);
-        if (calendarParticipant == null)
-        {
-            throw new BusinessLogicException("Этого пользователя нет в календаре.");
-        }
+        CalendarEventWithParticipants eventInfo = await GetEventInfo(data.UserId, data.EventId);
 
         CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
-        if (!eventsInfo.Event.IsPrivate || eventParticipant != null || calendarParticipant.IsAdminOrCreator())
+        // HACK: CanUserDeleteEvent == Админ или Создатель календаря
+        if (!eventInfo.Event.IsPrivate || eventParticipant != null || eventInfo.CanUserDeleteEvent)
         {
-            return eventsInfo;
+            return eventInfo;
         }
         
-        HideEventInfo(eventsInfo.Event);
-        return new CalendarEventWithParticipants(eventsInfo.Event, Enumerable.Empty<CalendarEventParticipant>(), eventsInfo.CanUserEditEvent, eventsInfo.CanUserEditParticipants);
+        HideEventInfo(eventInfo.Event);
+        return new CalendarEventWithParticipants(eventInfo.Event, Enumerable.Empty<CalendarEventParticipant>(), eventInfo.CanUserEditEvent, eventInfo.CanUserEditParticipants, eventInfo.CanUserDeleteEvent);
     }
 
     private static void HideEventInfo(CalendarEvent @event)
@@ -259,12 +278,19 @@ public class CalendarEventService : ICalendarEventService
             throw new BusinessLogicException("События c таким Id не существует");
         }
 
+        CalendarParticipant? calendarParticipant = await calendarParticipantRepository.GetByUserAndCalendarId(userId, @event.CalendarId);
+        if (calendarParticipant is null)
+        {
+            throw new BusinessLogicException("Этого пользователя нет в календаре");
+        }
+
         var participants = await eventParticipantRepository.GetByEventId(eventId);
 
         CalendarEventParticipant? userIdParticipant = participants.FirstOrDefault(x => x.CalendarParticipant!.User!.Id == userId);
         bool canUserEditEvent = userIdParticipant?.IsCreator() ?? false;
         bool canUserEditParticipants = userIdParticipant?.IsParticipantOrCreator() ?? false;
+        bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
         
-        return new CalendarEventWithParticipants(@event, participants, canUserEditEvent, canUserEditParticipants);
+        return new CalendarEventWithParticipants(@event, participants, canUserEditEvent, canUserEditParticipants, canUserDeleteEvent);
     }
 }

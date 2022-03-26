@@ -28,6 +28,8 @@ public class DateRangeViewModel
 
     public async Task GetEventsAsync()
     {
+        ClearEvents();
+        
         var result = await serverProxy.GetEventsInPeriod(new GetEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
         Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
@@ -37,7 +39,7 @@ public class DateRangeViewModel
             toastService.AddSystemErrorToast(result.ErrorDescription!);
         }
 
-        var events = result.Value!.Select(x => new EventViewModel(x, false, false)).ToList();
+        var events = result.Value!.Select(x => new EventViewModel(x, false, false, false)).ToList();
 
         foreach (DayViewModel dayViewModel in Days)
         {
@@ -46,7 +48,7 @@ public class DateRangeViewModel
         }
     }
 
-    public void ClearEvents()
+    private void ClearEvents()
     {
         foreach (DayViewModel dayViewModel in Days)
         {

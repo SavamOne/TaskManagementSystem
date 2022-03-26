@@ -4,16 +4,16 @@ namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
 public class ChangeEventParticipantsData
 {
-	public ChangeEventParticipantsData(Guid userId, Guid eventId, ICollection<ChangeEventParticipantData> participants)
+	public ChangeEventParticipantsData(Guid userId, Guid eventId, ICollection<ChangeEventParticipantData> eventParticipants)
 	{
 		UserId = userId;
 		EventId = eventId;
-		Participants = participants;
+		EventParticipants = eventParticipants.AssertNotNull();
 	}
 
 	public Guid UserId { get;  }
 
 	public Guid EventId { get; }
 	
-	public ICollection<ChangeEventParticipantData> Participants { get; }
+	public ICollection<ChangeEventParticipantData> EventParticipants { get; }
 } 

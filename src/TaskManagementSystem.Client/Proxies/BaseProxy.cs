@@ -80,12 +80,12 @@ public abstract class BaseProxy
 
             if (response.IsSuccessStatusCode)
             {
-                TResponse? value = await response.Content.ReadFromJsonAsync<TResponse>();
+                TResponse? value = await response.Content.ReadFromJsonAsync<TResponse?>(ApplicationJsonOptions.Options);
                 return Result<TResponse>.Success(value!);
             }
             if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject>();
+                ErrorObject? error = await response.Content.ReadFromJsonAsync<ErrorObject?>(ApplicationJsonOptions.Options);
                 return Result<TResponse>.Error(error!.Error);
             }
             if (response.StatusCode == HttpStatusCode.InternalServerError)

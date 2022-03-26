@@ -171,10 +171,10 @@ public class ServerProxy : BaseProxy
         return result;
     }
 
-    public async Task<Result<EventInfo>> DeleteEvent(DeleteEventRequest request)
+    public async Task<Result<bool>> DeleteEvent(DeleteEventRequest request)
     {
         var result =
-            await SendRequestAsync<DeleteEventRequest, EventInfo>(new Uri("Api/V1/CalendarEvent/Delete", UriKind.Relative), HttpMethod.Post, request);
+            await SendRequestAsync<DeleteEventRequest, bool>(new Uri("Api/V1/CalendarEvent/Delete", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }
@@ -183,6 +183,14 @@ public class ServerProxy : BaseProxy
     {
         var result =
             await SendRequestAsync<AddEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/AddParticipants", UriKind.Relative), HttpMethod.Post, request);
+
+        return result;
+    }
+    
+    public async Task<Result<EventWithParticipants>> ChangeEventParticipants(ChangeEventParticipantsRequest request)
+    {
+        var result =
+            await SendRequestAsync<ChangeEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeParticipants", UriKind.Relative), HttpMethod.Post, request);
 
         return result;
     }

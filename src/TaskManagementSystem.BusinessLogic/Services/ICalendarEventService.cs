@@ -9,7 +9,7 @@ public interface ICalendarEventService
 
     Task DeleteEventAsync(DeleteEventData data);
 
-    Task<CalendarEvent> EditEventAsync(ChangeCalendarEventData data);
+    Task<CalendarEvent> ChangeEventAsync(ChangeCalendarEventData data);
 
     Task<CalendarEventWithParticipants> AddEventParticipant(AddEventParticipantsData data);
     

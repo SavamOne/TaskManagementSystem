@@ -5,7 +5,7 @@ namespace TaskManagementSystem.Client.ViewModels;
 public class EventParticipantViewModel
 {
 	private readonly EventParticipantUser eventParticipantUser;
-	
+
 	private EventParticipantRole role;
 
 	public EventParticipantViewModel(EventParticipantUser eventParticipantUser)
@@ -39,13 +39,15 @@ public class EventParticipantViewModel
 		}
 	}
 
-	// public ChangeCalendarParticipantRoleRequest GetChangeRoleRequest()
-	// {
-	// 	if (!RoleChanged)
-	// 	{
-	// 		throw new Exception();
-	// 	}
-	//
-	// 	return new ChangeCalendarParticipantRoleRequest(ParticipantId, Role);
-	// }
+	public ChangeEventParticipantRequest GetChangeRequest()
+	{
+		if (!RoleChanged)
+		{
+			throw new Exception();
+		}
+
+		return new ChangeEventParticipantRequest(EventParticipantId,
+			Role != EventParticipantRole.NotSet ? Role : null,
+			Role == EventParticipantRole.NotSet);
+	}
 }

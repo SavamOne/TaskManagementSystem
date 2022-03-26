@@ -14,8 +14,15 @@
                     @Body
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" type="submit">Подтвердить</button>
-                </div>
+                    @if (Footer != null)
+                    {
+                        @Footer
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary" type="submit">Подтвердить</button>
+                    }
+                    </div>
             </EditForm>
         </div>
     </div>

@@ -38,7 +38,9 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 		const string getSql = "SELECT * FROM event_participant ep "
 							+ "INNER JOIN calendar_participant cp on cp.id = ep.calendar_participant_id "
 							+ "INNER JOIN \"user\" u on cp.user_id = u.id "
-							+ "WHERE cp.user_id = @UserId AND ep.event_id = @EventId";
+							+ "WHERE cp.user_id = @UserId AND ep.event_id = @EventId "
+							+ "AND ep.is_deleted = false and cp.is_deleted = false AND u.is_deleted = false";
+		
 
 		DalEventParticipant? participant = ( await GetConnection()
 		   .QueryAsync<DalEventParticipant, DalCalendarParticipant, DalUser, DalEventParticipant>(getSql,
@@ -62,7 +64,8 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 		const string getSql = "SELECT * FROM event_participant ep "
 							+ "INNER JOIN calendar_participant cp on cp.id = ep.calendar_participant_id "
 							+ "INNER JOIN \"user\" u on cp.user_id = u.id "
-							+ "WHERE ep.event_id = @EventId";
+							+ "WHERE ep.event_id = @EventId "
+							+ "AND ep.is_deleted = false and cp.is_deleted = false AND u.is_deleted = false";
 
 		var dalParticipants = await GetConnection()
 		   .QueryAsync<DalEventParticipant, DalCalendarParticipant, DalUser, DalEventParticipant>(getSql,
