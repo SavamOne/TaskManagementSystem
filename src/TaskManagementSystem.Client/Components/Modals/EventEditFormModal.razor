@@ -54,7 +54,7 @@
                     <input type="text" class="form-control" @bind="filter" disabled="@(!CanUserChangeParticipants)">
                 </div>
                 <div class="col col-sm-2">
-                    <button type="button" class="btn btn-outline-primary w-100" @onclick="FilterParticipants" disabled="@(!CanUserChangeParticipants)">
+                    <button type="button" class="btn btn-outline-primary w-100" @onclick="FilterParticipantsAsync" disabled="@(!CanUserChangeParticipants)">
                         <span class="oi oi-magnifying-glass"></span>
                     </button>
                 </div>
@@ -193,12 +193,11 @@
             if (eventInfo is not null)
             {
                 Event = new EventViewModel(eventInfo, true, true, false);
+                isEditMode = true;
             }
-            
-            isEditMode = true;
         }
 
-        EventWithParticipants? eventWithParticipants;
+        EventWithParticipants? eventWithParticipants = null;
         if (CanUserChangeParticipants && participantsChanged)
         {
             eventWithParticipants = await AddParticipantsAsync();
@@ -206,7 +205,7 @@
 
             participantsChanged = false;
         }
-        else
+        else if(Event.Id != default)
         {
             eventWithParticipants = await GetEventInfoAsync(Event.Id);
         }
@@ -243,7 +242,7 @@
             return null;
         }
 
-        ToastService!.AddSystemToast(Modal.Title!, "Успешно изменены участники");
+        ToastService!.AddSystemToast(Modal.Title!, "Успешно изменены участники события");
         
         return changeResult.Value;
     }
@@ -272,7 +271,7 @@
             return null;
         }
         
-        ToastService!.AddSystemToast(Modal.Title!, "Успешно добавлены участники");
+        ToastService!.AddSystemToast(Modal.Title!, "Успешно добавлены участники события");
 
         return addResult.Value;
     }
@@ -318,7 +317,7 @@
         return result.Value;
     }
 
-    private async Task FilterParticipants()
+    private async Task FilterParticipantsAsync()
     {
         var result = await ServerProxy!.GetCalendarParticipantsByFilter(new GetCalendarParticipantsByFilterRequest(CalendarId, filter));
 

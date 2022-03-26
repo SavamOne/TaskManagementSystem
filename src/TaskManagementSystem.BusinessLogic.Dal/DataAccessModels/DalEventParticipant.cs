@@ -21,4 +21,6 @@ public class DalEventParticipant
 
     [ForeignKey("CalendarParticipantId")]
     public DalCalendarParticipant? CalendarParticipant { get; set; }
+    
+    public bool IsDeleted { get; set; }
 }

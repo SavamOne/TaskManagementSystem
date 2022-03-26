@@ -30,7 +30,7 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 
 	public async Task<bool> ContainsCalendarParticipantInEvent(Guid calendarParticipant, Guid eventId)
 	{
-		return await AnyAsync(x => x.CalendarParticipantId == calendarParticipant && x.EventId == eventId);
+		return await AnyAsync(x => x.CalendarParticipantId == calendarParticipant && x.EventId == eventId && !x.IsDeleted);
 	}
 
 	public async Task<CalendarEventParticipant?> GetByUserAndEventId(Guid userId, Guid eventId)

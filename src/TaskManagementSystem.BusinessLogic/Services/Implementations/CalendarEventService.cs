@@ -44,7 +44,7 @@ public class CalendarEventService : ICalendarEventService
             throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
         }
 
-        if (data.StartTime.ToLocalTime() - DateTimeOffset.Now > TimeSpan.FromDays(1))
+        if (DateTimeOffset.Now - data.StartTime.ToLocalTime() > TimeSpan.FromDays(1))
         {
             throw new BusinessLogicException("Нельзя создавать события, начавшиеся более 24 часов назад");
         }
@@ -149,6 +149,16 @@ public class CalendarEventService : ICalendarEventService
         @event.IsPrivate = data.IsPrivate ?? @event.IsPrivate;
         @event.StartTimeUtc = data.StartTime?.UtcDateTime ?? @event.StartTimeUtc;
         @event.EndTimeUtc = data.EndTime?.UtcDateTime ?? @event.EndTimeUtc;
+        
+        if (@event.StartTimeUtc >= @event.EndTimeUtc)
+        {
+            throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
+        }
+
+        if (DateTime.UtcNow - @event.StartTimeUtc > TimeSpan.FromDays(1))
+        {
+            throw new BusinessLogicException("Нельзя создавать события, начавшиеся более 24 часов назад");
+        }
 
         await eventRepository.UpdateAsync(@event);
 
