@@ -5,11 +5,11 @@ namespace TaskManagementSystem.Client.Pages;
 
 public partial class Profile
 {
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
+	[Inject]
+	public ServerProxy? ServerProxy { get; set; }
 
-    private async Task Logout()
-    {
-        await ServerProxy!.LogoutAsync();
-    }
+	private async Task Logout()
+	{
+		await ServerProxy!.LogoutAsync();
+	}
 }

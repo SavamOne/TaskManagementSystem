@@ -6,14 +6,14 @@ namespace TaskManagementSystem.BusinessLogic.Helpers;
 
 public static class PasswordHelper
 {
-    private static readonly Encoding PasswordEncoding = Encoding.ASCII;
+	private static readonly Encoding PasswordEncoding = Encoding.ASCII;
 
-    public static byte[] GetHash(string password)
-    {
-        password.AssertNotNullOrWhiteSpace();
+	public static byte[] GetHash(string password)
+	{
+		password.AssertNotNullOrWhiteSpace();
 
-        SHA512 hashAlgorithm = new SHA512CryptoServiceProvider();
-        byte[] passwordBytes = PasswordEncoding.GetBytes(password);
-        return hashAlgorithm.ComputeHash(passwordBytes);
-    }
+		using SHA512 hashAlgorithm = new SHA512CryptoServiceProvider();
+		byte[] passwordBytes = PasswordEncoding.GetBytes(password);
+		return hashAlgorithm.ComputeHash(passwordBytes);
+	}
 }

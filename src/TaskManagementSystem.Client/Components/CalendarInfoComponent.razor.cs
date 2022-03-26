@@ -10,237 +10,237 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarInfoComponent
 {
-    private readonly IEnumerable<CalendarParticipantRole> roles =
-        Enum.GetValues<CalendarParticipantRole>()
-            .Where(x => x != CalendarParticipantRole.Creator)
-            .ToList();
+	private readonly IEnumerable<CalendarParticipantRole> roles =
+		Enum.GetValues<CalendarParticipantRole>()
+		   .Where(x => x != CalendarParticipantRole.Creator)
+		   .ToList();
 
-    private CalendarViewModel calendar = new();
-    private CalendarViewModel calendarForEdit = new();
+	private CalendarViewModel calendar = new();
+	private CalendarViewModel calendarForEdit = new();
 
-    private bool changed, isNameEditing, isDescriptionEditing;
+	private bool changed, isNameEditing, isDescriptionEditing;
 
-    private string filter = string.Empty;
-    private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
-    private ICollection<UserInfoWithParticipantRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithParticipantRoleViewModel>();
+	private string filter = string.Empty;
+	private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
+	private ICollection<UserInfoWithParticipantRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithParticipantRoleViewModel>();
 
-    [Parameter]
-    public Guid CalendarId { get; set; }
+	[Parameter]
+	public Guid CalendarId { get; set; }
 
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
+	[Inject]
+	public ServerProxy? ServerProxy { get; set; }
 
-    [Inject]
-    public IToastService? ToastService { get; set; }
+	[Inject]
+	public IToastService? ToastService { get; set; }
 
-    [Inject]
-    public IJSInteropWrapper? JsInteropWrapper { get; set; }
+	[Inject]
+	public IJSInteropWrapper? JsInteropWrapper { get; set; }
 
-    private bool Changed
-    {
-        get => changed;
-        set
-        {
-            changed = value;
-            StateHasChanged();
-        }
-    }
+	private bool Changed
+	{
+		get => changed;
+		set
+		{
+			changed = value;
+			StateHasChanged();
+		}
+	}
 
-    private string ChangedState => Changed ? string.Empty : "disabled";
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        var result = await ServerProxy!.GetCalendarInfo(new GetCalendarInfoRequest(CalendarId));
-
-        if (!result.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-            return;
-        }
-
-        calendar = new CalendarViewModel(result.Value!.Calendar);
-        calendarForEdit = new CalendarViewModel(result.Value!.Calendar);
-
-        participants = result.Value.Participants
-            .Select(x => new CalendarParticipantViewModel(x))
-            .ToDictionary(x => x.UserId);
-    }
-
-    private async Task GetUsersByFilter()
-    {
-        possibleParticipants.ClearIfPossible();
-
-        var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter));
-
-        if (!result.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-            return;
-        }
-
-        if (!result.Value!.Any())
-        {
-            ToastService!.AddSystemToast("Календарь", "Не найден список участников по запросу");
-            return;
-        }
-
-        possibleParticipants = result.Value!
-            .Where(x => !participants.ContainsKey(x.Id))
-            .Select(x => new UserInfoWithParticipantRoleViewModel(x))
-            .OrderBy(x => x.Role)
-            .ThenBy(x => x.Name)
-            .ToList();
-    }
-
-    private async Task SaveChanges()
-    {
-        if (!Changed)
-        {
-            return;
-        }
-
-        await TryEditCalendarInfo();
-        await TryAddToParticipants();
-        await TryChangeRoleOrDelete();
-
-        Changed = false;
-    }
-
-    private async Task<bool> TryChangeRoleOrDelete()
-    {
-        var participantsWithChangedRole = participants.Values
-            .Where(x => x.RoleChanged)
-            .ToList();
-
-        if (!participantsWithChangedRole.Any())
-        {
-            return false;
-        }
-
-        CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
-        newParticipantsList = await TryDelete(participantsWithChangedRole) ?? newParticipantsList;
+	private string ChangedState => Changed ? string.Empty : "disabled";
 
 
-        if (newParticipantsList is null)
-        {
-            return false;
-        }
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await ServerProxy!.GetCalendarInfo(new GetCalendarInfoRequest(CalendarId));
 
-        participants = newParticipantsList.Participants
-            .Select(x => new CalendarParticipantViewModel(x))
-            .ToDictionary(x => x.UserId);
+		if (!result.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+			return;
+		}
 
-        return true;
-    }
+		calendar = new CalendarViewModel(result.Value!.Calendar);
+		calendarForEdit = new CalendarViewModel(result.Value!.Calendar);
 
-    private async Task<CalendarWithParticipantUsers?> TryDelete(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
-    {
-        var toDeleteIds = participantsWithChangedRole
-            .Where(x => x.Role == CalendarParticipantRole.NotSet)
-            .Select(x => x.ParticipantId)
-            .ToList();
+		participants = result.Value.Participants
+		   .Select(x => new CalendarParticipantViewModel(x))
+		   .ToDictionary(x => x.UserId);
+	}
 
-        if (!toDeleteIds.Any())
-        {
-            return null;
-        }
+	private async Task GetUsersByFilter()
+	{
+		possibleParticipants.ClearIfPossible();
 
-        var deleteResult = await ServerProxy!.DeleteCalendarParticipants(new DeleteParticipantsRequest(CalendarId, toDeleteIds));
+		var result = await ServerProxy!.GetUsersByFilterAsync(new GetUserInfosByFilterRequest(filter));
 
-        if (!deleteResult.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(deleteResult.ErrorDescription!);
-            return null;
-        }
+		if (!result.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+			return;
+		}
 
-        ToastService!.AddSystemToast("Календарь", "Пользователи успешно удалены");
-        return deleteResult.Value;
-    }
+		if (!result.Value!.Any())
+		{
+			ToastService!.AddSystemToast("Календарь", "Не найден список участников по запросу");
+			return;
+		}
 
-    private async Task<CalendarWithParticipantUsers?> TryChangeRole(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
-    {
-        var toChangeRoleRequests = participantsWithChangedRole
-            .Where(x => x.Role != CalendarParticipantRole.NotSet)
-            .Select(x => x.GetChangeRoleRequest())
-            .ToList();
+		possibleParticipants = result.Value!
+		   .Where(x => !participants.ContainsKey(x.Id))
+		   .Select(x => new UserInfoWithParticipantRoleViewModel(x))
+		   .OrderBy(x => x.Role)
+		   .ThenBy(x => x.Name)
+		   .ToList();
+	}
 
-        if (!toChangeRoleRequests.Any())
-        {
-            return null;
-        }
+	private async Task SaveChanges()
+	{
+		if (!Changed)
+		{
+			return;
+		}
 
-        var changeRoleResult = await ServerProxy!.ChangeParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
+		await TryEditCalendarInfo();
+		await TryAddToParticipants();
+		await TryChangeRoleOrDelete();
 
-        if (!changeRoleResult.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(changeRoleResult.ErrorDescription!);
-            return null;
-        }
+		Changed = false;
+	}
 
-        ToastService!.AddSystemToast("Календарь", "Роли успешно изменены");
-        return changeRoleResult.Value;
-    }
+	private async Task<bool> TryChangeRoleOrDelete()
+	{
+		var participantsWithChangedRole = participants.Values
+		   .Where(x => x.RoleChanged)
+		   .ToList();
 
-    private async Task TryAddToParticipants()
-    {
-        var toAddRequests = possibleParticipants
-            .Where(x => x.Role != CalendarParticipantRole.NotSet)
-            .Select(x => x.GetAddParticipantRequest())
-            .ToList();
+		if (!participantsWithChangedRole.Any())
+		{
+			return false;
+		}
 
-        if (!toAddRequests.Any())
-        {
-            return;
-        }
+		CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
+		newParticipantsList = await TryDelete(participantsWithChangedRole) ?? newParticipantsList;
 
-        var addResult = await ServerProxy!.AddCalendarParticipants(new AddCalendarParticipantsRequest(CalendarId, toAddRequests));
 
-        if (!addResult.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(addResult.ErrorDescription!);
-            return;
-        }
+		if (newParticipantsList is null)
+		{
+			return false;
+		}
 
-        participants = addResult.Value!.Participants
-            .Select(x => new CalendarParticipantViewModel(x))
-            .ToDictionary(x => x.UserId);
+		participants = newParticipantsList.Participants
+		   .Select(x => new CalendarParticipantViewModel(x))
+		   .ToDictionary(x => x.UserId);
 
-        filter = string.Empty;
-        possibleParticipants.Clear();
+		return true;
+	}
 
-        ToastService!.AddSystemToast("Календарь", "Новые участники календаря добавлены");
-    }
+	private async Task<CalendarWithParticipantUsers?> TryDelete(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
+	{
+		var toDeleteIds = participantsWithChangedRole
+		   .Where(x => x.Role == CalendarParticipantRole.NotSet)
+		   .Select(x => x.ParticipantId)
+		   .ToList();
 
-    private async Task TryEditCalendarInfo()
-    {
-        if (calendar.Equals(calendarForEdit))
-        {
-            return;
-        }
+		if (!toDeleteIds.Any())
+		{
+			return null;
+		}
 
-        var result = await ServerProxy!.EditCalendar(calendarForEdit.GetEditRequest());
+		var deleteResult = await ServerProxy!.DeleteCalendarParticipants(new DeleteParticipantsRequest(CalendarId, toDeleteIds));
 
-        if (!result.IsSuccess)
-        {
-            ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-            return;
-        }
+		if (!deleteResult.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(deleteResult.ErrorDescription!);
+			return null;
+		}
 
-        calendar = new CalendarViewModel(result.Value!);
+		ToastService!.AddSystemToast("Календарь", "Пользователи успешно удалены");
+		return deleteResult.Value;
+	}
 
-        ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
-    }
+	private async Task<CalendarWithParticipantUsers?> TryChangeRole(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
+	{
+		var toChangeRoleRequests = participantsWithChangedRole
+		   .Where(x => x.Role != CalendarParticipantRole.NotSet)
+		   .Select(x => x.GetChangeRoleRequest())
+		   .ToList();
 
-    private void ChangeCalendarName(string newName)
-    {
-        calendarForEdit.Name = newName;
-        Changed |= !calendarForEdit.Equals(calendar);
-    }
+		if (!toChangeRoleRequests.Any())
+		{
+			return null;
+		}
 
-    private void ChangeCalendarDescription(string newDescription)
-    {
-        calendarForEdit.Description = newDescription;
-        Changed |= !calendarForEdit.Equals(calendar);
-    }
+		var changeRoleResult = await ServerProxy!.ChangeParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
+
+		if (!changeRoleResult.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(changeRoleResult.ErrorDescription!);
+			return null;
+		}
+
+		ToastService!.AddSystemToast("Календарь", "Роли успешно изменены");
+		return changeRoleResult.Value;
+	}
+
+	private async Task TryAddToParticipants()
+	{
+		var toAddRequests = possibleParticipants
+		   .Where(x => x.Role != CalendarParticipantRole.NotSet)
+		   .Select(x => x.GetAddParticipantRequest())
+		   .ToList();
+
+		if (!toAddRequests.Any())
+		{
+			return;
+		}
+
+		var addResult = await ServerProxy!.AddCalendarParticipants(new AddCalendarParticipantsRequest(CalendarId, toAddRequests));
+
+		if (!addResult.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(addResult.ErrorDescription!);
+			return;
+		}
+
+		participants = addResult.Value!.Participants
+		   .Select(x => new CalendarParticipantViewModel(x))
+		   .ToDictionary(x => x.UserId);
+
+		filter = string.Empty;
+		possibleParticipants.Clear();
+
+		ToastService!.AddSystemToast("Календарь", "Новые участники календаря добавлены");
+	}
+
+	private async Task TryEditCalendarInfo()
+	{
+		if (calendar.Equals(calendarForEdit))
+		{
+			return;
+		}
+
+		var result = await ServerProxy!.EditCalendar(calendarForEdit.GetEditRequest());
+
+		if (!result.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+			return;
+		}
+
+		calendar = new CalendarViewModel(result.Value!);
+
+		ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
+	}
+
+	private void ChangeCalendarName(string newName)
+	{
+		calendarForEdit.Name = newName;
+		Changed |= !calendarForEdit.Equals(calendar);
+	}
+
+	private void ChangeCalendarDescription(string newDescription)
+	{
+		calendarForEdit.Description = newDescription;
+		Changed |= !calendarForEdit.Equals(calendar);
+	}
 }

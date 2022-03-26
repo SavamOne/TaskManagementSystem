@@ -2,17 +2,17 @@ using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
-public class UserInfoWithEventRoleViewModel  : UserInfoViewModel
+public class UserInfoWithEventRoleViewModel : UserInfoViewModel
 {
-	public UserInfoWithEventRoleViewModel(CalendarParticipantUser user) 
+	public UserInfoWithEventRoleViewModel(CalendarParticipantUser user)
 		: base(new UserInfo(user.UserId, user.Username, user.Email, user.RegisterDate))
 	{
 		Role = EventParticipantRole.NotSet;
 		CalendarParticipantId = user.Id;
 	}
-	
+
 	public Guid CalendarParticipantId { get; }
-	
+
 	public EventParticipantRole Role { get; set; }
 
 	public AddEventParticipantRequest GetAddParticipantRequest()

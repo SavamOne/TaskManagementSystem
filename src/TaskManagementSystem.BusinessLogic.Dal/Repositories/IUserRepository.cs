@@ -4,15 +4,15 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Repositories;
 
 public interface IUserRepository
 {
-    Task<User?> GetByIdAsync(Guid id);
+	Task<User?> GetByIdAsync(Guid id);
 
-    Task<ISet<User>> GetByIdsAsync(ISet<Guid> ids);
+	Task<ISet<User>> GetByIdsAsync(ISet<Guid> ids);
 
-    Task<User?> GetByEmailAsync(string email);
+	Task<User?> GetByEmailAsync(string email);
 
-    Task<ISet<User>> GetByFilter(string filter, int limit);
+	Task<ISet<User>> GetByFilter(string filter, int limit);
 
-    Task UpdateAsync(User user);
+	Task UpdateAsync(User user);
 
-    Task InsertAsync(User user);
+	Task InsertAsync(User user);
 }

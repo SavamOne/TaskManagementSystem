@@ -4,13 +4,13 @@ namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
 public class ChangeParticipantRoleData
 {
-    public ChangeParticipantRoleData(Guid participantId, CalendarRole role)
-    {
-        ParticipantId = participantId;
-        Role = role;
-    }
+	public ChangeParticipantRoleData(Guid participantId, CalendarRole role)
+	{
+		ParticipantId = participantId;
+		Role = role;
+	}
 
-    public Guid ParticipantId { get; }
+	public Guid ParticipantId { get; }
 
-    public CalendarRole Role { get; }
+	public CalendarRole Role { get; }
 }

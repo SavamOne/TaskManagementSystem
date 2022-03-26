@@ -5,19 +5,19 @@ namespace TaskManagementSystem.BusinessLogic.Services;
 
 public interface ICalendarService
 {
-    Task<ICollection<Calendar>> GetUserCalendars(Guid userId);
+	Task<ICollection<Calendar>> GetUserCalendars(Guid userId);
 
-    Task<Calendar> CreateCalendarAsync(CreateCalendarData data);
+	Task<Calendar> CreateCalendarAsync(CreateCalendarData data);
 
-    Task<Calendar> EditCalendarAsync(EditCalendarData data);
+	Task<Calendar> EditCalendarAsync(EditCalendarData data);
 
-    Task<CalendarWithParticipants> AddParticipantsAsync(AddCalendarParticipantsData data);
+	Task<CalendarWithParticipants> AddParticipantsAsync(AddCalendarParticipantsData data);
 
-    Task<CalendarWithParticipants> ChangeParticipantRoleAsync(ChangeParticipantsRoleData data);
+	Task<CalendarWithParticipants> ChangeParticipantRoleAsync(ChangeParticipantsRoleData data);
 
-    Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data);
+	Task<CalendarWithParticipants> DeleteParticipantsAsync(DeleteParticipantsData data);
 
-    Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id);
+	Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id);
 
-    Task<ICollection<CalendarParticipant>> GetParticipantsByFilter(GetCalendarParticipantsByFilter data);
+	Task<ICollection<CalendarParticipant>> GetParticipantsByFilter(GetCalendarParticipantsByFilter data);
 }

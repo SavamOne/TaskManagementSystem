@@ -1,6 +1,3 @@
 namespace TaskManagementSystem.Server.Extensions;
 
-public class MappingExtensions
-{
-	
-}
+public class MappingExtensions {}

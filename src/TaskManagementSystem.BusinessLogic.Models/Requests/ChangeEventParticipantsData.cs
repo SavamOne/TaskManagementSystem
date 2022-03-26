@@ -11,9 +11,9 @@ public class ChangeEventParticipantsData
 		EventParticipants = eventParticipants.AssertNotNull();
 	}
 
-	public Guid UserId { get;  }
+	public Guid UserId { get; }
 
 	public Guid EventId { get; }
-	
+
 	public ICollection<ChangeEventParticipantData> EventParticipants { get; }
-} 
+}

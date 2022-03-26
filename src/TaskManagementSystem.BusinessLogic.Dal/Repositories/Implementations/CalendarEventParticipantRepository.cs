@@ -40,7 +40,7 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 							+ "INNER JOIN \"user\" u on cp.user_id = u.id "
 							+ "WHERE cp.user_id = @UserId AND ep.event_id = @EventId "
 							+ "AND ep.is_deleted = false and cp.is_deleted = false AND u.is_deleted = false";
-		
+
 
 		DalEventParticipant? participant = ( await GetConnection()
 		   .QueryAsync<DalEventParticipant, DalCalendarParticipant, DalUser, DalEventParticipant>(getSql,
@@ -91,7 +91,7 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 			await UpdateAsync(calendarParticipant.ToDalEventParticipant());
 		}
 	}
-	
+
 	public async Task DeleteByIdsAsync(ISet<Guid> eventParticipantsIds)
 	{
 		const string deleteSql = "UPDATE event_participant SET is_deleted = TRUE WHERE id = ANY(@Ids);";

@@ -15,15 +15,14 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 
 	public async Task<ICollection<CalendarParticipant>> GetByCalendarIdAsync(Guid calendarId)
 	{
-		var dalParticipants = await GetConnection().SelectAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(
-			x => x.CalendarId == calendarId && !x.IsDeleted, StandardMap);
+		var dalParticipants = await GetConnection().SelectAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(x => x.CalendarId == calendarId && !x.IsDeleted, StandardMap);
 
 		return dalParticipants.Select(x => x.ToCalendarParticipant()).ToList();
 	}
 	public async Task<CalendarParticipant?> GetByUserAndCalendarId(Guid userId, Guid calendarId)
 	{
-		DalCalendarParticipant? dalParticipant = await GetConnection().FirstOrDefaultAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(
-			x => x.UserId == userId && x.CalendarId == calendarId && !x.IsDeleted, StandardMap);
+		DalCalendarParticipant? dalParticipant = await GetConnection()
+		   .FirstOrDefaultAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(x => x.UserId == userId && x.CalendarId == calendarId && !x.IsDeleted, StandardMap);
 
 		return dalParticipant?.ToCalendarParticipant();
 	}
@@ -32,8 +31,7 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 	{
 		ids.AssertNotNull();
 
-		var dalParticipants =await GetConnection().SelectAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(
-			x => ids.Contains(x.Id) && !x.IsDeleted, StandardMap);
+		var dalParticipants = await GetConnection().SelectAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(x => ids.Contains(x.Id) && !x.IsDeleted, StandardMap);
 
 		return dalParticipants.Select(x => x.ToCalendarParticipant()).ToList();
 	}
@@ -84,8 +82,8 @@ public class CalendarParticipantRepository : Repository<DalCalendarParticipant>,
 							+ "WHERE cp.calendar_id = @CalendarId "
 							+ "and (upper(u.name) like concat(upper(@Filter), '%') "
 							+ "or upper(u.email) like concat(upper(@Filter), '%')) "
-							+ "and cp.is_deleted = false and u.is_deleted = false " 
-							 + "limit @Limit";
+							+ "and cp.is_deleted = false and u.is_deleted = false "
+							+ "limit @Limit";
 
 		var dalParticipants = await GetConnection()
 		   .QueryAsync<DalCalendarParticipant, DalUser, DalCalendarParticipant>(getSql,

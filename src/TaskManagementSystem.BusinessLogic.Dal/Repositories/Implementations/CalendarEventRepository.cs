@@ -7,39 +7,38 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 
 public class CalendarEventRepository : Repository<DalEvent>
 {
-    public CalendarEventRepository(DatabaseConnectionProvider connectionProvider)
-        : base(connectionProvider) {}
+	public CalendarEventRepository(DatabaseConnectionProvider connectionProvider)
+		: base(connectionProvider) {}
 
 
-    public async Task InsertAsync(CalendarEvent calendarEvent)
-    {
-        await InsertAsync(calendarEvent.ToDalEvent());
-    }
+	public async Task InsertAsync(CalendarEvent calendarEvent)
+	{
+		await InsertAsync(calendarEvent.ToDalEvent());
+	}
 
-    public async Task UpdateAsync(CalendarEvent calendarEvent)
-    {
-        await UpdateAsync(calendarEvent.ToDalEvent());
-    }
+	public async Task UpdateAsync(CalendarEvent calendarEvent)
+	{
+		await UpdateAsync(calendarEvent.ToDalEvent());
+	}
 
-    public async Task DeleteByIdAsync(Guid eventId)
-    {
-        await DeleteMultipleAsync(x => x.Id == eventId);
-    }
+	public async Task DeleteByIdAsync(Guid eventId)
+	{
+		await DeleteMultipleAsync(x => x.Id == eventId);
+	}
 
-    public async Task<CalendarEvent?> GetById(Guid eventId)
-    {
-        DalEvent? dalEvent = await FirstOrDefaultAsync(x => x.Id == eventId);
+	public async Task<CalendarEvent?> GetById(Guid eventId)
+	{
+		DalEvent? dalEvent = await FirstOrDefaultAsync(x => x.Id == eventId);
 
-        return dalEvent?.ToCalendarEvent();
-    }
+		return dalEvent?.ToCalendarEvent();
+	}
 
-    public async Task<ICollection<CalendarEvent>> GetStandardEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod)
-    {
-        var dalEvents =  await SelectAsync(x => x.CalendarId == calendarId 
-                                                && x.EndTime >= startPeriod 
-                                                && x.StartTime <= endPeriod);
+	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod)
+	{
+		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId
+											&& x.EndTime >= startPeriod
+											&& x.StartTime <= endPeriod);
 
-        return dalEvents.Select(x=> x.ToCalendarEvent()).ToList();
-    }
-    
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
 }

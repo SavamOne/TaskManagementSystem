@@ -10,10 +10,10 @@ public class GetCalendarParticipantsByFilter
 		UserId = userId;
 		Filter = filter.AssertNotNull();
 	}
-	
+
 	public Guid UserId { get; }
 
 	public Guid CalendarId { get; }
-	
+
 	public string Filter { get; }
 }

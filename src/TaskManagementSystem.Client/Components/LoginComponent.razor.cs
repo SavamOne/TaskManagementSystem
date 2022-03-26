@@ -7,23 +7,23 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class LoginComponent
 {
-    private readonly LoginViewModel loginViewModel = new();
+	private readonly LoginViewModel loginViewModel = new();
 
-    [Inject]
-    public ServerProxy? ServerProxy { get; set; }
+	[Inject]
+	public ServerProxy? ServerProxy { get; set; }
 
-    [Inject]
-    public IToastService? ToastService { get; set; }
+	[Inject]
+	public IToastService? ToastService { get; set; }
 
-    private async void OnLogin()
-    {
-        var result = await ServerProxy!.LoginAsync(loginViewModel.GetData());
+	private async void OnLogin()
+	{
+		var result = await ServerProxy!.LoginAsync(loginViewModel.GetData());
 
-        if (result.IsSuccess)
-        {
-            return;
-        }
+		if (result.IsSuccess)
+		{
+			return;
+		}
 
-        ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-    }
+		ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+	}
 }

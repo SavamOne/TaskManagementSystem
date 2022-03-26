@@ -8,7 +8,7 @@ public static class CollectionExtensions
 		{
 			return;
 		}
-		
+
 		collection.Clear();
 	}
 }

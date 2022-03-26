@@ -8,51 +8,54 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public class DateRangeViewModel
 {
-    private readonly ServerProxy serverProxy;
-    private readonly IToastService toastService;
-    private readonly Guid calendarId;
+	private readonly Guid calendarId;
+	private readonly ServerProxy serverProxy;
+	private readonly IToastService toastService;
 
-    public DateRangeViewModel(ServerProxy serverProxy, IToastService toastService, IEnumerable<DayViewModel> days, Guid calendarId)
-    {
-        this.serverProxy = serverProxy;
-        this.toastService = toastService;
-        this.calendarId = calendarId;
-        Days = days;
-    }
+	public DateRangeViewModel(ServerProxy serverProxy,
+		IToastService toastService,
+		IEnumerable<DayViewModel> days,
+		Guid calendarId)
+	{
+		this.serverProxy = serverProxy;
+		this.toastService = toastService;
+		this.calendarId = calendarId;
+		Days = days;
+	}
 
-    public IEnumerable<DayViewModel> Days { get; }
+	public IEnumerable<DayViewModel> Days { get; }
 
-    public DayViewModel FirstDay => Days.First();
+	public DayViewModel FirstDay => Days.First();
 
-    public DayViewModel LastDay => Days.Last();
+	public DayViewModel LastDay => Days.Last();
 
-    public async Task GetEventsAsync()
-    {
-        ClearEvents();
-        
-        var result = await serverProxy.GetEventsInPeriod(new GetEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
+	public async Task GetEventsAsync()
+	{
+		ClearEvents();
 
-        Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
+		var result = await serverProxy.GetEventsInPeriod(new GetEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
-        if (!result.IsSuccess)
-        {
-            toastService.AddSystemErrorToast(result.ErrorDescription!);
-        }
+		Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
 
-        var events = result.Value!.Select(x => new EventViewModel(x, false, false, false)).ToList();
+		if (!result.IsSuccess)
+		{
+			toastService.AddSystemErrorToast(result.ErrorDescription!);
+		}
 
-        foreach (DayViewModel dayViewModel in Days)
-        {
-            dayViewModel.InterceptDateEvents(events);
-            events.RemoveAll(x => x.EndDate < dayViewModel.DateTimeOffset.AddDays(1));
-        }
-    }
+		var events = result.Value!.Select(x => new EventViewModel(x, false, false, false)).ToList();
 
-    private void ClearEvents()
-    {
-        foreach (DayViewModel dayViewModel in Days)
-        {
-            dayViewModel.ClearEvents();
-        }
-    }
+		foreach (DayViewModel dayViewModel in Days)
+		{
+			dayViewModel.InterceptDateEvents(events);
+			events.RemoveAll(x => x.EndDate < dayViewModel.DateTimeOffset.AddDays(1));
+		}
+	}
+
+	private void ClearEvents()
+	{
+		foreach (DayViewModel dayViewModel in Days)
+		{
+			dayViewModel.ClearEvents();
+		}
+	}
 }

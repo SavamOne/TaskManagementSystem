@@ -8,12 +8,12 @@ public static class CalendarParticipantRoleExtensions
 	{
 		return calendarParticipant != null && IsAdminOrCreator(calendarParticipant.Role);
 	}
-	
+
 	public static bool IsAdminOrCreator(this CalendarRole role)
 	{
 		return role is CalendarRole.Admin or CalendarRole.Creator;
 	}
-	
+
 	public static bool IsCreator(this CalendarRole role)
 	{
 		return role is CalendarRole.Creator;
@@ -23,5 +23,4 @@ public static class CalendarParticipantRoleExtensions
 	{
 		return role is CalendarRole.Admin or CalendarRole.Participant;
 	}
-
 }

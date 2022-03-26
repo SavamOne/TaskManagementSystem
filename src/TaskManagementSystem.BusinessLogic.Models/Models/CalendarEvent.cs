@@ -4,37 +4,46 @@ namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public class CalendarEvent
 {
-    public CalendarEvent(Guid id, Guid calendarId, string name, string? description, EventType eventType, string? place, DateTime startTimeUtc, DateTime? endTimeUtc, bool isPrivate, DateTime creationTimeUtc)
-    {
-        Id = id;
-        CalendarId = calendarId;
-        Name = name.AssertNotNullOrWhiteSpace();
-        Description = description;
-        EventType = eventType;
-        Place = place;
-        StartTimeUtc = startTimeUtc;
-        EndTimeUtc = endTimeUtc;
-        IsPrivate = isPrivate;
-        CreationTimeUtc = creationTimeUtc;
-    }
-    
-    public Guid Id { get; }
-    
-    public Guid CalendarId { get; }
-    
-    public string Name { get; set; }
-    
-    public string? Description { get; set; }
-    
-    public EventType EventType { get; set; }
-    
-    public string? Place { get; set; }
-    
-    public DateTime StartTimeUtc { get; set; }
-    
-    public DateTime? EndTimeUtc { get; set; }
-    
-    public bool IsPrivate { get; set; }
-    
-    public DateTime CreationTimeUtc { get; }
+	public CalendarEvent(Guid id,
+		Guid calendarId,
+		string name,
+		string? description,
+		EventType eventType,
+		string? place,
+		DateTime startTimeUtc,
+		DateTime? endTimeUtc,
+		bool isPrivate,
+		DateTime creationTimeUtc)
+	{
+		Id = id;
+		CalendarId = calendarId;
+		Name = name.AssertNotNullOrWhiteSpace();
+		Description = description;
+		EventType = eventType;
+		Place = place;
+		StartTimeUtc = startTimeUtc;
+		EndTimeUtc = endTimeUtc;
+		IsPrivate = isPrivate;
+		CreationTimeUtc = creationTimeUtc;
+	}
+
+	public Guid Id { get; }
+
+	public Guid CalendarId { get; }
+
+	public string Name { get; set; }
+
+	public string? Description { get; set; }
+
+	public EventType EventType { get; set; }
+
+	public string? Place { get; set; }
+
+	public DateTime StartTimeUtc { get; set; }
+
+	public DateTime? EndTimeUtc { get; set; }
+
+	public bool IsPrivate { get; set; }
+
+	public DateTime CreationTimeUtc { get; }
 }

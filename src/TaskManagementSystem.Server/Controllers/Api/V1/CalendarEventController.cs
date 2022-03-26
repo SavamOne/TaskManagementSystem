@@ -71,7 +71,7 @@ public class CalendarEventController : ControllerBase
 
 		return Ok(Convert(result));
 	}
-	
+
 	[HttpPost("ChangeParticipants")]
 	public async Task<IActionResult> ChangeParticipantsAsync(ChangeEventParticipantsRequest request)
 	{
@@ -168,7 +168,7 @@ public class CalendarEventController : ControllerBase
 	{
 		return new AddEventParticipantsData(userId,
 			request.EventId,
-			request.Participants.Select(x => 
+			request.Participants.Select(x =>
 					new AddEventParticipantData(x.ParticipantId,
 						(CalendarEventParticipantRole)x.Role))
 			   .ToList());

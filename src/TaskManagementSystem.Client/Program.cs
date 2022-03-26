@@ -16,13 +16,13 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(_ => new HttpClient
 {
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+	BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 builder.Services.AddScoped<ServerProxy>();
 
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>(provider =>
-    provider.GetService<JwtAuthenticationStateProvider>()!);
+	provider.GetService<JwtAuthenticationStateProvider>()!);
 
 builder.Services.AddSingleton<IJSInteropWrapper, JSInteropWrapper>();
 
@@ -34,8 +34,8 @@ builder.Services.AddAuthorizationCore();
 
 await using (ServiceProvider provider = builder.Services.BuildServiceProvider())
 {
-    ILocalizationService localizationService = provider.GetService<ILocalizationService>()!;
-    await localizationService.InitializeAsync();
+	ILocalizationService localizationService = provider.GetService<ILocalizationService>()!;
+	await localizationService.InitializeAsync();
 }
 
 await builder.Build().RunAsync();

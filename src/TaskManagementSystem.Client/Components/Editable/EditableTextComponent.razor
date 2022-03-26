@@ -4,11 +4,13 @@
 </div>
 
 @code {
+
     [Inject]
     public IJSInteropWrapper? JsInteropWrapper { get; set; }
-    
+
     [Parameter]
-    public string Value {
+    public string Value
+    {
         set
         {
             originalText = value;
@@ -18,10 +20,10 @@
 
     [Parameter]
     public int TextSize { get; set; } = 6;
-    
+
     [Parameter]
     public Func<string, Task>? OnValueEditedAsync { get; set; }
-    
+
     [Parameter]
     public Action<string>? OnValueEdited { get; set; }
 
@@ -29,7 +31,7 @@
 
     private string? originalText;
     private string? text;
-    
+
     private bool isTextEditing;
 
 
@@ -55,7 +57,7 @@
                 OnValueEdited?.Invoke(originalText);
             }
         }
-        
+
         isTextEditing = false;
     }
 

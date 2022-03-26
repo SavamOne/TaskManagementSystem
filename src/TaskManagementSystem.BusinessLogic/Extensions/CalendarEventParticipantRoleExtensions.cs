@@ -8,25 +8,24 @@ public static class CalendarEventParticipantRoleExtensions
 	{
 		return eventParticipant != null && IsParticipantOrCreator(eventParticipant.Role);
 	}
-	
+
 	public static bool IsParticipantOrCreator(this CalendarEventParticipantRole role)
 	{
 		return role is CalendarEventParticipantRole.Participant or CalendarEventParticipantRole.Creator;
 	}
-	
+
 	public static bool IsParticipantOrInform(this CalendarEventParticipantRole role)
 	{
 		return role is CalendarEventParticipantRole.Participant or CalendarEventParticipantRole.Inform;
 	}
-	
+
 	public static bool IsCreator(this CalendarEventParticipant? eventParticipant)
 	{
 		return eventParticipant != null && IsCreator(eventParticipant.Role);
 	}
-	
+
 	public static bool IsCreator(this CalendarEventParticipantRole role)
 	{
 		return role is CalendarEventParticipantRole.Creator;
 	}
-
 }

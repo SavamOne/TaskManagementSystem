@@ -4,19 +4,19 @@ namespace TaskManagementSystem.Client.Services;
 
 public interface ILocalizationService
 {
-    Task InitializeAsync();
+	Task InitializeAsync();
 
-    Task<CultureInfo> GetApplicationCultureAsync();
+	Task<CultureInfo> GetApplicationCultureAsync();
 
-    Task<DateTimeFormatInfo> GetApplicationDateTimeFormatAsync();
+	Task<DateTimeFormatInfo> GetApplicationDateTimeFormatAsync();
 
-    Task<string> GeApplicationCultureNameAsync();
+	Task<string> GeApplicationCultureNameAsync();
 
-    Task<DayOfWeek> GetApplicationFirstDayOfWeekAsync();
+	Task<DayOfWeek> GetApplicationFirstDayOfWeekAsync();
 
-    Task SetApplicationCultureAsync(CultureInfo culture);
+	Task SetApplicationCultureAsync(CultureInfo culture);
 
-    Task SetApplicationFirstDayOfWeekAsync(DayOfWeek dayOfWeek);
+	Task SetApplicationFirstDayOfWeekAsync(DayOfWeek dayOfWeek);
 
-    IEnumerable<CultureInfo> GetAvailableCultures();
+	IEnumerable<CultureInfo> GetAvailableCultures();
 }

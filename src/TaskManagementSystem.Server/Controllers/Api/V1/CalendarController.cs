@@ -16,145 +16,134 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Route("Api/V1/[controller]")]
 public class CalendarController : ControllerBase
 {
-    private readonly ICalendarService calendarService;
-    private readonly ITokenService tokenService;
-    private readonly IUserService userService;
+	private readonly ICalendarService calendarService;
+	private readonly ITokenService tokenService;
+	private readonly IUserService userService;
 
-    public CalendarController(ITokenService tokenService, IUserService userService, ICalendarService calendarService)
-    {
-        this.tokenService = tokenService;
-        this.userService = userService;
-        this.calendarService = calendarService;
-    }
+	public CalendarController(ITokenService tokenService, IUserService userService, ICalendarService calendarService)
+	{
+		this.tokenService = tokenService;
+		this.userService = userService;
+		this.calendarService = calendarService;
+	}
 
-    [HttpPost("GetMyList")]
-    public async Task<IActionResult> GetUserCalendarListAsync()
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("GetMyList")]
+	public async Task<IActionResult> GetUserCalendarListAsync()
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        var result = await calendarService.GetUserCalendars(userId);
+		var result = await calendarService.GetUserCalendars(userId);
 
-        return Ok(result.Select(x => new CalendarInfo(x.Id, x.Name, x.Description, x.CreationDateUtc)));
-    }
+		return Ok(result.Select(x => new CalendarInfo(x.Id, x.Name, x.Description, x.CreationDateUtc)));
+	}
 
-    [HttpPost("Create")]
-    public async Task<IActionResult> CreateCalendarAsync(CreateCalendarRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("Create")]
+	public async Task<IActionResult> CreateCalendarAsync(CreateCalendarRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        Calendar result = await calendarService.CreateCalendarAsync(new CreateCalendarData(userId, request.Name, request.Description));
+		Calendar result = await calendarService.CreateCalendarAsync(new CreateCalendarData(userId, request.Name, request.Description));
 
-        return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
-    }
+		return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
+	}
 
-    [HttpPost("Edit")]
-    public async Task<IActionResult> EditCalendarAsync(EditCalendarRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("Edit")]
+	public async Task<IActionResult> EditCalendarAsync(EditCalendarRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        Calendar result = await calendarService.EditCalendarAsync(new EditCalendarData(
-        userId, request.CalendarId, request.Name, request.Description));
+		Calendar result = await calendarService.EditCalendarAsync(new EditCalendarData(userId, request.CalendarId, request.Name, request.Description));
 
-        return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
-    }
+		return Ok(new CalendarInfo(result.Id, result.Name, result.Description, result.CreationDateUtc));
+	}
 
-    [HttpPost("AddParticipants")]
-    public async Task<IActionResult> AddParticipantsAsync(AddCalendarParticipantsRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("AddParticipants")]
+	public async Task<IActionResult> AddParticipantsAsync(AddCalendarParticipantsRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        CalendarWithParticipants result = await calendarService.AddParticipantsAsync(
-        new AddCalendarParticipantsData(
-        userId, request.CalendarId,
-        request.Users
-            .Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role))
-            .ToHashSet()
-        ));
+		CalendarWithParticipants result = await calendarService.AddParticipantsAsync(new AddCalendarParticipantsData(userId,
+			request.CalendarId,
+			request.Users
+			   .Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role))
+			   .ToHashSet()));
 
-        return Ok(await ConvertAsync(result));
-    }
+		return Ok(await ConvertAsync(result));
+	}
 
-    [HttpPost("ChangeParticipantsRole")]
-    public async Task<IActionResult> ChangeParticipantsRoleAsync(ChangeCalendarParticipantsRoleRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("ChangeParticipantsRole")]
+	public async Task<IActionResult> ChangeParticipantsRoleAsync(ChangeCalendarParticipantsRoleRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(
-        new ChangeParticipantsRoleData(
-        userId, request.CalendarId,
-        request.Participants
-            .Select(x => new ChangeParticipantRoleData(x.ParticipantId, (CalendarRole)x.Role))
-            .ToHashSet()
-        ));
+		CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(new ChangeParticipantsRoleData(userId,
+			request.CalendarId,
+			request.Participants
+			   .Select(x => new ChangeParticipantRoleData(x.ParticipantId, (CalendarRole)x.Role))
+			   .ToHashSet()));
 
-        return Ok(await ConvertAsync(result));
-    }
+		return Ok(await ConvertAsync(result));
+	}
 
-    [HttpPost("DeleteParticipants")]
-    public async Task<IActionResult> DeleteParticipantsAsync(DeleteParticipantsRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
+	[HttpPost("DeleteParticipants")]
+	public async Task<IActionResult> DeleteParticipantsAsync(DeleteParticipantsRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        CalendarWithParticipants result = await calendarService.DeleteParticipantsAsync(
-        new DeleteParticipantsData(
-        userId, request.CalendarId,
-        request.ParticipantIds.ToHashSet()
-        ));
+		CalendarWithParticipants result = await calendarService.DeleteParticipantsAsync(new DeleteParticipantsData(userId,
+			request.CalendarId,
+			request.ParticipantIds.ToHashSet()));
 
-        return Ok(await ConvertAsync(result));
-    }
+		return Ok(await ConvertAsync(result));
+	}
 
 
-    [HttpPost("GetInfo")]
-    public async Task<IActionResult> GetCalendarInfoAsync(GetCalendarInfoRequest request)
-    {
-        CalendarWithParticipants result = await calendarService.GetCalendarInfoAsync(request.CalendarId);
+	[HttpPost("GetInfo")]
+	public async Task<IActionResult> GetCalendarInfoAsync(GetCalendarInfoRequest request)
+	{
+		CalendarWithParticipants result = await calendarService.GetCalendarInfoAsync(request.CalendarId);
 
-        return Ok(await ConvertAsync(result));
-    }
-    
-    [Authorize]
-    [HttpPost("GetInfosByFilter")]
-    public async Task<IActionResult> GetUsersByFilterAsync(GetCalendarParticipantsByFilterRequest request)
-    {
-        Guid userId = tokenService.GetUserIdFromClaims(User);
-        
-        request.AssertNotNull();
+		return Ok(await ConvertAsync(result));
+	}
 
-        var result = await calendarService.GetParticipantsByFilter(new GetCalendarParticipantsByFilter(userId, request.CalendarId, request.Filter));
+	[Authorize]
+	[HttpPost("GetInfosByFilter")]
+	public async Task<IActionResult> GetUsersByFilterAsync(GetCalendarParticipantsByFilterRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-        var participantsUsers = result.Select(participant => new CalendarParticipantUser(
-            participant.Id, 
-            participant.CalendarId, 
-            participant.UserId, 
-            participant.JoinDateUtc,
-            (CalendarParticipantRole)participant.Role, 
-            participant.User!.Name, 
-            participant.User.Email, 
-            participant.User.DateJoinedUtc)).ToList();
-        
-        return Ok(participantsUsers);
-    }
+		request.AssertNotNull();
 
-    private async Task<CalendarWithParticipantUsers> ConvertAsync(CalendarWithParticipants request)
-    {
-        var participantsUsers = request.Participants.Select(participant => new CalendarParticipantUser(
-            participant.Id, 
-            participant.CalendarId, 
-            participant.UserId, 
-            participant.JoinDateUtc,
-            (CalendarParticipantRole)participant.Role, 
-            participant.User!.Name, 
-            participant.User.Email, 
-            participant.User.DateJoinedUtc));
+		var result = await calendarService.GetParticipantsByFilter(new GetCalendarParticipantsByFilter(userId, request.CalendarId, request.Filter));
 
-        return new CalendarWithParticipantUsers(
-            new CalendarInfo(
-                request.Calendar.Id, 
-                request.Calendar.Name, 
-                request.Calendar.Description, 
-                request.Calendar.CreationDateUtc),
-            participantsUsers
-        );
-    }
+		var participantsUsers = result.Select(participant => new CalendarParticipantUser(participant.Id,
+				participant.CalendarId,
+				participant.UserId,
+				participant.JoinDateUtc,
+				(CalendarParticipantRole)participant.Role,
+				participant.User!.Name,
+				participant.User.Email,
+				participant.User.DateJoinedUtc))
+		   .ToList();
+
+		return Ok(participantsUsers);
+	}
+
+	private async Task<CalendarWithParticipantUsers> ConvertAsync(CalendarWithParticipants request)
+	{
+		var participantsUsers = request.Participants.Select(participant => new CalendarParticipantUser(participant.Id,
+			participant.CalendarId,
+			participant.UserId,
+			participant.JoinDateUtc,
+			(CalendarParticipantRole)participant.Role,
+			participant.User!.Name,
+			participant.User.Email,
+			participant.User.DateJoinedUtc));
+
+		return new CalendarWithParticipantUsers(new CalendarInfo(request.Calendar.Id,
+				request.Calendar.Name,
+				request.Calendar.Description,
+				request.Calendar.CreationDateUtc),
+			participantsUsers);
+	}
 }
