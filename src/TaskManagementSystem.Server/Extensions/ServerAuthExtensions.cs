@@ -1,10 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.Server.Dal.Extensions;
 using TaskManagementSystem.Server.Options;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Server.Services.Implementations;
+using TaskManagementSystem.Server.Workers;
+using TaskManagementSystem.Server.Workers.Implementations;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.Server.Extensions;
@@ -19,6 +22,10 @@ public static class ServerAuthExtensions
 		serviceCollection.AddServerDal();
 		serviceCollection.AddScoped<ITokenService, TokenService>();
 		serviceCollection.AddScoped<INotificationService, NotificationService>();
+		
+		serviceCollection.TryAddEnumerable(ServiceDescriptor.Scoped<IScopedHostedService, EventNotificationWorker>());
+		
+		serviceCollection.AddHostedService<ScopedBackgroundServiceProvider>();
 		
 		JwtOptions jwtOptions = ConfigureJwtOptions(serviceCollection, jwtSection);
 		ConfigureWebPushOptions(serviceCollection, webPushSection);
