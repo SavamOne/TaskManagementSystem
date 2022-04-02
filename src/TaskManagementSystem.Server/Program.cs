@@ -11,7 +11,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 //TODO: Придумать, как передавать секцию без установки дополнительного нугета.
 builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection(nameof(PostgresOptions)));
 builder.Services.AddBusinessLogic();
-builder.Services.AddServerAuth(builder.Configuration.GetSection(nameof(JwtOptions)));
+builder.Services.AddServerAuth(builder.Configuration.GetSection(nameof(JwtOptions)), builder.Configuration.GetSection(nameof(WebPushOptions)));
 
 builder.Services.AddSingleton<ApiResponseExceptionFilter>();
 builder.Services.AddControllersWithViews()
@@ -37,6 +37,7 @@ if (builder.Environment.IsDevelopment())
 }
 
 WebApplication app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {

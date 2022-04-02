@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Providers;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Helpers;
@@ -8,6 +9,7 @@ namespace TaskManagementSystem.Client.Proxies;
 
 public class ServerProxy : BaseProxy
 {
+	private readonly IJSInteropWrapper interopWrapper;
 	private readonly NavigationManager navigationManager;
 	private readonly JwtAuthenticationStateProvider stateProvider;
 
@@ -16,9 +18,11 @@ public class ServerProxy : BaseProxy
 		IToastService toastService,
 		NavigationManager navigationManager,
 		JwtAuthenticationStateProvider stateProvider,
-		ILocalizationService localizationService)
+		ILocalizationService localizationService,
+		IJSInteropWrapper interopWrapper)
 		: base(httpClient, storageService, toastService, localizationService)
 	{
+		this.interopWrapper = interopWrapper;
 		this.navigationManager = navigationManager.AssertNotNull();
 		this.stateProvider = stateProvider.AssertNotNull();
 	}
@@ -46,9 +50,15 @@ public class ServerProxy : BaseProxy
 
 	public async Task LogoutAsync()
 	{
+		string? subscriptionEndpoint = await interopWrapper.UnsubscribeFromNotificationsAsync();
+		if (subscriptionEndpoint != null)
+		{
+			await UnsubscribeFromNotifications(new DeleteNotificationSubscribeRequest(subscriptionEndpoint));
+		}
+		
 		await StorageService.ClearTokens();
-		navigationManager.NavigateTo("Login");
 		stateProvider.ChangeAuthenticationState(false);
+		navigationManager.NavigateTo("Login");
 	}
 
 	public async Task<Result<UserInfo>> GetUserInfoAsync()
@@ -209,6 +219,30 @@ public class ServerProxy : BaseProxy
 	{
 		var result =
 			await SendRequestAsync<GetEventsInPeriodRequest, IEnumerable<EventInfo>>(new Uri("Api/V1/CalendarEvent/GetInPeriod", UriKind.Relative), HttpMethod.Post, request);
+
+		return result;
+	}
+	
+	public async Task<Result<GetPublicKeyResponse>> GetNotificationsPublicKey()
+	{
+		var result =
+			await SendRequestAsync<GetPublicKeyResponse>(new Uri("Api/V1/Notification/GetPublicKey", UriKind.Relative), HttpMethod.Post);
+
+		return result;
+	}
+	
+	public async Task<Result<bool>> SubscribeToNotifications(AddNotificationSubscribeRequest request)
+	{
+		var result =
+			await SendRequestAsync<AddNotificationSubscribeRequest, bool>(new Uri("Api/V1/Notification/Subscribe", UriKind.Relative), HttpMethod.Post, request);
+
+		return result;
+	}
+	
+	public async Task<Result<bool>> UnsubscribeFromNotifications(DeleteNotificationSubscribeRequest request)
+	{
+		var result =
+			await SendRequestAsync<DeleteNotificationSubscribeRequest, bool>(new Uri("Api/V1/Notification/Subscribe", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

@@ -112,4 +112,9 @@ public class UserController : ControllerBase
 
 		return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
 	}
+
+	public async Task<IActionResult> Logout()
+	{
+		return Ok();
+	}
 }

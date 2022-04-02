@@ -1,3 +1,5 @@
+using TaskManagementSystem.Shared.Models;
+
 namespace TaskManagementSystem.Client.Helpers;
 
 public interface IJSInteropWrapper
@@ -13,4 +15,10 @@ public interface IJSInteropWrapper
 	Task RemoveAsync(string key);
 
 	Task<string> GetInnerTextByIdAsync(string id);
+
+	Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey);
+	
+	Task<string?> UnsubscribeFromNotificationsAsync();
+
+	Task<bool> NeedToSubscribeAsync();
 }
