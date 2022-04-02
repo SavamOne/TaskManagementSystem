@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.JSInterop;
 using TaskManagementSystem.Shared.Helpers;
+using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.Helpers.Implementations;
 
@@ -57,5 +58,20 @@ public class JSInteropWrapper : IJSInteropWrapper
 	public async Task<string> GetInnerTextByIdAsync(string id)
 	{
 		return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
+	}
+	
+	public async Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey)
+	{
+		return await jsRuntime.InvokeAsync<AddNotificationSubscribeRequest?>("requestNotificationSubscription", publicKey);
+	}
+	
+	public async Task<string?> UnsubscribeFromNotificationsAsync()
+	{
+		return await jsRuntime.InvokeAsync<string>("unsubscribeFromNotifications");
+	}
+
+	public async Task<bool> NeedToSubscribeAsync()
+	{
+		return await jsRuntime.InvokeAsync<bool>("needToSubscribe");
 	}
 }

@@ -12,7 +12,8 @@ public static class ServerDalRegistrationExtensions
 		serviceCollection.AddDal();
 
 		serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-
+		serviceCollection.AddScoped<INotificationSubscriptionRepository, NotificationSubscriptionRepository>();
+		
 		return serviceCollection;
 	}
 }

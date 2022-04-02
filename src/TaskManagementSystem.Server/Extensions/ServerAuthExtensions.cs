@@ -11,14 +11,17 @@ namespace TaskManagementSystem.Server.Extensions;
 
 public static class ServerAuthExtensions
 {
-	public static IServiceCollection AddServerAuth(this IServiceCollection serviceCollection, IConfigurationSection jwtSection)
+	public static IServiceCollection AddServerAuth(this IServiceCollection serviceCollection, 
+		IConfigurationSection jwtSection, IConfigurationSection webPushSection)
 	{
 		JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
 		serviceCollection.AddServerDal();
 		serviceCollection.AddScoped<ITokenService, TokenService>();
-
+		serviceCollection.AddScoped<INotificationService, NotificationService>();
+		
 		JwtOptions jwtOptions = ConfigureJwtOptions(serviceCollection, jwtSection);
+		ConfigureWebPushOptions(serviceCollection, webPushSection);
 
 		serviceCollection.AddAuthorization();
 		serviceCollection.AddAuthentication(options =>
@@ -60,5 +63,21 @@ public static class ServerAuthExtensions
 		serviceCollection.Configure<JwtOptions>(jwtSection);
 
 		return jwtOptions;
+	}
+
+	private static WebPushOptions ConfigureWebPushOptions(IServiceCollection serviceCollection, IConfigurationSection webPushSection)
+	{
+		webPushSection.AssertNotNull(nameof(webPushSection));
+
+		WebPushOptions webPushOptions = new();
+		webPushSection.Bind(webPushOptions);
+
+		webPushOptions.Subject.AssertNotNullOrWhiteSpace();
+		webPushOptions.PrivateKey.AssertNotNullOrWhiteSpace();
+		webPushOptions.PublicKey.AssertNotNullOrWhiteSpace();
+
+		serviceCollection.Configure<WebPushOptions>(webPushSection);
+
+		return webPushOptions;
 	}
 }

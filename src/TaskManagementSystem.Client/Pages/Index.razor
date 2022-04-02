@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Text.Json
 
 <CreateCalendarModal @ref="createCalendarModal" OnSuccess="tabs.RefreshCalendarsStateAsync"/>
 
@@ -25,6 +26,15 @@
 
 @code
 {
+    [Inject]
+    public IJSInteropWrapper? JsInteropWrapper { get; set; }
+    
+    [Inject]
+    public ServerProxy? ServerProxy { get; set; }
+    
+    [Inject]
+    public IToastService? ToastService { get; set; }
+    
     private CreateCalendarModal createCalendarModal = new();
 
     private CalendarTabsComponent tabs = new();
@@ -32,5 +42,48 @@
     private void Create()
     {
         createCalendarModal.Create();
+    }
+
+
+    protected override void OnInitialized()
+    {
+        _ = RequestNotificationSubscriptionAsync();
+    }
+    
+    private async Task RequestNotificationSubscriptionAsync()
+    {
+        try
+        {
+            if (!await JsInteropWrapper!.NeedToSubscribeAsync())
+            {
+                return;
+            }
+            
+            var publicKeyResult = await ServerProxy!.GetNotificationsPublicKey();
+            if (!publicKeyResult.IsSuccess)
+            {
+                ToastService!.AddSystemErrorToast(publicKeyResult.ErrorDescription!);
+                return;
+            }
+            
+            AddNotificationSubscribeRequest? subscriptionRequest = await JsInteropWrapper!.TryRequestNotificationSubscriptionAsync(publicKeyResult.Value!.PublicKey);
+            Console.WriteLine(JsonSerializer.Serialize(subscriptionRequest));
+        
+            if (subscriptionRequest == null)
+            {
+                return;
+            }
+
+            var result = await ServerProxy!.SubscribeToNotifications(subscriptionRequest);
+
+            if (!result.IsSuccess)
+            {
+                ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+            }
+        }
+        catch (Exception e)
+        {
+            ToastService!.AddSystemErrorToast(e.Message);
+        }
     }
 }
