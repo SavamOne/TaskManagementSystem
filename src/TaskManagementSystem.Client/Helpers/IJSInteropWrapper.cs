@@ -17,7 +17,7 @@ public interface IJSInteropWrapper
 	Task<string> GetInnerTextByIdAsync(string id);
 
 	Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey);
-	
+
 	Task<string?> UnsubscribeFromNotificationsAsync();
 
 	Task<bool> NeedToSubscribeAsync();

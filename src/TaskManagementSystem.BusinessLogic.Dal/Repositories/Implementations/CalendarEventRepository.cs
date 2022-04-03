@@ -5,7 +5,7 @@ using TaskManagementSystem.Shared.Dal;
 
 namespace TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 
-public class CalendarEventRepository : Repository<DalEvent>
+public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepository
 {
 	public CalendarEventRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
@@ -38,6 +38,12 @@ public class CalendarEventRepository : Repository<DalEvent>
 		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId
 											&& x.EndTime >= startPeriod
 											&& x.StartTime <= endPeriod);
+
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
+	public async Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod)
+	{
+		var dalEvents = await SelectAsync(x => x.StartTime >= startPeriod && x.StartTime <= endPeriod);
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}

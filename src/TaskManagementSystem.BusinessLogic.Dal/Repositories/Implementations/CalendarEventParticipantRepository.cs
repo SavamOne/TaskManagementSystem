@@ -7,7 +7,7 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 
-public class CalendarEventParticipantRepository : Repository<DalEventParticipant>
+public class CalendarEventParticipantRepository : Repository<DalEventParticipant>, ICalendarEventParticipantRepository
 {
 	public CalendarEventParticipantRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
@@ -19,8 +19,8 @@ public class CalendarEventParticipantRepository : Repository<DalEventParticipant
 
 	public async Task InsertAllAsync(ICollection<CalendarEventParticipant> eventParticipants)
 	{
-		const string insertSql = "INSERT INTO Event_Participant (Id, Event_Id, calendar_participant_id, Role, Status_type) "
-							   + "VALUES (@Id, @EventId, @CalendarParticipantId, @Role, 0) "
+		const string insertSql = "INSERT INTO Event_Participant (Id, Event_Id, calendar_participant_id, Role, Status_type, start_notification_before) "
+							   + "VALUES (@Id, @EventId, @CalendarParticipantId, @Role, @StatusType, @StartNotificationBefore) "
 							   + "ON CONFLICT (Event_Id, calendar_participant_id) "
 							   + "DO UPDATE SET Role = @Role, Is_Deleted = FALSE;";
 

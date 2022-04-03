@@ -10,7 +10,7 @@ public class DalNotificationSubscription
 	[Column("user_id")]
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
 	public Guid UserId { get; set; }
-	
+
 	[Key]
 	[Column("url")]
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
