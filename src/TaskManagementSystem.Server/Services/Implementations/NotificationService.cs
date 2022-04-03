@@ -56,11 +56,6 @@ public class NotificationService : INotificationService, IDisposable
 	
 	public async Task SendNotificationAsync(ISet<Guid> userIds, WebPushPayload message)
 	{
-		if ((await userRepository.GetByIdsAsync(userIds)).Count != userIds.Count)
-		{
-			throw new BusinessLogicException("Пользователя с таким идентификатором нет.");
-		}
-
 		VapidDetails details = new(options.Value.Subject, options.Value.PublicKey, options.Value.PrivateKey);
 
 		foreach (var userId in userIds)

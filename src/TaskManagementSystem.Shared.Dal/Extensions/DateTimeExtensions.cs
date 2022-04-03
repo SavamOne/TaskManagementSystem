@@ -12,4 +12,9 @@ public static class DateTimeExtensions
 			_ => throw new ArgumentOutOfRangeException(nameof(dateTime.Kind))
 		};
 	}
+
+	public static DateTime StripSeconds(this DateTime dateTime)
+	{
+		return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0, dateTime.Kind);
+	}
 }

@@ -12,7 +12,9 @@ public static class CalendarEventParticipantConverter
 			Id = participant.Id,
 			EventId = participant.EventId,
 			CalendarParticipantId = participant.CalendarParticipantId,
-			Role = (int)participant.Role
+			Role = (int)participant.Role,
+			StartNotificationBefore = participant.NotifyBefore,
+			StatusType = (int)participant.State
 		};
 	}
 
@@ -21,8 +23,10 @@ public static class CalendarEventParticipantConverter
 		return new CalendarEventParticipant(dalEventParticipant.Id,
 			dalEventParticipant.EventId,
 			dalEventParticipant.CalendarParticipantId,
-			(CalendarEventParticipantRole)dalEventParticipant.Role)
+			(CalendarEventParticipantRole)dalEventParticipant.Role,
+			(EventParticipantState)dalEventParticipant.StatusType)
 		{
+			NotifyBefore = dalEventParticipant.StartNotificationBefore,
 			CalendarParticipant = dalEventParticipant.CalendarParticipant?.ToCalendarParticipant()
 		};
 	}

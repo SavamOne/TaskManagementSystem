@@ -13,6 +13,7 @@ public static class ServerDalRegistrationExtensions
 
 		serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 		serviceCollection.AddScoped<INotificationSubscriptionRepository, NotificationSubscriptionRepository>();
+		serviceCollection.AddScoped<Func<INotificationSubscriptionRepository>>(sp => sp.GetRequiredService<INotificationSubscriptionRepository>);
 		
 		return serviceCollection;
 	}

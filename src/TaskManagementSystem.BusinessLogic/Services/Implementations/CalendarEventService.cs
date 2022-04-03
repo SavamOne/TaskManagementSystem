@@ -1,5 +1,4 @@
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
-using TaskManagementSystem.BusinessLogic.Dal.Repositories.Implementations;
 using TaskManagementSystem.BusinessLogic.Extensions;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -13,14 +12,14 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 public class CalendarEventService : ICalendarEventService
 {
 	private readonly ICalendarParticipantRepository calendarParticipantRepository;
-	private readonly CalendarEventParticipantRepository eventParticipantRepository;
-	private readonly CalendarEventRepository eventRepository;
+	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
+	private readonly ICalendarEventRepository eventRepository;
 	private readonly IUnitOfWork unitOfWork;
 
 	public CalendarEventService(IUnitOfWork unitOfWork,
 		ICalendarParticipantRepository calendarParticipantRepository,
-		CalendarEventRepository eventRepository,
-		CalendarEventParticipantRepository eventParticipantRepository)
+		ICalendarEventRepository eventRepository,
+		ICalendarEventParticipantRepository eventParticipantRepository)
 	{
 		this.unitOfWork = unitOfWork;
 		this.calendarParticipantRepository = calendarParticipantRepository;
@@ -58,7 +57,11 @@ public class CalendarEventService : ICalendarEventService
 			data.EndTime?.UtcDateTime,
 			data.IsPrivate,
 			DateTime.UtcNow);
-		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(), calendarEvent.Id, participant.Id, CalendarEventParticipantRole.Creator);
+		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(),
+			calendarEvent.Id,
+			participant.Id,
+			CalendarEventParticipantRole.Creator,
+			EventParticipantState.Confirmed);
 
 		unitOfWork.BeginTransaction();
 		await eventRepository.InsertAsync(calendarEvent);
@@ -203,7 +206,13 @@ public class CalendarEventService : ICalendarEventService
 			throw new BusinessLogicException("Не все пользователи принадлежат календарю");
 		}
 
-		var participantsToAdd = data.CalendarParticipants.Select(x => new CalendarEventParticipant(Guid.NewGuid(), info.Event.Id, x.CalendarParticipantId, x.Role)).ToList();
+		var participantsToAdd = data.CalendarParticipants
+		   .Select(x => new CalendarEventParticipant(Guid.NewGuid(),
+				info.Event.Id,
+				x.CalendarParticipantId,
+				x.Role,
+				EventParticipantState.Unknown))
+		   .ToList();
 
 		await eventParticipantRepository.InsertAllAsync(participantsToAdd);
 
