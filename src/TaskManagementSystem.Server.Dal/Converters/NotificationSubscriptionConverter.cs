@@ -18,9 +18,9 @@ public static class NotificationSubscriptionConverter
 
 	public static NotificationSubscription ToSubscription(this DalNotificationSubscription notificationSubscription)
 	{
-		return new NotificationSubscription(notificationSubscription.UserId, 
-			notificationSubscription.Url, 
-			notificationSubscription.P256dh, 
+		return new NotificationSubscription(notificationSubscription.UserId,
+			notificationSubscription.Url,
+			notificationSubscription.P256dh,
 			notificationSubscription.Auth);
 	}
 }

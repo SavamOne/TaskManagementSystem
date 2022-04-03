@@ -13,6 +13,6 @@ public interface ICalendarEventRepository
 	Task<CalendarEvent?> GetById(Guid eventId);
 
 	Task<ICollection<CalendarEvent>> GetStandardEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod);
-	
+
 	Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod);
 }

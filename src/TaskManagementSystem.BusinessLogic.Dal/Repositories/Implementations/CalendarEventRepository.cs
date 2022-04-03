@@ -44,7 +44,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	public async Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod)
 	{
 		var dalEvents = await SelectAsync(x => x.StartTime >= startPeriod && x.StartTime <= endPeriod);
-		
+
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
 }

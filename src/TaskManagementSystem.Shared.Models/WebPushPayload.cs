@@ -9,6 +9,6 @@ public class WebPushPayload
 	}
 
 	public string Message { get; }
-	
+
 	public string Url { get; }
 }

@@ -59,12 +59,12 @@ public class JSInteropWrapper : IJSInteropWrapper
 	{
 		return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
 	}
-	
+
 	public async Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey)
 	{
 		return await jsRuntime.InvokeAsync<AddNotificationSubscribeRequest?>("requestNotificationSubscription", publicKey);
 	}
-	
+
 	public async Task<string?> UnsubscribeFromNotificationsAsync()
 	{
 		return await jsRuntime.InvokeAsync<string>("unsubscribeFromNotifications");

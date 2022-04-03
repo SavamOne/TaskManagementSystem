@@ -13,8 +13,8 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 [Route("Api/V1/[controller]")]
 public class NotificationController : ControllerBase
 {
-	private readonly ITokenService tokenService;
 	private readonly INotificationService notificationService;
+	private readonly ITokenService tokenService;
 
 	public NotificationController(ITokenService tokenService, INotificationService notificationService)
 	{

@@ -23,10 +23,10 @@ public class DalEventParticipant
 
 	[Column("is_deleted")]
 	public bool IsDeleted { get; set; }
-	
+
 	[Column("start_notification_before")]
 	public TimeSpan StartNotificationBefore { get; set; }
-	
+
 	[Column("status_type")]
 	public int StatusType { get; set; }
 }

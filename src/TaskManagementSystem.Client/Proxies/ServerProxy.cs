@@ -55,7 +55,7 @@ public class ServerProxy : BaseProxy
 		{
 			await UnsubscribeFromNotifications(new DeleteNotificationSubscribeRequest(subscriptionEndpoint));
 		}
-		
+
 		await StorageService.ClearTokens();
 		stateProvider.ChangeAuthenticationState(false);
 		navigationManager.NavigateTo("Login");
@@ -222,7 +222,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<GetPublicKeyResponse>> GetNotificationsPublicKey()
 	{
 		var result =
@@ -230,7 +230,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<bool>> SubscribeToNotifications(AddNotificationSubscribeRequest request)
 	{
 		var result =
@@ -238,7 +238,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<bool>> UnsubscribeFromNotifications(DeleteNotificationSubscribeRequest request)
 	{
 		var result =

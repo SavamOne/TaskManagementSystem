@@ -23,8 +23,8 @@ async function needToSubscribe() {
         console.log("This browser does not support desktop notification");
         return false;
     }
-    
-    if(Notification.permission === "denied") {
+
+    if (Notification.permission === "denied") {
         return false;
     }
 
@@ -36,7 +36,7 @@ async function needToSubscribe() {
 async function unsubscribeFromNotifications() {
     const worker = await navigator.serviceWorker.getRegistration();
     const existingSubscription = await worker.pushManager.getSubscription();
-    if(existingSubscription) {
+    if (existingSubscription) {
         await existingSubscription.unsubscribe()
         return existingSubscription.endpoint;
     }

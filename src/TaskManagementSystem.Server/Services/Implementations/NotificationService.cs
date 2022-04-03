@@ -15,8 +15,8 @@ namespace TaskManagementSystem.Server.Services.Implementations;
 public class NotificationService : INotificationService, IDisposable
 {
 	private readonly IOptions<WebPushOptions> options;
-	private readonly IUserRepository userRepository;
 	private readonly INotificationSubscriptionRepository subscriptionRepository;
+	private readonly IUserRepository userRepository;
 	private readonly WebPushClient webPushClient;
 
 	public NotificationService(IOptions<WebPushOptions> options, IUserRepository userRepository, INotificationSubscriptionRepository subscriptionRepository)
@@ -25,6 +25,11 @@ public class NotificationService : INotificationService, IDisposable
 		this.userRepository = userRepository;
 		this.subscriptionRepository = subscriptionRepository;
 		webPushClient = new WebPushClient();
+	}
+
+	public void Dispose()
+	{
+		webPushClient.Dispose();
 	}
 
 	//TODO: AddSubscriptionData
@@ -48,17 +53,21 @@ public class NotificationService : INotificationService, IDisposable
 
 		await subscriptionRepository.DeleteAsync(url);
 	}
-	
+
 	public async Task SendNotificationAsync(Guid userId, WebPushPayload message)
 	{
-		await SendNotificationAsync(new HashSet<Guid> { userId }, message);
+		await SendNotificationAsync(new HashSet<Guid>
+			{
+				userId
+			},
+			message);
 	}
-	
+
 	public async Task SendNotificationAsync(ISet<Guid> userIds, WebPushPayload message)
 	{
 		VapidDetails details = new(options.Value.Subject, options.Value.PublicKey, options.Value.PrivateKey);
 
-		foreach (var userId in userIds)
+		foreach (Guid userId in userIds)
 		{
 			foreach (NotificationSubscription subscription in await subscriptionRepository.GetForUserId(userId))
 			{
@@ -66,7 +75,7 @@ public class NotificationService : INotificationService, IDisposable
 			}
 		}
 	}
-	
+
 	public string GetPublicKey()
 	{
 		return options.Value.PublicKey!;
@@ -77,9 +86,9 @@ public class NotificationService : INotificationService, IDisposable
 		try
 		{
 			PushSubscription pushSubscription = new(subscription.Url, subscription.P256dh, subscription.Auth);
-			
+
 			string payloadString = JsonSerializer.Serialize(payload, ApplicationJsonOptions.Options);
-		
+
 			await webPushClient.SendNotificationAsync(pushSubscription, payloadString, vapidDetails);
 		}
 		catch (WebPushException e)
@@ -89,12 +98,7 @@ public class NotificationService : INotificationService, IDisposable
 			{
 				throw new BusinessLogicException("Не удалось подписаться на уведомления. Попробуйте перезайти в систему, если проблема повторяется, смените браузер.");
 			}
-			
-		}
-	}
 
-	public void Dispose()
-	{
-		webPushClient.Dispose();
+		}
 	}
 }

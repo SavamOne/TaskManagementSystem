@@ -11,6 +11,6 @@ public interface INotificationService
 	Task SendNotificationAsync(Guid userId, WebPushPayload message);
 
 	Task SendNotificationAsync(ISet<Guid> userIds, WebPushPayload message);
-	
+
 	string GetPublicKey();
 }

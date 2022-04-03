@@ -10,8 +10,8 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
 public class CalendarEventNotificationService
 {
-	private readonly ConcurrentDictionary<(Guid, Guid), CalendarEventNotification> eventNotifications = new ();
-	
+	private readonly ConcurrentDictionary<(Guid, Guid), CalendarEventNotification> eventNotifications = new();
+
 	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
 	private readonly ICalendarEventRepository eventRepository;
 	private readonly ILogger<CalendarEventNotificationService> logger;
@@ -37,32 +37,32 @@ public class CalendarEventNotificationService
 		while (!stoppingToken.IsCancellationRequested)
 		{
 			DateTime minuteToSend = DateTime.UtcNow.StripSeconds();
-			
+
 			foreach (CalendarEventNotification notification in eventNotifications.Values
-			   .OrderBy(x=> x.NotificationTimeUtc))
+			   .OrderBy(x => x.NotificationTimeUtc))
 			{
-				if(notification.NotificationTimeUtc > minuteToSend)
+				if (notification.NotificationTimeUtc > minuteToSend)
 				{
 					break;
 				}
 
 				_ = TrySendNotificationAsync(func, notification);
-				
+
 				if (stoppingToken.IsCancellationRequested)
 				{
 					return;
 				}
 			}
-			
+
 			logger.LogDebug("{0:HH:mm:ss:ffff} - Getting events", DateTime.Now);
 
 			DateTime nextMinute = minuteToSend.AddMinutes(1);
 			uint count = await UpdateNotificationsAsync(nextMinute);
-			
+
 			logger.LogDebug("Found {0} events with start time >= {1:HH:mm}", count, nextMinute.ToLocalTime());
 
 			await DelayUntil(stoppingToken, nextMinute);
-			
+
 			logger.LogDebug("{0:HH:mm:ss:ffff} - Next iteration", DateTime.Now);
 		}
 	}
@@ -103,7 +103,7 @@ public class CalendarEventNotificationService
 				count++;
 			}
 		}
-		
+
 		return count;
 	}
 
@@ -111,7 +111,7 @@ public class CalendarEventNotificationService
 	{
 		DateTime now = DateTime.UtcNow;
 		TimeSpan sleepInterval = until - now;
-		
+
 		if (sleepInterval >= TimeSpan.Zero)
 		{
 			await Task.Delay(sleepInterval, stoppingToken);

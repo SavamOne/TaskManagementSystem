@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Dal\TaskManagementSystem.Shared.Dal.csproj" />
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj" />
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj" />
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Dal\TaskManagementSystem.Shared.Dal.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Helpers\TaskManagementSystem.Shared.Helpers.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Models\TaskManagementSystem.Shared.Models.csproj"/>
     </ItemGroup>
 
 </Project>

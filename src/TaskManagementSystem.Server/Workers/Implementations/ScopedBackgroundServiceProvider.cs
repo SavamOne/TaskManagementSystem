@@ -22,7 +22,7 @@ public sealed class ScopedBackgroundServiceProvider : BackgroundService
 
 			await Task.WhenAll(tasks);
 		}
-		
+
 		logger.LogInformation($"{nameof(ScopedBackgroundServiceProvider)} is stopped.");
 	}
 
@@ -41,7 +41,7 @@ public sealed class ScopedBackgroundServiceProvider : BackgroundService
 		{
 			logger.LogCritical(e, "Critical error in {0}.", serviceName);
 		}
-		
+
 		logger.LogInformation("{0} is stopped.", serviceName);
 	}
 }

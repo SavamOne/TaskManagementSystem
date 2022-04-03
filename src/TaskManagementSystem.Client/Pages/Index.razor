@@ -28,13 +28,13 @@
 {
     [Inject]
     public IJSInteropWrapper? JsInteropWrapper { get; set; }
-    
+
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
-    
+
     [Inject]
     public IToastService? ToastService { get; set; }
-    
+
     private CreateCalendarModal createCalendarModal = new();
 
     private CalendarTabsComponent tabs = new();
@@ -49,7 +49,7 @@
     {
         _ = RequestNotificationSubscriptionAsync();
     }
-    
+
     private async Task RequestNotificationSubscriptionAsync()
     {
         try
@@ -58,17 +58,17 @@
             {
                 return;
             }
-            
+
             var publicKeyResult = await ServerProxy!.GetNotificationsPublicKey();
             if (!publicKeyResult.IsSuccess)
             {
                 ToastService!.AddSystemErrorToast(publicKeyResult.ErrorDescription!);
                 return;
             }
-            
+
             AddNotificationSubscribeRequest? subscriptionRequest = await JsInteropWrapper!.TryRequestNotificationSubscriptionAsync(publicKeyResult.Value!.PublicKey);
             Console.WriteLine(JsonSerializer.Serialize(subscriptionRequest));
-        
+
             if (subscriptionRequest == null)
             {
                 return;

@@ -20,11 +20,11 @@ public class CalendarEventParticipant
 	public Guid EventId { get; }
 
 	public Guid CalendarParticipantId { get; }
-	
+
 	public EventParticipantState State { get; set; }
-	
+
 	public TimeSpan NotifyBefore { get; set; } = TimeSpan.Zero;
-	
+
 	public CalendarEventParticipantRole Role { get; set; }
 
 	public CalendarParticipant? CalendarParticipant { get; init; }
