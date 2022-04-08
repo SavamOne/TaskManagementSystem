@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Localization;
+using Microsoft.OpenApi.Models;
 using TaskManagementSystem.BusinessLogic.Extensions;
 using TaskManagementSystem.Server.Extensions;
 using TaskManagementSystem.Server.Filters;
@@ -27,13 +28,32 @@ builder.Services.AddControllersWithViews()
 		options.JsonSerializerOptions.AllowTrailingCommas = ApplicationJsonOptions.AllowTrailingCommas;
 		options.JsonSerializerOptions.PropertyNameCaseInsensitive = ApplicationJsonOptions.PropertyNameCaseInsensitive;
 		options.JsonSerializerOptions.PropertyNamingPolicy = ApplicationJsonOptions.PropertyNamingPolicy;
+		options.JsonSerializerOptions.Converters.Add(ApplicationJsonOptions.Converters.First());
 	});
 
 builder.Services.AddRazorPages();
 
 if (builder.Environment.IsDevelopment())
 {
-	builder.Services.AddSwaggerGen();
+	builder.Services.AddSwaggerGen(options =>
+	{
+		options.SwaggerDoc("API", new OpenApiInfo
+		{
+			Version = "v1",
+			Title = "TaskManagementSystem Public API Спецификация (v1)",
+			Description = "Web API сервиса по работе с календарями и событиями",
+			Contact = new OpenApiContact
+			{
+				Name = "GitHub",
+				Url = new Uri("https://github.com/SavamOne/TaskManagementSystem")
+			}
+		});
+		options.DescribeAllParametersInCamelCase();
+		foreach (string xmlDocPath in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))
+		{
+			options.IncludeXmlComments(xmlDocPath);
+		}
+	});
 }
 
 WebApplication app = builder.Build();
@@ -41,8 +61,14 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.UseSwagger(options =>
+	{
+		options.SerializeAsV2 = true;
+	});
+	app.UseSwaggerUI(options =>
+	{
+		options.SwaggerEndpoint("/swagger/API/swagger.yaml", "API");
+	});
 
 	app.UseWebAssemblyDebugging();
 }

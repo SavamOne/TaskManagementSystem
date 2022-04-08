@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using TaskManagementSystem.Shared.Models;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.ViewModels;
 

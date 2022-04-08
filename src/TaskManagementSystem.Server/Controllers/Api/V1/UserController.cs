@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -7,6 +8,7 @@ using TaskManagementSystem.Server.Filters;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Server.Controllers.Api.V1;
 
@@ -24,8 +26,17 @@ public class UserController : ControllerBase
 		this.tokenService = tokenService.AssertNotNull();
 	}
 
+	/// <summary>
+	/// Зарегистрироваться.
+	/// </summary>
+	/// <param name="request"><see cref="RegisterRequest"/>.</param>
+	/// <returns><see cref="Tokens"/>.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Register")]
-	public async Task<IActionResult> RegisterUserAsync(RegisterRequest request)
+	public async Task<IActionResult> RegisterUserAsync([Required] RegisterRequest request)
 	{
 		request.AssertNotNull();
 
@@ -35,8 +46,17 @@ public class UserController : ControllerBase
 		return Ok(tokens);
 	}
 
+	/// <summary>
+	/// Авторизоваться.
+	/// </summary>
+	/// <param name="request"><see cref="LoginRequest"/>.</param>
+	/// <returns><see cref="Tokens"/>.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Login")]
-	public async Task<IActionResult> LoginAsync(LoginRequest request)
+	public async Task<IActionResult> LoginAsync([Required] LoginRequest request)
 	{
 		request.AssertNotNull();
 
@@ -46,8 +66,17 @@ public class UserController : ControllerBase
 		return Ok(tokens);
 	}
 
+	/// <summary>
+	/// Обновить refresh-токен.
+	/// </summary>
+	/// <param name="request"><see cref="RefreshTokensRequest"/>.</param>
+	/// <returns><see cref="Tokens"/>.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Refresh")]
-	public async Task<IActionResult> RefreshAsync(RefreshTokensRequest request)
+	public async Task<IActionResult> RefreshAsync([Required] RefreshTokensRequest request)
 	{
 		request.AssertNotNull();
 
@@ -56,6 +85,15 @@ public class UserController : ControllerBase
 		return Ok(tokens);
 	}
 
+	/// <summary>
+	/// Получить информацию о пользователе.
+	/// </summary>
+	/// <returns><see cref="UserInfo"/>.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("GetInfo")]
 	public async Task<IActionResult> GetInfoAsync()
@@ -67,20 +105,40 @@ public class UserController : ControllerBase
 		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
 	}
 
+	/// <summary>
+	/// Получить информацию о пользователе по Id.
+	/// </summary>
+	/// <param name="request"><see cref="GetUserInfoByIdRequest"/>.</param>
+	/// <returns><see cref="UserInfo"/>.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("GetInfoById")]
-	public async Task<IActionResult> GetInfoAsync(GetUserInfoByIdRequest byIdRequest)
+	public async Task<IActionResult> GetInfoAsync([Required] GetUserInfoByIdRequest request)
 	{
-		byIdRequest.AssertNotNull();
+		request.AssertNotNull();
 
-		User user = await userService.GetUserAsync(byIdRequest.UserId);
+		User user = await userService.GetUserAsync(request.UserId);
 
 		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
 	}
 
+	/// <summary>
+	/// Изменить пароль пользователя.
+	/// </summary>
+	/// <param name="request"><see cref="ChangePasswordRequest"/>.</param>
+	/// <returns><see cref="UserInfo"/>.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("ChangePassword")]
-	public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request)
+	public async Task<IActionResult> ChangePasswordAsync([Required] ChangePasswordRequest request)
 	{
 		request.AssertNotNull();
 
@@ -90,9 +148,19 @@ public class UserController : ControllerBase
 		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
 	}
 
+	/// <summary>
+	/// Изменить информацию о себе.
+	/// </summary>
+	/// <param name="request"><see cref="ChangeUserInfoRequest"/>.</param>
+	/// <returns><see cref="UserInfo"/>.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("ChangeInfo")]
-	public async Task<IActionResult> ChangeInfoAsync(ChangeUserInfoRequest request)
+	public async Task<IActionResult> ChangeInfoAsync([Required] ChangeUserInfoRequest request)
 	{
 		request.AssertNotNull();
 
@@ -102,19 +170,24 @@ public class UserController : ControllerBase
 		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
 	}
 
+	/// <summary>
+	/// Получить пользователей по фильтру.
+	/// </summary>
+	/// <param name="request"><see cref="GetUserInfosByFilterRequest"/>.</param>
+	/// <returns>Коллекция <see cref="UserInfo"/>.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="UserInfo"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	[ProducesResponseType(typeof(IEnumerable<UserInfo>), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
-	[HttpPost("GetInfosByFilter")]
-	public async Task<IActionResult> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
+	[HttpPost("GetByFilter")]
+	public async Task<IActionResult> GetUsersByFilterAsync([Required] GetUserInfosByFilterRequest request)
 	{
 		request.AssertNotNull();
 
 		var result = await userService.GetUsersByFilter(request.Filter);
 
 		return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
-	}
-
-	public async Task<IActionResult> Logout()
-	{
-		return Ok();
 	}
 }

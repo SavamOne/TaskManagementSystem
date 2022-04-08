@@ -16,12 +16,18 @@ public static class ApplicationJsonOptions
 
 	public static readonly bool PropertyNameCaseInsensitive = true;
 
+	public static IList<JsonConverter> Converters = new List<JsonConverter>
+	{
+		new JsonStringEnumConverter()
+	};
+
 	public static readonly JsonSerializerOptions Options = new()
 	{
 		Encoder = Encoder,
 		AllowTrailingCommas = AllowTrailingCommas,
 		PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
 		PropertyNamingPolicy = PropertyNamingPolicy,
-		DefaultIgnoreCondition = DefaultIgnoreCondition
+		DefaultIgnoreCondition = DefaultIgnoreCondition,
+		Converters = { new JsonStringEnumConverter() }
 	};
 }

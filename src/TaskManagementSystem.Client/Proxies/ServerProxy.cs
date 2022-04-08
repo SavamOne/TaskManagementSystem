@@ -4,6 +4,7 @@ using TaskManagementSystem.Client.Providers;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Proxies;
 
@@ -80,7 +81,7 @@ public class ServerProxy : BaseProxy
 	public async Task<Result<UserInfo[]>> GetUsersByFilterAsync(GetUserInfosByFilterRequest request)
 	{
 		var result =
-			await SendRequestAsync<GetUserInfosByFilterRequest, UserInfo[]>(new Uri("Api/V1/User/GetInfosByFilter", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<GetUserInfosByFilterRequest, UserInfo[]>(new Uri("Api/V1/User/GetByFilter", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -160,7 +161,7 @@ public class ServerProxy : BaseProxy
 	public async Task<Result<ICollection<CalendarParticipantUser>>> GetCalendarParticipantsByFilter(GetCalendarParticipantsByFilterRequest request)
 	{
 		var result =
-			await SendRequestAsync<GetCalendarParticipantsByFilterRequest, ICollection<CalendarParticipantUser>>(new Uri("Api/V1/Calendar/GetInfosByFilter", UriKind.Relative),
+			await SendRequestAsync<GetCalendarParticipantsByFilterRequest, ICollection<CalendarParticipantUser>>(new Uri("Api/V1/Calendar/GetParticipantsByFilter", UriKind.Relative),
 				HttpMethod.Post,
 				request);
 
@@ -239,12 +240,9 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<bool>> UnsubscribeFromNotifications(DeleteNotificationSubscribeRequest request)
+	public async Task UnsubscribeFromNotifications(DeleteNotificationSubscribeRequest request)
 	{
-		var result =
-			await SendRequestAsync<DeleteNotificationSubscribeRequest, bool>(new Uri("Api/V1/Notification/Subscribe", UriKind.Relative), HttpMethod.Post, request);
-
-		return result;
+		await SendRequestAsync<DeleteNotificationSubscribeRequest, bool>(new Uri("Api/V1/Notification/Unsubscribe", UriKind.Relative), HttpMethod.Post, request);
 	}
 
 	protected override async Task RefreshTokens()

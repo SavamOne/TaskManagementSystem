@@ -3,6 +3,7 @@ using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Shared.Models;
 using TaskManagementSystem.Shared.Models.Options;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.ViewModels;
 

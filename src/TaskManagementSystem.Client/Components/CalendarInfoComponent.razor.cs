@@ -5,6 +5,7 @@ using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
 using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
