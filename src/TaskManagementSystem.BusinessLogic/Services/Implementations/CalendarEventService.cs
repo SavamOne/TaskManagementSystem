@@ -1,5 +1,6 @@
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
 using TaskManagementSystem.BusinessLogic.Extensions;
+using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
@@ -13,18 +14,21 @@ public class CalendarEventService : ICalendarEventService
 {
 	private readonly ICalendarParticipantRepository calendarParticipantRepository;
 	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
+	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
 	private readonly ICalendarEventRepository eventRepository;
 	private readonly IUnitOfWork unitOfWork;
 
 	public CalendarEventService(IUnitOfWork unitOfWork,
 		ICalendarParticipantRepository calendarParticipantRepository,
 		ICalendarEventRepository eventRepository,
-		ICalendarEventParticipantRepository eventParticipantRepository)
+		ICalendarEventParticipantRepository eventParticipantRepository,
+		IRecurrentSettingsRepository recurrentSettingsRepository)
 	{
 		this.unitOfWork = unitOfWork;
 		this.calendarParticipantRepository = calendarParticipantRepository;
 		this.eventRepository = eventRepository;
 		this.eventParticipantRepository = eventParticipantRepository;
+		this.recurrentSettingsRepository = recurrentSettingsRepository;
 	}
 
 	public async Task<CalendarEvent> CreateEventAsync(AddCalendarEventData data)
@@ -54,9 +58,12 @@ public class CalendarEventService : ICalendarEventService
 			data.EventType,
 			data.Place,
 			data.StartTime.UtcDateTime,
-			data.EndTime?.UtcDateTime,
+			data.EndTime.UtcDateTime,
 			data.IsPrivate,
-			DateTime.UtcNow);
+			DateTime.UtcNow,
+			//TODO: НАСТРОЙКИ!!!!
+			false);
+		
 		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(),
 			calendarEvent.Id,
 			participant.Id,
@@ -87,21 +94,30 @@ public class CalendarEventService : ICalendarEventService
 		}
 
 		var events = await eventRepository.GetStandardEventsInRange(data.CalendarId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
-
-		if (participant.IsAdminOrCreator())
+		var repeatedEvents = await eventRepository.GetRepeatedEventsInRange(data.CalendarId);
+		
+		if (!participant.IsAdminOrCreator())
 		{
-			return events;
-		}
-
-		foreach (CalendarEvent @event in events.Where(x => x.IsPrivate))
-		{
-			if (!await eventParticipantRepository.ContainsCalendarParticipantInEvent(participant.Id, @event.Id))
+			foreach (CalendarEvent @event in events.Union(repeatedEvents).Where(x => x.IsPrivate))
 			{
-				HideEventInfo(@event);
+				if (!await eventParticipantRepository.ContainsCalendarParticipantInEvent(participant.Id, @event.Id))
+				{
+					HideEventInfo(@event);
+				}
 			}
 		}
+		
+		var repeatedEventsIds = repeatedEvents.Select(x => x.Id).ToHashSet();
+		var recurrentSettings = (await recurrentSettingsRepository.GetForEvents(repeatedEventsIds)).ToDictionary(x=> x.EventId);
 
-		return events;
+		List<CalendarEvent> finalRepresentation = new(events);
+		foreach (CalendarEvent repeatedEvent in repeatedEvents.AsParallel())
+		{
+			var calculated = RecurrenceCalculator.Calculate(repeatedEvent, recurrentSettings[repeatedEvent.Id], data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
+			finalRepresentation.AddRange(calculated);
+		}
+
+		return finalRepresentation;
 	}
 
 	public async Task DeleteEventAsync(DeleteEventData data)
@@ -164,11 +180,6 @@ public class CalendarEventService : ICalendarEventService
 		if (@event.StartTimeUtc >= @event.EndTimeUtc)
 		{
 			throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
-		}
-
-		if (DateTime.UtcNow - @event.StartTimeUtc > TimeSpan.FromDays(1))
-		{
-			throw new BusinessLogicException("Нельзя создавать события, начавшиеся более 24 часов назад");
 		}
 
 		await eventRepository.UpdateAsync(@event);

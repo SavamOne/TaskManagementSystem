@@ -19,7 +19,8 @@ public static class CalendarEventConverter
 			EndTime = calendarEvent.EndTimeUtc,
 			EventType = (int)calendarEvent.EventType,
 			IsPrivate = calendarEvent.IsPrivate,
-			StartTime = calendarEvent.StartTimeUtc
+			StartTime = calendarEvent.StartTimeUtc,
+			IsRepeated = calendarEvent.IsRepeated
 		};
 	}
 
@@ -32,8 +33,9 @@ public static class CalendarEventConverter
 			(EventType)dalEvent.EventType,
 			dalEvent.Place,
 			dalEvent.StartTime.SetUtcKind(),
-			dalEvent.EndTime?.SetUtcKind(),
+			dalEvent.EndTime.SetUtcKind(),
 			dalEvent.IsPrivate,
-			dalEvent.CreationTime.SetUtcKind());
+			dalEvent.CreationTime.SetUtcKind(),
+			dalEvent.IsRepeated);
 	}
 }

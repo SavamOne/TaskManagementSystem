@@ -12,7 +12,7 @@ public class AddCalendarEventData
 		EventType eventType,
 		string? place,
 		DateTimeOffset startTime,
-		DateTimeOffset? endTime,
+		DateTimeOffset endTime,
 		bool isPrivate)
 	{
 		UserId = userId;
@@ -40,7 +40,7 @@ public class AddCalendarEventData
 
 	public DateTimeOffset StartTime { get; }
 
-	public DateTimeOffset? EndTime { get; }
+	public DateTimeOffset EndTime { get; }
 
 	public bool IsPrivate { get; }
 }

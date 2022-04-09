@@ -17,6 +17,7 @@ public static class BusinessLogicDalRegistrationExtensions
 		serviceCollection.TryAddScoped<ICalendarParticipantRepository, CalendarParticipantRepository>();
 		serviceCollection.TryAddScoped<ICalendarEventRepository, CalendarEventRepository>();
 		serviceCollection.TryAddScoped<ICalendarEventParticipantRepository, CalendarEventParticipantRepository>();
+		serviceCollection.TryAddScoped<IRecurrentSettingsRepository, RecurrentSettingsRepository>();
 
 		return serviceCollection;
 	}

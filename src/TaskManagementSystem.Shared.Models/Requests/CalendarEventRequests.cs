@@ -13,7 +13,7 @@ public class CreateEventRequest
 		string? place,
 		CalendarEventType type,
 		DateTimeOffset startTime,
-		DateTimeOffset? endTime,
+		DateTimeOffset endTime,
 		bool isPrivate)
 	{
 		CalendarId = calendarId;
@@ -66,7 +66,7 @@ public class CreateEventRequest
 	///     Время окончания.
 	/// </summary>
 	[Required]
-	public DateTimeOffset? EndTime { get; }
+	public DateTimeOffset EndTime { get; }
 
 	/// <summary>
 	///     Флаг конфиденциальности.

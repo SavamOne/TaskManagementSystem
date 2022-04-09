@@ -2,7 +2,7 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
-public class CalendarEvent
+public record CalendarEvent
 {
 	public CalendarEvent(Guid id,
 		Guid calendarId,
@@ -11,9 +11,10 @@ public class CalendarEvent
 		EventType eventType,
 		string? place,
 		DateTime startTimeUtc,
-		DateTime? endTimeUtc,
+		DateTime endTimeUtc,
 		bool isPrivate,
-		DateTime creationTimeUtc)
+		DateTime creationTimeUtc,
+		bool isRepeated)
 	{
 		Id = id;
 		CalendarId = calendarId;
@@ -25,6 +26,7 @@ public class CalendarEvent
 		EndTimeUtc = endTimeUtc;
 		IsPrivate = isPrivate;
 		CreationTimeUtc = creationTimeUtc;
+		IsRepeated = isRepeated;
 	}
 
 	public Guid Id { get; }
@@ -41,9 +43,13 @@ public class CalendarEvent
 
 	public DateTime StartTimeUtc { get; set; }
 
-	public DateTime? EndTimeUtc { get; set; }
+	public DateTime EndTimeUtc { get; set; }
 
 	public bool IsPrivate { get; set; }
 
 	public DateTime CreationTimeUtc { get; }
+	
+	public bool IsRepeated { get; set; }
+	
+	public uint RepeatNum { get; set; }
 }

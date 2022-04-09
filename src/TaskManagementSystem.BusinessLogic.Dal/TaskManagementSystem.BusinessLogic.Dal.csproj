@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic.Models\TaskManagementSystem.BusinessLogic.Models.csproj"/>
-        <ProjectReference Include="..\TaskManagementSystem.Shared.Dal\TaskManagementSystem.Shared.Dal.csproj"/>
+        <ProjectReference Include="..\TaskManagementSystem.BusinessLogic.Models\TaskManagementSystem.BusinessLogic.Models.csproj" />
+        <ProjectReference Include="..\TaskManagementSystem.Shared.Dal\TaskManagementSystem.Shared.Dal.csproj" />
     </ItemGroup>
 
 </Project>

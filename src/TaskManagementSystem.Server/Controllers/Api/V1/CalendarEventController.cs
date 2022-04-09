@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -18,12 +19,14 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 public class CalendarEventController : ControllerBase
 {
 	private readonly ICalendarEventService eventService;
+	private readonly ILogger<CalendarEventController> logger;
 	private readonly ITokenService tokenService;
 
-	public CalendarEventController(ITokenService tokenService, ICalendarEventService eventService)
+	public CalendarEventController(ITokenService tokenService, ICalendarEventService eventService, ILogger<CalendarEventController> logger)
 	{
 		this.tokenService = tokenService;
 		this.eventService = eventService;
+		this.logger = logger;
 	}
 
 	/// <summary>
@@ -161,8 +164,11 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
+		var stopWatch = Stopwatch.StartNew();
 		var result = await eventService.GetEventsInPeriodAsync(new GetEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
-
+		
+		logger.LogInformation("{0} processed in {1:g}", nameof(GetEventsInPeriodAsync), stopWatch.Elapsed);
+		
 		return Ok(result.Select(Convert).ToList());
 	}
 

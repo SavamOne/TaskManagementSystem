@@ -9,8 +9,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 {
 	public CalendarEventRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
-
-
+	
 	public async Task InsertAsync(CalendarEvent calendarEvent)
 	{
 		await InsertAsync(calendarEvent.ToDalEvent());
@@ -37,13 +36,22 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	{
 		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId
 											&& x.EndTime >= startPeriod
-											&& x.StartTime <= endPeriod);
+											&& x.StartTime <= endPeriod 
+											&& !x.IsRepeated);
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
+
+	public async Task<ICollection<CalendarEvent>> GetRepeatedEventsInRange(Guid calendarId)
+	{
+		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId && x.IsRepeated);
+
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
+
 	public async Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod)
 	{
-		var dalEvents = await SelectAsync(x => x.StartTime >= startPeriod && x.StartTime <= endPeriod);
+		var dalEvents = await SelectAsync(x => x.StartTime >= startPeriod && x.StartTime <= endPeriod && !x.IsRepeated);
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
