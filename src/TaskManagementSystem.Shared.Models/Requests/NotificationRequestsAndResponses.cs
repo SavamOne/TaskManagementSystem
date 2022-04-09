@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace TaskManagementSystem.Shared.Models.Requests;
 
 /// <summary>
-/// Запрос на подписку webpush уведомлений для устройства (https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-08)
+///     Запрос на подписку webpush уведомлений для устройства
+///     (https://datatracker.ietf.org/doc/html/draft-ietf-webpush-encryption-08)
 /// </summary>
 public class AddNotificationSubscribeRequest
 {
@@ -15,53 +16,53 @@ public class AddNotificationSubscribeRequest
 	}
 
 	/// <summary>
-	/// Адрес Push сервиса.
+	///     Адрес Push сервиса.
 	/// </summary>
 	[Required]
 	public string Url { get; }
 
 	/// <summary>
-	/// Открытый ключ.
+	///     Открытый ключ.
 	/// </summary>
 	[Required]
 	public string P256dh { get; }
 
 	/// <summary>
-	/// Auth secret.
+	///     Auth secret.
 	/// </summary>
 	[Required]
 	public string Auth { get; }
 }
 
 /// <summary>
-/// Запрос на отписку webpush уведомлений устройства
+///     Запрос на отписку webpush уведомлений устройства
 /// </summary>
 public class DeleteNotificationSubscribeRequest
 {
-	public DeleteNotificationSubscribeRequest(string url) 
+	public DeleteNotificationSubscribeRequest(string url)
 	{
 		Url = url;
 	}
 
 	/// <summary>
-	/// Адрес Push сервиса.
+	///     Адрес Push сервиса.
 	/// </summary>
 	[Required]
 	public string Url { get; }
 }
 
 /// <summary>
-/// Публичный ключ сервера приложения.
+///     Публичный ключ сервера приложения.
 /// </summary>
 public class GetPublicKeyResponse
 {
-	public GetPublicKeyResponse(string publicKey) 
+	public GetPublicKeyResponse(string publicKey)
 	{
 		PublicKey = publicKey;
 	}
 
 	/// <summary>
-	/// Значение ключа.
+	///     Значение ключа.
 	/// </summary>
 	[Required]
 	public string PublicKey { get; }

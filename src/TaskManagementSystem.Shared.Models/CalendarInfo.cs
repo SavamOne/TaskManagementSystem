@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Информация о календаре.
+///     Информация о календаре.
 /// </summary>
 public class CalendarInfo
 {
@@ -20,25 +20,25 @@ public class CalendarInfo
 	}
 
 	/// <summary>
-	/// Id календаря.
+	///     Id календаря.
 	/// </summary>
 	[Required]
 	public Guid Id { get; }
 
 	/// <summary>
-	/// Имя.
+	///     Имя.
 	/// </summary>
 	[Required]
 	public string Name { get; }
 
 	/// <summary>
-	/// Описание.
+	///     Описание.
 	/// </summary>
 	[Required]
 	public string Description { get; }
 
 	/// <summary>
-	/// Дата создания.
+	///     Дата создания.
 	/// </summary>
 	[Required]
 	public DateTimeOffset CreationDate { get; }

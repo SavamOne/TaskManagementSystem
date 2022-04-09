@@ -1,37 +1,37 @@
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Тип события.
+///     Тип события.
 /// </summary>
 public enum CalendarEventType
 {
 	/// <summary>
-	/// Неизвестный.
+	///     Неизвестный.
 	/// </summary>
 	Unknown = 0,
-	
+
 	/// <summary>
-	/// Событие.
+	///     Событие.
 	/// </summary>
 	Event,
-	
+
 	/// <summary>
-	/// Встреча.
+	///     Встреча.
 	/// </summary>
 	Meeting,
-	
+
 	/// <summary>
-	/// Звонок.
+	///     Звонок.
 	/// </summary>
 	Call,
-	
+
 	/// <summary>
-	/// Задача.
+	///     Задача.
 	/// </summary>
 	Task,
-	
+
 	/// <summary>
-	/// Напоминание.
+	///     Напоминание.
 	/// </summary>
 	Reminder
 }

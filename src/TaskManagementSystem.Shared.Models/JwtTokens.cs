@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Токены.
+///     Токены.
 /// </summary>
 public class Tokens
 {
@@ -15,13 +15,13 @@ public class Tokens
 	}
 
 	/// <summary>
-	/// Access токен.
+	///     Access токен.
 	/// </summary>
 	[Required]
 	public string AccessToken { get; }
 
 	/// <summary>
-	/// Refresh токен.
+	///     Refresh токен.
 	/// </summary>
 	[Required]
 	public string RefreshToken { get; }

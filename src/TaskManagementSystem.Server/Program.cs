@@ -37,17 +37,18 @@ if (builder.Environment.IsDevelopment())
 {
 	builder.Services.AddSwaggerGen(options =>
 	{
-		options.SwaggerDoc("API", new OpenApiInfo
-		{
-			Version = "v1",
-			Title = "TaskManagementSystem Public API Спецификация (v1)",
-			Description = "Web API сервиса по работе с календарями и событиями",
-			Contact = new OpenApiContact
+		options.SwaggerDoc("API",
+			new OpenApiInfo
 			{
-				Name = "GitHub",
-				Url = new Uri("https://github.com/SavamOne/TaskManagementSystem")
-			}
-		});
+				Version = "v1",
+				Title = "TaskManagementSystem Public API Спецификация (v1)",
+				Description = "Web API сервиса по работе с календарями и событиями",
+				Contact = new OpenApiContact
+				{
+					Name = "GitHub",
+					Url = new Uri("https://github.com/SavamOne/TaskManagementSystem")
+				}
+			});
 		options.DescribeAllParametersInCamelCase();
 		foreach (string xmlDocPath in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))
 		{

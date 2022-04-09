@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Объект ошибки.
+///     Объект ошибки.
 /// </summary>
 public class ErrorObject
 {
@@ -14,7 +14,7 @@ public class ErrorObject
 	}
 
 	/// <summary>
-	/// Текст ошибки.
+	///     Текст ошибки.
 	/// </summary>
 	[Required]
 	public string Error { get; }

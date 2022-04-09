@@ -1,27 +1,27 @@
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Роль участника календаря.
+///     Роль участника календаря.
 /// </summary>
 public enum EventParticipantRole
 {
 	/// <summary>
-	/// Не выставлена (по умолчанию).
+	///     Не выставлена (по умолчанию).
 	/// </summary>
 	NotSet = -1,
-	
+
 	/// <summary>
-	/// Информируемый.
+	///     Информируемый.
 	/// </summary>
 	Inform = 0,
-	
+
 	/// <summary>
-	/// Участник.
+	///     Участник.
 	/// </summary>
 	Participant = 1,
-	
+
 	/// <summary>
-	/// Создатель.
+	///     Создатель.
 	/// </summary>
 	Creator = 2
 }

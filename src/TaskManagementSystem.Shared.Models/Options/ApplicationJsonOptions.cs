@@ -28,6 +28,9 @@ public static class ApplicationJsonOptions
 		PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
 		PropertyNamingPolicy = PropertyNamingPolicy,
 		DefaultIgnoreCondition = DefaultIgnoreCondition,
-		Converters = { new JsonStringEnumConverter() }
+		Converters =
+		{
+			new JsonStringEnumConverter()
+		}
 	};
 }

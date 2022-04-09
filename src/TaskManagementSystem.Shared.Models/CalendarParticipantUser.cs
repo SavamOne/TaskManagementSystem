@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Участник календаря.
+///     Участник календаря.
 /// </summary>
 public class CalendarParticipantUser
 {
@@ -29,49 +29,49 @@ public class CalendarParticipantUser
 	}
 
 	/// <summary>
-	/// Id участника события.
+	///     Id участника события.
 	/// </summary>
 	[Required]
 	public Guid Id { get; }
 
 	/// <summary>
-	/// Id календаря.
+	///     Id календаря.
 	/// </summary>
 	[Required]
 	public Guid CalendarId { get; }
 
 	/// <summary>
-	/// Id пользователя
+	///     Id пользователя
 	/// </summary>
 	[Required]
 	public Guid UserId { get; }
 
 	/// <summary>
-	/// Дата присоединения в календарь.
+	///     Дата присоединения в календарь.
 	/// </summary>
 	[Required]
 	public DateTimeOffset CalendarJoinDate { get; }
 
 	/// <summary>
-	/// Роль в календаре.
+	///     Роль в календаре.
 	/// </summary>
 	[Required]
 	public CalendarParticipantRole Role { get; }
 
 	/// <summary>
-	/// Имя пользователя.
+	///     Имя пользователя.
 	/// </summary>
 	[Required]
 	public string Username { get; }
 
 	/// <summary>
-	/// Email.
+	///     Email.
 	/// </summary>
 	[Required]
 	public string Email { get; }
 
 	/// <summary>
-	/// Дата регистрации.
+	///     Дата регистрации.
 	/// </summary>
 	[Required]
 	public DateTimeOffset RegisterDate { get; }

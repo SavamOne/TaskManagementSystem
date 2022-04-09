@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Информация о событии.
+///     Информация о событии.
 /// </summary>
 public class EventInfo
 {
@@ -31,61 +31,61 @@ public class EventInfo
 	}
 
 	/// <summary>
-	/// Id события.
+	///     Id события.
 	/// </summary>
 	[Required]
 	public Guid Id { get; }
 
 	/// <summary>
-	/// Id календаря.
+	///     Id календаря.
 	/// </summary>
 	[Required]
 	public Guid CalendarId { get; }
 
 	/// <summary>
-	/// Имя события.
+	///     Имя события.
 	/// </summary>
 	[Required]
 	public string Name { get; }
 
 	/// <summary>
-	/// Описание события.
+	///     Описание события.
 	/// </summary>
 	[Required]
 	public string? Description { get; }
 
 	/// <summary>
-	/// Тип события.
+	///     Тип события.
 	/// </summary>
 	[Required]
 	public CalendarEventType EventType { get; }
 
 	/// <summary>
-	/// Место события.
+	///     Место события.
 	/// </summary>
 	[Required]
 	public string? Place { get; }
 
 	/// <summary>
-	/// Время начала события.
+	///     Время начала события.
 	/// </summary>
 	[Required]
 	public DateTimeOffset StartTime { get; }
 
 	/// <summary>
-	/// Время окончания события.
+	///     Время окончания события.
 	/// </summary>
 	[Required]
 	public DateTimeOffset? EndTime { get; }
 
 	/// <summary>
-	/// Флаг конфиденциальности события.
+	///     Флаг конфиденциальности события.
 	/// </summary>
 	[Required]
 	public bool IsPrivate { get; }
 
 	/// <summary>
-	/// Дата создания.
+	///     Дата создания.
 	/// </summary>
 	[Required]
 	public DateTimeOffset CreationTime { get; }

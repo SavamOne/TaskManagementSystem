@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Участник события.
+///     Участник события.
 /// </summary>
 public class EventParticipantUser
 {
@@ -28,49 +28,49 @@ public class EventParticipantUser
 	}
 
 	/// <summary>
-	/// Имя пользователя.
+	///     Имя пользователя.
 	/// </summary>
 	[Required]
 	public string UserName { get; }
 
 	/// <summary>
-	/// Email пользователя.
+	///     Email пользователя.
 	/// </summary>
 	[Required]
 	public string UserEmail { get; }
 
 	/// <summary>
-	/// Id участника события.
+	///     Id участника события.
 	/// </summary>
 	[Required]
 	public Guid EventParticipantId { get; }
 
 	/// <summary>
-	/// Id участника календаря.
+	///     Id участника календаря.
 	/// </summary>
 	[Required]
 	public Guid CalendarParticipantId { get; }
 
 	/// <summary>
-	/// Id пользователя.
+	///     Id пользователя.
 	/// </summary>
 	[Required]
 	public Guid UserId { get; }
 
 	/// <summary>
-	/// Id события.
+	///     Id события.
 	/// </summary>
 	[Required]
 	public Guid EventId { get; }
 
 	/// <summary>
-	/// Id календаря.
+	///     Id календаря.
 	/// </summary>
 	[Required]
 	public Guid CalendarId { get; }
 
 	/// <summary>
-	/// Роль в событии.
+	///     Роль в событии.
 	/// </summary>
 	[Required]
 	public EventParticipantRole Role { get; }

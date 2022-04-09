@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Полная информация о событии вместе с участниками.
+///     Полная информация о событии вместе с участниками.
 /// </summary>
 public class CalendarWithParticipantUsers
 {
@@ -15,13 +15,13 @@ public class CalendarWithParticipantUsers
 	}
 
 	/// <summary>
-	/// Информация о календаре.
+	///     Информация о календаре.
 	/// </summary>
 	[Required]
 	public CalendarInfo Calendar { get; }
 
 	/// <summary>
-	/// Коллекция участников.
+	///     Коллекция участников.
 	/// </summary>
 	[Required]
 	public IEnumerable<CalendarParticipantUser> Participants { get; }

@@ -25,14 +25,14 @@ public class NotificationController : ControllerBase
 	}
 
 	/// <summary>
-	/// Подписать устройство на получение уведомлений.
+	///     Подписать устройство на получение уведомлений.
 	/// </summary>
-	/// <param name="request"><see cref="AddNotificationSubscribeRequest"/>.</param>
-	/// <returns><see cref="bool"/>.</returns>
-	/// <response code="200">Возвращает <see cref="bool"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="AddNotificationSubscribeRequest" />.</param>
+	/// <returns><see cref="bool" />.</returns>
+	/// <response code="200">Возвращает <see cref="bool" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("Subscribe")]
 	public async Task<IActionResult> SubscribeAsync([Required] AddNotificationSubscribeRequest request)
@@ -45,14 +45,16 @@ public class NotificationController : ControllerBase
 	}
 
 	/// <summary>
-	/// Отписать устройство от получения уведомлений.
+	///     Отписать устройство от получения уведомлений.
 	/// </summary>
-	/// <param name="request"><see cref="DeleteNotificationSubscribeRequest"/></param>
-	/// <returns><see cref="bool"/>.</returns>
-	/// <response code="200">Возвращает <see cref="bool"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request">
+	///     <see cref="DeleteNotificationSubscribeRequest" />
+	/// </param>
+	/// <returns><see cref="bool" />.</returns>
+	/// <response code="200">Возвращает <see cref="bool" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("Unsubscribe")]
 	public async Task<IActionResult> Unsubscribe([Required] DeleteNotificationSubscribeRequest request)
@@ -63,13 +65,13 @@ public class NotificationController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить публичный ключ для подписки на уведомления.
+	///     Получить публичный ключ для подписки на уведомления.
 	/// </summary>
-	/// <returns><see cref="GetPublicKeyResponse"/>.</returns>
-	/// <response code="200">Возвращает <see cref="GetPublicKeyResponse"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <returns><see cref="GetPublicKeyResponse" />.</returns>
+	/// <response code="200">Возвращает <see cref="GetPublicKeyResponse" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(GetPublicKeyResponse), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("GetPublicKey")]
 	public IActionResult GetPublicKey()

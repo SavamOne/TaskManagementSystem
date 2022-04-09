@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Информация о пользователе.
+///     Информация о пользователе.
 /// </summary>
 public class UserInfo
 {
@@ -20,25 +20,25 @@ public class UserInfo
 	}
 
 	/// <summary>
-	/// Id пользователя.
+	///     Id пользователя.
 	/// </summary>
 	[Required]
 	public Guid Id { get; }
 
 	/// <summary>
-	/// Имя.
+	///     Имя.
 	/// </summary>
 	[Required]
 	public string Name { get; }
 
 	/// <summary>
-	/// Email.
+	///     Email.
 	/// </summary>
 	[Required]
 	public string Email { get; }
 
 	/// <summary>
-	/// Дата регистрации.
+	///     Дата регистрации.
 	/// </summary>
 	[Required]
 	public DateTimeOffset DateJoined { get; }

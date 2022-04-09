@@ -4,7 +4,7 @@ using TaskManagementSystem.Shared.Helpers;
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Полная информация о событии вместе с участниками.
+///     Полная информация о событии вместе с участниками.
 /// </summary>
 public class EventWithParticipants
 {
@@ -22,31 +22,31 @@ public class EventWithParticipants
 	}
 
 	/// <summary>
-	/// Флаг права на редактирование события у пользователя.
+	///     Флаг права на редактирование события у пользователя.
 	/// </summary>
 	[Required]
 	public bool CanUserEditEvent { get; }
 
 	/// <summary>
-	/// Флаг права на редактирование списка участников у пользователя.
+	///     Флаг права на редактирование списка участников у пользователя.
 	/// </summary>
 	[Required]
 	public bool CanUserEditParticipants { get; }
 
 	/// <summary>
-	/// Флаг права на удаление события у пользователя
+	///     Флаг права на удаление события у пользователя
 	/// </summary>
 	[Required]
 	public bool CanUserDeleteEvent { get; }
 
 	/// <summary>
-	/// Информация о событии.
+	///     Информация о событии.
 	/// </summary>
 	[Required]
 	public EventInfo EventInfo { get; }
 
 	/// <summary>
-	/// Коллекция участников.
+	///     Коллекция участников.
 	/// </summary>
 	[Required]
 	public ICollection<EventParticipantUser> Participants { get; }

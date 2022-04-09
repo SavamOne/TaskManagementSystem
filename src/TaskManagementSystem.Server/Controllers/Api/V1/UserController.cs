@@ -27,14 +27,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Зарегистрироваться.
+	///     Зарегистрироваться.
 	/// </summary>
-	/// <param name="request"><see cref="RegisterRequest"/>.</param>
-	/// <returns><see cref="Tokens"/>.</returns>
-	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="RegisterRequest" />.</param>
+	/// <returns><see cref="Tokens" />.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Register")]
 	public async Task<IActionResult> RegisterUserAsync([Required] RegisterRequest request)
 	{
@@ -47,14 +47,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Авторизоваться.
+	///     Авторизоваться.
 	/// </summary>
-	/// <param name="request"><see cref="LoginRequest"/>.</param>
-	/// <returns><see cref="Tokens"/>.</returns>
-	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="LoginRequest" />.</param>
+	/// <returns><see cref="Tokens" />.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Login")]
 	public async Task<IActionResult> LoginAsync([Required] LoginRequest request)
 	{
@@ -67,14 +67,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Обновить refresh-токен.
+	///     Обновить refresh-токен.
 	/// </summary>
-	/// <param name="request"><see cref="RefreshTokensRequest"/>.</param>
-	/// <returns><see cref="Tokens"/>.</returns>
-	/// <response code="200">Возвращает <see cref="Tokens"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="RefreshTokensRequest" />.</param>
+	/// <returns><see cref="Tokens" />.</returns>
+	/// <response code="200">Возвращает <see cref="Tokens" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(Tokens), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[HttpPost("Refresh")]
 	public async Task<IActionResult> RefreshAsync([Required] RefreshTokensRequest request)
 	{
@@ -86,13 +86,13 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить информацию о пользователе.
+	///     Получить информацию о пользователе.
 	/// </summary>
-	/// <returns><see cref="UserInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <returns><see cref="UserInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("GetInfo")]
@@ -106,14 +106,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить информацию о пользователе по Id.
+	///     Получить информацию о пользователе по Id.
 	/// </summary>
-	/// <param name="request"><see cref="GetUserInfoByIdRequest"/>.</param>
-	/// <returns><see cref="UserInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="GetUserInfoByIdRequest" />.</param>
+	/// <returns><see cref="UserInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("GetInfoById")]
@@ -127,14 +127,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Изменить пароль пользователя.
+	///     Изменить пароль пользователя.
 	/// </summary>
-	/// <param name="request"><see cref="ChangePasswordRequest"/>.</param>
-	/// <returns><see cref="UserInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="ChangePasswordRequest" />.</param>
+	/// <returns><see cref="UserInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("ChangePassword")]
@@ -149,14 +149,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Изменить информацию о себе.
+	///     Изменить информацию о себе.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeUserInfoRequest"/>.</param>
-	/// <returns><see cref="UserInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="UserInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="ChangeUserInfoRequest" />.</param>
+	/// <returns><see cref="UserInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="UserInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(UserInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("ChangeInfo")]
@@ -171,14 +171,14 @@ public class UserController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить пользователей по фильтру.
+	///     Получить пользователей по фильтру.
 	/// </summary>
-	/// <param name="request"><see cref="GetUserInfosByFilterRequest"/>.</param>
-	/// <returns>Коллекция <see cref="UserInfo"/>.</returns>
-	/// <response code="200">Возвращает коллекцию <see cref="UserInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="GetUserInfosByFilterRequest" />.</param>
+	/// <returns>Коллекция <see cref="UserInfo" />.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="UserInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(IEnumerable<UserInfo>), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
 	[HttpPost("GetByFilter")]

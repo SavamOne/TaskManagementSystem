@@ -26,13 +26,13 @@ public class CalendarController : ControllerBase
 		this.tokenService = tokenService;
 		this.calendarService = calendarService;
 	}
-	
+
 	/// <summary>
-	/// Получить список календарей пользователей.
+	///     Получить список календарей пользователей.
 	/// </summary>
-	/// <returns>Коллекция <see cref="CalendarInfo"/>.</returns>
-	/// <response code="200">Возвращает коллекцию <see cref="CalendarInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <returns>Коллекция <see cref="CalendarInfo" />.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="CalendarInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[HttpPost("GetMyList")]
 	[ProducesResponseType(typeof(IEnumerable<CalendarInfo>), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -46,14 +46,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Создать календарь.
+	///     Создать календарь.
 	/// </summary>
-	/// <param name="request"><see cref="CreateCalendarRequest"/>.</param>
-	/// <returns><see cref="CalendarInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="CreateCalendarRequest" />.</param>
+	/// <returns><see cref="CalendarInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("Create")]
 	public async Task<IActionResult> CreateCalendarAsync([Required] CreateCalendarRequest request)
@@ -66,14 +66,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Отредактировать календарь.
+	///     Отредактировать календарь.
 	/// </summary>
-	/// <param name="request"><see cref="EditCalendarRequest"/>.</param>
-	/// <returns><see cref="CalendarInfo"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarInfo"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="EditCalendarRequest" />.</param>
+	/// <returns><see cref="CalendarInfo" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarInfo), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("Edit")]
 	public async Task<IActionResult> EditCalendarAsync([Required] EditCalendarRequest request)
@@ -86,14 +86,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Добавить участников календаря.
+	///     Добавить участников календаря.
 	/// </summary>
-	/// <param name="request"><see cref="AddCalendarParticipantsRequest"/>.</param>
-	/// <returns><see cref="CalendarWithParticipantUsers"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="AddCalendarParticipantsRequest" />.</param>
+	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("AddParticipants")]
 	public async Task<IActionResult> AddParticipantsAsync([Required] AddCalendarParticipantsRequest request)
@@ -110,14 +110,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Изменить роль участников календаря.
+	///     Изменить роль участников календаря.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeCalendarParticipantsRoleRequest"/>.</param>
-	/// <returns><see cref="CalendarWithParticipantUsers"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="ChangeCalendarParticipantsRoleRequest" />.</param>
+	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("ChangeParticipantsRole")]
 	public async Task<IActionResult> ChangeParticipantsRoleAsync([Required] ChangeCalendarParticipantsRoleRequest request)
@@ -134,14 +134,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Удалить участников календаря.
+	///     Удалить участников календаря.
 	/// </summary>
-	/// <param name="request"><see cref="DeleteParticipantsRequest"/>.</param>
-	/// <returns><see cref="CalendarWithParticipantUsers"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="DeleteParticipantsRequest" />.</param>
+	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("DeleteParticipants")]
 	public async Task<IActionResult> DeleteParticipantsAsync([Required] DeleteParticipantsRequest request)
@@ -156,14 +156,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить информацию о календаре.
+	///     Получить информацию о календаре.
 	/// </summary>
-	/// <param name="request"><see cref="GetCalendarInfoRequest"/>.</param>
-	/// <returns><see cref="CalendarWithParticipantUsers"/>.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="GetCalendarInfoRequest" />.</param>
+	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
+	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("GetInfo")]
 	public async Task<IActionResult> GetCalendarInfoAsync([Required] GetCalendarInfoRequest request)
@@ -174,14 +174,14 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	/// Получить участников календаря по фильтру.
+	///     Получить участников календаря по фильтру.
 	/// </summary>
-	/// <param name="request"><see cref="GetCalendarParticipantsByFilterRequest"/>.</param>
-	/// <returns>Коллекция <see cref="CalendarParticipantUser"/>.</returns>
-	/// <response code="200">Возвращает коллекцию <see cref="CalendarParticipantUser"/>.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject"/>.</response>
+	/// <param name="request"><see cref="GetCalendarParticipantsByFilterRequest" />.</param>
+	/// <returns>Коллекция <see cref="CalendarParticipantUser" />.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="CalendarParticipantUser" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(IEnumerable<CalendarParticipantUser>), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject),StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("GetParticipantsByFilter")]
 	public async Task<IActionResult> GetParticipantsByFilterAsync([Required] GetCalendarParticipantsByFilterRequest request)
