@@ -190,7 +190,7 @@ public class CalendarController : ControllerBase
 
 		request.AssertNotNull();
 
-		var result = await calendarService.GetParticipantsByFilter(new GetCalendarParticipantsByFilter(userId, request.CalendarId, request.Filter));
+		var result = await calendarService.GetParticipantsByFilterAsync(new GetCalendarParticipantsByFilter(userId, request.CalendarId, request.Filter));
 
 		var participantsUsers = result.Select(participant => new CalendarParticipantUser(participant.Id,
 				participant.CalendarId,
@@ -203,6 +203,26 @@ public class CalendarController : ControllerBase
 		   .ToList();
 
 		return Ok(participantsUsers);
+	}
+
+	/// <summary>
+	///     Получить имя календаря по его идентификатору.
+	/// </summary>
+	/// <param name="request"><see cref="GetCalendarNameRequest" />.</param>
+	/// <returns>Коллекция <see cref="CalendarNameResponse" />.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="CalendarNameResponse"/>.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
+	[ProducesResponseType(typeof(IEnumerable<CalendarNameResponse>), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[HttpPost("GetCalendarName")]
+	public async Task<IActionResult> GetCalendarNameAsync([Required] GetCalendarNameRequest request)
+	{
+		request.AssertNotNull();
+
+		var names = await calendarService.GetCalendarNamesAsync(request.CalendarIds);
+		
+		return Ok(names.Select(x=> new CalendarNameResponse(x.CalendarId, x.Name)));
 	}
 
 	private async Task<CalendarWithParticipantUsers> ConvertAsync([Required] CalendarWithParticipants request)

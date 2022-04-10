@@ -167,6 +167,16 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
+	
+	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNameRequest request)
+	{
+		var result =
+			await SendRequestAsync<GetCalendarNameRequest, ICollection<CalendarNameResponse>>(new Uri("Api/V1/Calendar/GetCalendarName", UriKind.Relative),
+				HttpMethod.Post,
+				request);
+
+		return result;
+	}
 
 	public async Task<Result<EventInfo>> CreateEvent(CreateEventRequest request)
 	{

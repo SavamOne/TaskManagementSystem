@@ -19,5 +19,7 @@ public interface ICalendarService
 
 	Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id);
 
-	Task<ICollection<CalendarParticipant>> GetParticipantsByFilter(GetCalendarParticipantsByFilter data);
+	Task<ICollection<CalendarParticipant>> GetParticipantsByFilterAsync(GetCalendarParticipantsByFilter data);
+	
+	Task<ICollection<CalendarName>> GetCalendarNamesAsync(ISet<Guid> calendarIds);
 }

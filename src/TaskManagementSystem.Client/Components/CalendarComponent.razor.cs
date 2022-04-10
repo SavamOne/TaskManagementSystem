@@ -5,6 +5,7 @@ using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
+using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
@@ -40,10 +41,25 @@ public partial class CalendarComponent
 	private int Year { get; set; }
 
 	private ICollection<DayOfWeekViewModel>? DayOfWeekNamesWithFirstDay { get; set; }
+	
+	private string? CalendarName { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
 		IsLoaded = false;
+
+		var result = await ServerProxy!.GetCalendarName(new GetCalendarNameRequest(new HashSet<Guid>
+		{
+			CalendarId
+		}));
+
+		if (!result.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+			return;
+		}
+
+		CalendarName = result.Value!.FirstOrDefault()?.Name;
 
 		CultureInfo = await LocalizationService!.GetApplicationCultureAsync();
 		FirstDayOfWeek = CultureInfo.DateTimeFormat.FirstDayOfWeek;

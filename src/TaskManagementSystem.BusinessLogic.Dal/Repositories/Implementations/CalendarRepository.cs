@@ -28,6 +28,13 @@ public class CalendarRepository : Repository<DalCalendar>, ICalendarRepository
 
 		return dalCalendar?.ToCalendar();
 	}
+	
+	public async Task<ICollection<Calendar>> GetByIdsAsync(ISet<Guid> ids)
+	{
+		var dalCalendars = await SelectAsync(x => ids.Contains(x.Id) && !x.IsDeleted);
+
+		return dalCalendars.Select(x => x.ToCalendar()).ToList();
+	}
 
 	public async Task<ICollection<Calendar>> GetByUserId(Guid userId)
 	{

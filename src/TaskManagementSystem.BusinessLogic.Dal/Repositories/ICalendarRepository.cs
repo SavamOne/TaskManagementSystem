@@ -8,6 +8,8 @@ public interface ICalendarRepository
 
 	Task<Calendar?> GetByNameAsync(string name);
 
+	Task<ICollection<Calendar>> GetByIdsAsync(ISet<Guid> ids);
+
 	Task<ICollection<Calendar>> GetByUserId(Guid userId);
 
 	Task InsertAsync(Calendar calendar);

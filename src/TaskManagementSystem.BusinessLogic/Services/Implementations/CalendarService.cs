@@ -146,7 +146,7 @@ public class CalendarService : ICalendarService
 		return new CalendarWithParticipants(calendar, participants);
 	}
 
-	public async Task<ICollection<CalendarParticipant>> GetParticipantsByFilter(GetCalendarParticipantsByFilter data)
+	public async Task<ICollection<CalendarParticipant>> GetParticipantsByFilterAsync(GetCalendarParticipantsByFilter data)
 	{
 		data.AssertNotNull();
 
@@ -154,7 +154,18 @@ public class CalendarService : ICalendarService
 
 		return await calendarParticipantRepository.GetByFilter(data.CalendarId, data.Filter, 50);
 	}
+	
+	public async Task<ICollection<CalendarName>> GetCalendarNamesAsync(ISet<Guid> calendarIds)
+	{
+		var calendars = await calendarRepository.GetByIdsAsync(calendarIds);
+		if (calendarIds.Count != calendars.Count)
+		{
+			throw new BusinessLogicException("Не все календари удалось найти.");
+		}
 
+		return calendars.Select(x => new CalendarName(x.Id, x.Name)).ToList();
+	}
+	
 	private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
 	{
 		//Проверка, что нельзя удалить создателя календаря

@@ -214,3 +214,45 @@ public class GetCalendarParticipantsByFilterRequest
 	[Required]
 	public string Filter { get; }
 }
+
+/// <summary>
+///		Запрос на получение имен календарей.
+/// </summary>
+public class GetCalendarNameRequest
+{
+	public GetCalendarNameRequest(ISet<Guid> calendarIds) 
+	{
+		CalendarIds = calendarIds;
+	}
+
+	/// <summary>
+	///     Id календаря.
+	/// </summary>
+	[Required]
+	public ISet<Guid> CalendarIds { get; }
+}
+
+/// <summary>
+///		Имя календаря.
+/// </summary>
+public class CalendarNameResponse
+{
+	public CalendarNameResponse(Guid calendarId, string name)
+	{
+		CalendarId = calendarId;
+		Name = name;
+	}
+
+	
+	/// <summary>
+	///     Идентификатор календаря.
+	/// </summary>
+	[Required]
+	public Guid CalendarId { get; }
+
+	/// <summary>
+	///     Имя.
+	/// </summary>
+	[Required]
+	public string Name { get; }
+}
