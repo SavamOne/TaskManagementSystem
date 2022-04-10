@@ -161,18 +161,21 @@ public record EventViewModel
 			EventType,
 			StartDate,
 			EndDate,
-			IsPrivate);
+			IsPrivate,
+			null);
 	}
 
 	public EditEventRequest GetEditRequest()
 	{
 		return new EditEventRequest(Id,
+			false,
 			Name,
 			Description,
 			Place,
 			EventType,
 			StartDate,
 			EndDate,
-			IsPrivate);
+			IsPrivate,
+			null);
 	}
 }

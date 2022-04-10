@@ -16,7 +16,9 @@ public class EventInfo
 		DateTimeOffset startTime,
 		DateTimeOffset? endTime,
 		bool isPrivate,
-		DateTimeOffset creationTime)
+		DateTimeOffset creationTime,
+		bool isRepeated,
+		uint repeatNum)
 	{
 		Id = id;
 		CalendarId = calendarId;
@@ -28,6 +30,8 @@ public class EventInfo
 		EndTime = endTime;
 		IsPrivate = isPrivate;
 		CreationTime = creationTime;
+		IsRepeated = isRepeated;
+		RepeatNum = repeatNum;
 	}
 
 	/// <summary>
@@ -89,4 +93,16 @@ public class EventInfo
 	/// </summary>
 	[Required]
 	public DateTimeOffset CreationTime { get; }
+	
+	/// <summary>
+	///      Флаг, что для события заданы настройки повторения.
+	/// </summary>
+	[Required]
+	public bool IsRepeated { get; }
+	
+	/// <summary>
+	///      Номер повторения. Для события без повтора значение будет 0.
+	/// </summary>
+	[Required]
+	public uint RepeatNum { get; }
 }

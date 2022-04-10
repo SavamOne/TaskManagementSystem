@@ -14,7 +14,8 @@ public class CreateEventRequest
 		CalendarEventType type,
 		DateTimeOffset startTime,
 		DateTimeOffset endTime,
-		bool isPrivate)
+		bool isPrivate,
+		RecurrentSettingsRequest? recurrentSettings)
 	{
 		CalendarId = calendarId;
 		Name = name;
@@ -24,6 +25,7 @@ public class CreateEventRequest
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		RecurrentSettings = recurrentSettings;
 	}
 
 	/// <summary>
@@ -73,6 +75,49 @@ public class CreateEventRequest
 	/// </summary>
 	[Required]
 	public bool IsPrivate { get; }
+
+	/// <summary>
+	///     Настройки повторения событий.
+	/// </summary>
+	public RecurrentSettingsRequest? RecurrentSettings { get; }
+}
+
+/// <summary>
+///     Запрос на создание повторения события.
+/// </summary>
+public class RecurrentSettingsRequest
+{
+	public RecurrentSettingsRequest(EventRepeatType repeatType,
+		ISet<DayOfWeek> dayOfWeeks,
+		uint? count,
+		DateTimeOffset? until)
+	{
+		Count = count;
+		Until = until;
+		RepeatType = repeatType;
+		DayOfWeeks = dayOfWeeks;
+	}
+
+	/// <summary>
+	///     Ограничение повторения по количеству. null - отсутствие ограничения.
+	/// </summary>
+	public uint? Count { get; }
+
+	/// <summary>
+	///     Ограничение повторения до определенной даты. null - отсутствие ограничения.
+	/// </summary>
+	public DateTimeOffset? Until { get; }
+
+	/// <summary>
+	///     Вид повторения.
+	/// </summary>
+	[Required]
+	public EventRepeatType RepeatType { get; }
+
+	/// <summary>
+	///     Дни недели. Учитывается только если <see cref="RepeatType" />==<see cref="EventRepeatType.OnWeekDays" />.
+	/// </summary>
+	public ISet<DayOfWeek>? DayOfWeeks { get; }
 }
 
 /// <summary>
@@ -81,15 +126,18 @@ public class CreateEventRequest
 public class EditEventRequest
 {
 	public EditEventRequest(Guid eventId,
+		bool isRepeated,
 		string? name,
 		string? description,
 		string? place,
 		CalendarEventType? type,
 		DateTimeOffset? startTime,
 		DateTimeOffset? endTime,
-		bool? isPrivate)
+		bool? isPrivate,
+		RecurrentSettingsRequest? recurrentSettings)
 	{
 		EventId = eventId;
+		IsRepeated = isRepeated;
 		Name = name;
 		Description = description;
 		Place = place;
@@ -97,6 +145,7 @@ public class EditEventRequest
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		RecurrentSettings = recurrentSettings;
 	}
 
 	/// <summary>
@@ -104,6 +153,12 @@ public class EditEventRequest
 	/// </summary>
 	[Required]
 	public Guid EventId { get; }
+
+	/// <summary>
+	///     Флаг повторения события.
+	/// </summary>
+	[Required]
+	public bool IsRepeated { get; }
 
 	/// <summary>
 	///     Имя.
@@ -139,6 +194,11 @@ public class EditEventRequest
 	///     Флаг конфиденциальности.
 	/// </summary>
 	public bool? IsPrivate { get; }
+
+	/// <summary>
+	///    Настройки повторения события. Учитывается только если <see cref="IsRepeated"/> истина.
+	/// </summary>
+	public RecurrentSettingsRequest? RecurrentSettings { get; }
 }
 
 /// <summary>

@@ -205,7 +205,9 @@ public class CalendarEventController : ControllerBase
 			x.StartTimeUtc,
 			x.EndTimeUtc,
 			x.IsPrivate,
-			x.CreationTimeUtc);
+			x.CreationTimeUtc,
+			x.IsRepeated,
+			x.RepeatNum);
 	}
 
 	private static AddCalendarEventData Convert(CreateEventRequest request, Guid userId)
@@ -219,15 +221,14 @@ public class CalendarEventController : ControllerBase
 			request.StartTime,
 			request.EndTime,
 			request.IsPrivate,
-			null);
+			Convert(request.RecurrentSettings));
 	}
 
 	private static ChangeCalendarEventData Convert(EditEventRequest request, Guid userId)
 	{
 		return new ChangeCalendarEventData(userId,
 			request.EventId,
-			//TODO: НАСТРОЙКИ
-			false,
+			request.IsRepeated,
 			request.Name,
 			request.Description,
 			(EventType?)request.Type,
@@ -235,7 +236,20 @@ public class CalendarEventController : ControllerBase
 			request.StartTime,
 			request.EndTime,
 			request.IsPrivate,
-			null);
+			Convert(request.RecurrentSettings));
+	}
+
+	private static AddRecurrentSettingsData? Convert(RecurrentSettingsRequest? request)
+	{
+		if (request is null)
+		{
+			return null;
+		}
+		
+		return new AddRecurrentSettingsData((RepeatType)request.RepeatType,
+			request.DayOfWeeks,
+			request.Until,
+			request.Count);
 	}
 
 	private static AddEventParticipantsData Convert(AddEventParticipantsRequest request, Guid userId)

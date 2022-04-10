@@ -6,6 +6,7 @@ using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.BusinessLogic.Models.Requests;
 using TaskManagementSystem.BusinessLogic.Resources;
 using TaskManagementSystem.Shared.Dal;
+using TaskManagementSystem.Shared.Dal.Extensions;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
@@ -46,7 +47,7 @@ public class CalendarEventService : ICalendarEventService
 			throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
 		}
 
-		if (DateTimeOffset.Now - data.StartTime.ToLocalTime() > TimeSpan.FromDays(1))
+		if (DateTime.UtcNow - data.StartTime.UtcDateTime > TimeSpan.FromDays(1))
 		{
 			throw new BusinessLogicException("Нельзя создавать события, начавшиеся более 24 часов назад");
 		}
@@ -62,8 +63,8 @@ public class CalendarEventService : ICalendarEventService
 			data.Description,
 			data.EventType,
 			data.Place,
-			data.StartTime.UtcDateTime,
-			data.EndTime.UtcDateTime,
+			data.StartTime.UtcDateTime.StripSeconds(),
+			data.EndTime.UtcDateTime.StripSeconds(),
 			data.IsPrivate,
 			DateTime.UtcNow,
 			recurrentSettings is not null);
@@ -187,19 +188,19 @@ public class CalendarEventService : ICalendarEventService
 		@event.Place = data.Place ?? @event.Place;
 		@event.EventType = data.EventType ?? @event.EventType;
 		@event.IsPrivate = data.IsPrivate ?? @event.IsPrivate;
-		@event.StartTimeUtc = data.StartTime?.UtcDateTime ?? @event.StartTimeUtc;
-		@event.EndTimeUtc = data.EndTime?.UtcDateTime ?? @event.EndTimeUtc;
+		@event.StartTimeUtc = data.StartTime?.UtcDateTime.StripSeconds() ?? @event.StartTimeUtc;
+		@event.EndTimeUtc = data.EndTime?.UtcDateTime.StripSeconds() ?? @event.EndTimeUtc;
 		@event.IsRepeated = data.IsRepeated;
-
-		RecurrentEventSettings? recurrentSettings = data.IsRepeated 
-			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData!, @event.Id, @event.EndTimeUtc) 
-			: null;
 
 		if (@event.StartTimeUtc >= @event.EndTimeUtc)
 		{
 			throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
 		}
 		
+		RecurrentEventSettings? recurrentSettings = data.IsRepeated 
+			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData!, @event.Id, @event.EndTimeUtc) 
+			: null;
+
 		unitOfWork.BeginTransaction();
 		await eventRepository.UpdateAsync(@event);
 		
