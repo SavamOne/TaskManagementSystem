@@ -218,20 +218,24 @@ public class CalendarEventController : ControllerBase
 			request.Place,
 			request.StartTime,
 			request.EndTime,
-			request.IsPrivate);
+			request.IsPrivate,
+			null);
 	}
 
 	private static ChangeCalendarEventData Convert(EditEventRequest request, Guid userId)
 	{
 		return new ChangeCalendarEventData(userId,
 			request.EventId,
+			//TODO: НАСТРОЙКИ
+			false,
 			request.Name,
 			request.Description,
-			(EventType)request.Type,
+			(EventType?)request.Type,
 			request.Place,
 			request.StartTime,
 			request.EndTime,
-			request.IsPrivate);
+			request.IsPrivate,
+			null);
 	}
 
 	private static AddEventParticipantsData Convert(AddEventParticipantsRequest request, Guid userId)

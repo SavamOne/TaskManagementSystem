@@ -18,6 +18,11 @@ public class RecurrentSettingsRepository : Repository<DalRecurrentSetting>, IRec
 		return settings.ToRecurrentSettings();
 	}
 	
+	public async Task DeleteForEvent(Guid eventId)
+	{
+		await DeleteMultipleAsync(x => x.EventId == eventId);
+	}
+
 	public async Task<ICollection<RecurrentEventSettings>> GetForEvents(ISet<Guid> eventIds)
 	{
 		var settings = await SelectAsync(x => eventIds.Contains(x.EventId));

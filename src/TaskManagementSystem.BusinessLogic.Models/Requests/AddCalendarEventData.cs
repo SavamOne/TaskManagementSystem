@@ -13,7 +13,8 @@ public class AddCalendarEventData
 		string? place,
 		DateTimeOffset startTime,
 		DateTimeOffset endTime,
-		bool isPrivate)
+		bool isPrivate,
+		AddRecurrentSettingsData? recurrentSettingsData)
 	{
 		UserId = userId;
 		CalendarId = calendarId;
@@ -24,6 +25,7 @@ public class AddCalendarEventData
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		RecurrentSettingsData = recurrentSettingsData;
 	}
 
 	public Guid UserId { get; }
@@ -43,4 +45,6 @@ public class AddCalendarEventData
 	public DateTimeOffset EndTime { get; }
 
 	public bool IsPrivate { get; }
+	
+	public AddRecurrentSettingsData? RecurrentSettingsData { get; }
 }

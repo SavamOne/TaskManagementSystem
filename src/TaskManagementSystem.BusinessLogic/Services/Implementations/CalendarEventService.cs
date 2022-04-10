@@ -51,7 +51,12 @@ public class CalendarEventService : ICalendarEventService
 			throw new BusinessLogicException("Нельзя создавать события, начавшиеся более 24 часов назад");
 		}
 
-		CalendarEvent calendarEvent = new(Guid.NewGuid(),
+		Guid eventId = Guid.NewGuid();
+		RecurrentEventSettings? recurrentSettings = data.RecurrentSettingsData is not null 
+			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData, eventId, data.EndTime.UtcDateTime) 
+			: null;
+		
+		CalendarEvent calendarEvent = new(eventId,
 			data.CalendarId,
 			data.Name,
 			data.Description,
@@ -61,11 +66,10 @@ public class CalendarEventService : ICalendarEventService
 			data.EndTime.UtcDateTime,
 			data.IsPrivate,
 			DateTime.UtcNow,
-			//TODO: НАСТРОЙКИ!!!!
-			false);
-		
-		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(),
-			calendarEvent.Id,
+			recurrentSettings is not null);
+
+		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(), 
+			eventId,
 			participant.Id,
 			CalendarEventParticipantRole.Creator,
 			EventParticipantState.Confirmed);
@@ -73,6 +77,11 @@ public class CalendarEventService : ICalendarEventService
 		unitOfWork.BeginTransaction();
 		await eventRepository.InsertAsync(calendarEvent);
 		await eventParticipantRepository.InsertAsync(calendarEventParticipant);
+
+		if (recurrentSettings is not null)
+		{
+			await recurrentSettingsRepository.SaveForEvent(recurrentSettings);
+		}
 
 		unitOfWork.CommitTransaction();
 		return calendarEvent;
@@ -166,6 +175,10 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException("Изменять событие может только создатель события.");
 		}
+		if (data.IsRepeated && data.RecurrentSettingsData is null)
+		{
+			throw new BusinessLogicException("Отсутствуют настройки для повторения.");
+		}
 
 		CalendarEvent @event = ( await eventRepository.GetById(data.EventId) )!;
 
@@ -176,14 +189,30 @@ public class CalendarEventService : ICalendarEventService
 		@event.IsPrivate = data.IsPrivate ?? @event.IsPrivate;
 		@event.StartTimeUtc = data.StartTime?.UtcDateTime ?? @event.StartTimeUtc;
 		@event.EndTimeUtc = data.EndTime?.UtcDateTime ?? @event.EndTimeUtc;
+		@event.IsRepeated = data.IsRepeated;
+
+		RecurrentEventSettings? recurrentSettings = data.IsRepeated 
+			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData!, @event.Id, @event.EndTimeUtc) 
+			: null;
 
 		if (@event.StartTimeUtc >= @event.EndTimeUtc)
 		{
 			throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
 		}
-
+		
+		unitOfWork.BeginTransaction();
 		await eventRepository.UpdateAsync(@event);
-
+		
+		if (data.IsRepeated)
+		{
+			await recurrentSettingsRepository.SaveForEvent(recurrentSettings!);
+		}
+		else
+		{
+			await recurrentSettingsRepository.DeleteForEvent(@event.Id);
+		}
+		
+		unitOfWork.CommitTransaction();
 		return @event;
 	}
 
@@ -310,6 +339,38 @@ public class CalendarEventService : ICalendarEventService
 		@event.Description = "[Приватное событие]";
 		@event.Place = "[Приватное событие]";
 		@event.EventType = EventType.Unknown;
+	}
+	
+	private static RecurrentEventSettings ValidateAndCreateRecurrentSettings(AddRecurrentSettingsData recurrentSettingsData, Guid eventId, DateTime eventEndTimeUtc)
+	{
+		if (!Enum.GetValues<RepeatType>().Contains(recurrentSettingsData.RepeatType))
+		{
+			throw new BusinessLogicException("Вид повторения некорректный.");
+		}
+		if (recurrentSettingsData.RepeatType is RepeatType.OnWeekDays
+		 && recurrentSettingsData.DayOfWeeks is not
+			{
+				Count: > 0
+			})
+		{
+			throw new BusinessLogicException("Не заданы дни недели для повторения.");
+		}
+
+		if (recurrentSettingsData.Count == 0)
+		{
+			throw new BusinessLogicException("Количество повторений равно нулю.");
+		}
+
+		if (recurrentSettingsData.Until.HasValue && recurrentSettingsData.Until.Value.UtcDateTime < eventEndTimeUtc)
+		{
+			throw new BusinessLogicException("Окончание повторения меньше, чем дата окончания события.");
+		}
+
+		return new RecurrentEventSettings(eventId,
+			recurrentSettingsData.RepeatType,
+			recurrentSettingsData.Until?.UtcDateTime,
+			recurrentSettingsData.Count,
+			recurrentSettingsData.DayOfWeeks);
 	}
 
 	private async Task<CalendarEventWithParticipants> GetEventInfo(Guid userId, Guid eventId)
