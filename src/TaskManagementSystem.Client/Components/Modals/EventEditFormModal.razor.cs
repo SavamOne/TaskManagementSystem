@@ -1,4 +1,6 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
@@ -10,8 +12,15 @@ namespace TaskManagementSystem.Client.Components.Modals;
 
 public partial class EventEditFormModal
 {
+	private readonly IEnumerable<CalendarEventType> eventTypes = Enum.GetValues<CalendarEventType>();
 
-	private IEnumerable<CalendarEventType> eventTypes = Enum.GetValues<CalendarEventType>();
+	private readonly IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
+	   .Where(x => x != EventParticipantRole.Creator)
+	   .ToList();
+
+	private readonly IEnumerable<EventRepeatType> repeatTypes = Enum.GetValues<EventRepeatType>();
+
+	private IEnumerable<DayOfWeekViewModel>? dayOfWeeks;
 
 	private string filter = string.Empty;
 
@@ -20,15 +29,18 @@ public partial class EventEditFormModal
 	private ICollection<EventParticipantViewModel> participants = Array.Empty<EventParticipantViewModel>();
 	private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
 
-	private IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
-	   .Where(x => x != EventParticipantRole.Creator)
-	   .ToList();
+	private bool isRepeated, notifyRepeatChanged;
+	private string repeatedStartDateStr = string.Empty;
+	private string repeatedEndDateStr = string.Empty;
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
 
 	[Inject]
 	public IToastService? ToastService { get; set; }
+	
+	[Inject]
+	public ILocalizationService? LocalizationService { get; set; }
 
 	[Parameter]
 	public Guid CalendarId { get; set; }
@@ -56,13 +68,24 @@ public partial class EventEditFormModal
 
 	private bool CanUserDeleteEvent => Event.CanDeleteEvent;
 
-	public async Task EditAsync(Guid eventId)
+	protected override async Task OnInitializedAsync()
+	{
+		CultureInfo culture = await LocalizationService!.GetApplicationCultureAsync();
+		dayOfWeeks = DayOfWeekHelper.GetDayOfWeeksOrderedByFirstDay(culture, false);
+	}
+	
+	public async Task EditAsync(EventInfo eventInfo)
 	{
 		isEditMode = true;
 		Modal.Title = "Редактирование события";
 		participantsChanged = false;
 
-		EventWithParticipants? result = await GetEventInfoAsync(eventId);
+		isRepeated = eventInfo.IsRepeated;
+		notifyRepeatChanged = false;
+		repeatedStartDateStr = eventInfo.StartTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm");
+		repeatedEndDateStr = eventInfo.EndTime.ToLocalTime().ToString("yyyy-MM-ddTHH:mm");
+
+		EventWithParticipants? result = await GetEventInfoAsync(eventInfo.Id);
 
 		if (result is null)
 		{
@@ -79,6 +102,11 @@ public partial class EventEditFormModal
 		Modal.Title = "Создание события";
 		participantsChanged = false;
 
+		isRepeated = false;
+		notifyRepeatChanged = false;
+		repeatedStartDateStr = string.Empty;
+		repeatedEndDateStr = string.Empty;
+
 		Event = new EventViewModel();
 		participants.ClearIfPossible();
 		possibleParticipants.ClearIfPossible();
@@ -89,13 +117,15 @@ public partial class EventEditFormModal
 
 	private async Task SubmitAsync()
 	{
+		Guid eventId = default;
+		
 		if (CanUserChangeEvent && Event.Changed)
 		{
 			EventInfo? eventInfo = await CreateOrEditEventAsync();
 
 			if (eventInfo is not null)
 			{
-				Event = new EventViewModel(eventInfo, true, true, false);
+				eventId = eventInfo.Id;
 				isEditMode = true;
 			}
 		}
@@ -108,13 +138,15 @@ public partial class EventEditFormModal
 
 			participantsChanged = false;
 		}
-		else if (Event.Id != default)
+		else if (eventId != default)
 		{
-			eventWithParticipants = await GetEventInfoAsync(Event.Id);
+			eventWithParticipants = await GetEventInfoAsync(eventId);
 		}
 
 		if (eventWithParticipants is not null)
 		{
+			notifyRepeatChanged = isRepeated;
+			isRepeated = false;
 			Fill(eventWithParticipants);
 			StateHasChanged();
 			await OnEventChanged();
@@ -237,7 +269,7 @@ public partial class EventEditFormModal
 
 	private void Fill(EventWithParticipants eventWithParticipants)
 	{
-		Event = new EventViewModel(eventWithParticipants.EventInfo, eventWithParticipants.CanUserEditEvent, eventWithParticipants.CanUserEditParticipants, eventWithParticipants.CanUserDeleteEvent);
+		Event = new EventViewModel(eventWithParticipants.EventInfo, eventWithParticipants.RecurrentSettings, eventWithParticipants.CanUserEditEvent, eventWithParticipants.CanUserEditParticipants, eventWithParticipants.CanUserDeleteEvent);
 		participants = eventWithParticipants.Participants
 		   .OrderByDescending(x => x.Role)
 		   .ThenBy(x => x.UserName)

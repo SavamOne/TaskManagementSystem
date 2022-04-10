@@ -35,9 +35,33 @@
                     <InputCheckbox @bind-Value="Event.IsPrivate" disabled="@(!CanUserChangeEvent)"/> Приватное событие
                 </label>
             </div>
+            @if (isRepeated)
+            {
+                <div class="d-flex flex-row align-items-baseline">
+                    <span style="width: 35px">
+                        <span class="oi oi-clock m-lg-1"></span>
+                    </span>
+                    <h6>Выборанный повтор:</h6>
+                </div>
+                <div class="d-flex flex-row align-items-baseline mb-2">
+                    <span style="width: 35px"></span>
+                    <span class="w-100 d-flex flex-row align-items-baseline">
+                        <input value="@repeatedStartDateStr" type="datetime-local" class="form-control" readonly/>
+                        <p class="m-lg-1">-</p>
+                        <input value="@repeatedEndDateStr" type="datetime-local" class="form-control" readonly/>
+                    </span>
+                </div>
+                <div class="d-flex flex-row align-items-baseline">
+                    <span style="width: 35px"></span>
+                    <h6>Первоначальная настройка:</h6>
+                </div>
+            }
             <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
-                    <span class="oi oi-clock m-lg-1"></span>
+                    @if (!isRepeated)
+                    {
+                        <span class="oi oi-clock m-lg-1"></span>
+                    }
                 </span>
                 <span class="w-100 d-flex flex-row align-items-baseline">
                     <InputText @bind-Value="Event.StartDateStr" type="datetime-local" class="form-control" placeholder="Начало" disabled="@(!CanUserChangeEvent)"/>
@@ -45,6 +69,36 @@
                     <InputText @bind-Value="Event.EndDateStr" type="datetime-local" class="form-control" placeholder="Окончание" disabled="@(!CanUserChangeEvent)"/>
                 </span>
             </div>
+            @if (notifyRepeatChanged)
+            {
+                <div class="d-flex flex-row align-items-baseline mb-2 text-danger">
+                    <span style="width: 60px">
+                        <span class="oi oi-warning m-lg-1"></span>
+                    </span>
+                    <h6>Отображается дата исходного события. Для просмотра конкретного повтора закройте это окно и выберите событие.</h6>
+                </div>
+            }
+            <div class="d-flex flex-row align-items-baseline mb-2">
+                <span style="width: 35px"></span>
+                <DropdownComponent Items="repeatTypes" SelectedItem="Event.RepeatType"
+                                   Disabled="@(!CanUserChangeEvent)"
+                                   ItemToStringFunc="EventRepeatTypeExtensions.GetDescription"
+                                   ItemSelectedFunc="type => { Event.RepeatType = type; Console.WriteLine(Event.RepeatType); StateHasChanged();}"/>
+            </div>
+            @if (Event.RepeatType is EventRepeatType.OnWeekDays)
+            {
+                @foreach (DayOfWeekViewModel dayOfWeek in dayOfWeeks!)
+                {
+                    <div class="d-flex flex-row align-items-baseline mb-1">
+                        <span style="width: 35px"></span>
+                        <div class="form-check" @onclick="() => Event.CheckDayOfWeek(dayOfWeek.Value)">
+                            <input class="form-check-input" type="checkbox" value="" checked="@(Event.DayOfWeeks.Contains(dayOfWeek.Value))" disabled="@(!CanUserChangeEvent)">
+                            <label class="form-check-label">@dayOfWeek</label>
+                        </div>
+                    </div>
+                }
+            }
+
         </div>
         <div class="col-sm-6">
             <div class="row mb-1">

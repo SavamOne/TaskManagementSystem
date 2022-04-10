@@ -12,13 +12,15 @@ public class EventWithParticipants
 		ICollection<EventParticipantUser> participants,
 		bool canUserEditEvent,
 		bool canUserEditParticipants,
-		bool canUserDeleteEvent)
+		bool canUserDeleteEvent,
+		RecurrentSettings? recurrentSettings)
 	{
 		EventInfo = eventInfo.AssertNotNull();
 		Participants = participants.AssertNotNull();
 		CanUserEditEvent = canUserEditEvent;
 		CanUserEditParticipants = canUserEditParticipants;
 		CanUserDeleteEvent = canUserDeleteEvent;
+		RecurrentSettings = recurrentSettings;
 	}
 
 	/// <summary>
@@ -50,4 +52,9 @@ public class EventWithParticipants
 	/// </summary>
 	[Required]
 	public ICollection<EventParticipantUser> Participants { get; }
+	
+	/// <summary>
+	///     Настройки повторения.
+	/// </summary>
+	public RecurrentSettings? RecurrentSettings { get; }
 }

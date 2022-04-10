@@ -8,11 +8,13 @@ public class CalendarEventWithParticipants
 		IEnumerable<CalendarEventParticipant> participants,
 		bool canUserEditEvent,
 		bool canUserEditParticipants,
-		bool canUserDeleteEvent)
+		bool canUserDeleteEvent,
+		RecurrentEventSettings? recurrentEventSettings)
 	{
 		CanUserEditEvent = canUserEditEvent;
 		CanUserEditParticipants = canUserEditParticipants;
 		CanUserDeleteEvent = canUserDeleteEvent;
+		RecurrentEventSettings = recurrentEventSettings;
 		Event = @event.AssertNotNull();
 		Participants = participants.AssertNotNull();
 	}
@@ -26,4 +28,6 @@ public class CalendarEventWithParticipants
 	public CalendarEvent Event { get; }
 
 	public IEnumerable<CalendarEventParticipant> Participants { get; }
+	
+	public RecurrentEventSettings? RecurrentEventSettings { get; }
 }

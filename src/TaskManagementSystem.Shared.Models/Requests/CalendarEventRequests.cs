@@ -15,7 +15,7 @@ public class CreateEventRequest
 		DateTimeOffset startTime,
 		DateTimeOffset endTime,
 		bool isPrivate,
-		RecurrentSettingsRequest? recurrentSettings)
+		RecurrentSettings? recurrentSettings)
 	{
 		CalendarId = calendarId;
 		Name = name;
@@ -79,45 +79,7 @@ public class CreateEventRequest
 	/// <summary>
 	///     Настройки повторения событий.
 	/// </summary>
-	public RecurrentSettingsRequest? RecurrentSettings { get; }
-}
-
-/// <summary>
-///     Запрос на создание повторения события.
-/// </summary>
-public class RecurrentSettingsRequest
-{
-	public RecurrentSettingsRequest(EventRepeatType repeatType,
-		ISet<DayOfWeek> dayOfWeeks,
-		uint? count,
-		DateTimeOffset? until)
-	{
-		Count = count;
-		Until = until;
-		RepeatType = repeatType;
-		DayOfWeeks = dayOfWeeks;
-	}
-
-	/// <summary>
-	///     Ограничение повторения по количеству. null - отсутствие ограничения.
-	/// </summary>
-	public uint? Count { get; }
-
-	/// <summary>
-	///     Ограничение повторения до определенной даты. null - отсутствие ограничения.
-	/// </summary>
-	public DateTimeOffset? Until { get; }
-
-	/// <summary>
-	///     Вид повторения.
-	/// </summary>
-	[Required]
-	public EventRepeatType RepeatType { get; }
-
-	/// <summary>
-	///     Дни недели. Учитывается только если <see cref="RepeatType" />==<see cref="EventRepeatType.OnWeekDays" />.
-	/// </summary>
-	public ISet<DayOfWeek>? DayOfWeeks { get; }
+	public RecurrentSettings? RecurrentSettings { get; }
 }
 
 /// <summary>
@@ -134,7 +96,7 @@ public class EditEventRequest
 		DateTimeOffset? startTime,
 		DateTimeOffset? endTime,
 		bool? isPrivate,
-		RecurrentSettingsRequest? recurrentSettings)
+		RecurrentSettings? recurrentSettings)
 	{
 		EventId = eventId;
 		IsRepeated = isRepeated;
@@ -198,7 +160,7 @@ public class EditEventRequest
 	/// <summary>
 	///    Настройки повторения события. Учитывается только если <see cref="IsRepeated"/> истина.
 	/// </summary>
-	public RecurrentSettingsRequest? RecurrentSettings { get; }
+	public RecurrentSettings? RecurrentSettings { get; }
 }
 
 /// <summary>

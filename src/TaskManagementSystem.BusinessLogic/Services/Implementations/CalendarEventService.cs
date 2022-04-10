@@ -81,7 +81,7 @@ public class CalendarEventService : ICalendarEventService
 
 		if (recurrentSettings is not null)
 		{
-			await recurrentSettingsRepository.SaveForEvent(recurrentSettings);
+			await recurrentSettingsRepository.InsertForEvent(recurrentSettings);
 		}
 
 		unitOfWork.CommitTransaction();
@@ -203,16 +203,13 @@ public class CalendarEventService : ICalendarEventService
 
 		unitOfWork.BeginTransaction();
 		await eventRepository.UpdateAsync(@event);
+		await recurrentSettingsRepository.DeleteForEvent(@event.Id);
 		
 		if (data.IsRepeated)
 		{
-			await recurrentSettingsRepository.SaveForEvent(recurrentSettings!);
+			await recurrentSettingsRepository.InsertForEvent(recurrentSettings!);
 		}
-		else
-		{
-			await recurrentSettingsRepository.DeleteForEvent(@event.Id);
-		}
-		
+
 		unitOfWork.CommitTransaction();
 		return @event;
 	}
@@ -318,7 +315,7 @@ public class CalendarEventService : ICalendarEventService
 	public async Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data)
 	{
 		CalendarEventWithParticipants eventInfo = await GetEventInfo(data.UserId, data.EventId);
-
+		
 		CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
 		// HACK: CanUserDeleteEvent == Админ или Создатель календаря
 		if (!eventInfo.Event.IsPrivate || eventParticipant != null || eventInfo.CanUserDeleteEvent)
@@ -331,7 +328,8 @@ public class CalendarEventService : ICalendarEventService
 			Enumerable.Empty<CalendarEventParticipant>(),
 			eventInfo.CanUserEditEvent,
 			eventInfo.CanUserEditParticipants,
-			eventInfo.CanUserDeleteEvent);
+			eventInfo.CanUserDeleteEvent,
+			eventInfo.RecurrentEventSettings);
 	}
 
 	private static void HideEventInfo(CalendarEvent @event)
@@ -394,11 +392,14 @@ public class CalendarEventService : ICalendarEventService
 		bool canUserEditEvent = userIdParticipant?.IsCreator() ?? false;
 		bool canUserEditParticipants = userIdParticipant?.IsParticipantOrCreator() ?? false;
 		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
+		
+		RecurrentEventSettings? recurrentEventSettings = await recurrentSettingsRepository.GetForEvent(@event.Id);
 
 		return new CalendarEventWithParticipants(@event,
 			participants,
 			canUserEditEvent,
 			canUserEditParticipants,
-			canUserDeleteEvent);
+			canUserDeleteEvent,
+			recurrentEventSettings);
 	}
 }

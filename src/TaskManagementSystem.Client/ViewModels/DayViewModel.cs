@@ -1,4 +1,5 @@
 using TaskManagementSystem.Shared.Helpers;
+using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
@@ -24,15 +25,15 @@ public class DayViewModel
 
 	public bool IsTodayDay => Date == DateOnly.FromDateTime(DateTime.Today);
 
-	public IEnumerable<EventViewModel> Events { get; private set; } = Enumerable.Empty<EventViewModel>();
+	public IEnumerable<EventInfo> Events { get; private set; } = Enumerable.Empty<EventInfo>();
 
-	public void InterceptDateEvents(IEnumerable<EventViewModel> allEvents)
+	public void InterceptDateEvents(IEnumerable<EventInfo> allEvents)
 	{
-		Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartDate, x.EndDate, Date)).ToList();
+		Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartTime, x.EndTime, Date)).ToList();
 	}
 
 	public void ClearEvents()
 	{
-		Events = Enumerable.Empty<EventViewModel>();
+		Events = Enumerable.Empty<EventInfo>();
 	}
 }

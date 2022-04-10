@@ -42,12 +42,12 @@ public class DateRangeViewModel
 			toastService.AddSystemErrorToast(result.ErrorDescription!);
 		}
 
-		var events = result.Value!.Select(x => new EventViewModel(x, false, false, false)).ToList();
+		var events = result.Value!.ToList();
 
 		foreach (DayViewModel dayViewModel in Days)
 		{
 			dayViewModel.InterceptDateEvents(events);
-			events.RemoveAll(x => x.EndDate < dayViewModel.DateTimeOffset.AddDays(1));
+			events.RemoveAll(x => x.EndTime < dayViewModel.DateTimeOffset.AddDays(1));
 		}
 	}
 

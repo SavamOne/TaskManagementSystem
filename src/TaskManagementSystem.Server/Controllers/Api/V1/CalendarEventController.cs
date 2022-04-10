@@ -179,7 +179,21 @@ public class CalendarEventController : ControllerBase
 			eventWithParticipants.Participants.Select(Convert).ToList(),
 			eventWithParticipants.CanUserEditEvent,
 			eventWithParticipants.CanUserEditParticipants,
-			eventWithParticipants.CanUserDeleteEvent);
+			eventWithParticipants.CanUserDeleteEvent,
+			Convert(eventWithParticipants.RecurrentEventSettings));
+	}
+
+	private static RecurrentSettings? Convert(RecurrentEventSettings? recurrentEventSettings)
+	{
+		if (recurrentEventSettings is null)
+		{
+			return null;
+		}
+
+		return new RecurrentSettings((EventRepeatType)recurrentEventSettings.RepeatType,
+			recurrentEventSettings.DayOfWeeks,
+			recurrentEventSettings.RepeatCount,
+			recurrentEventSettings.UntilUtc);
 	}
 
 	private static EventParticipantUser Convert(CalendarEventParticipant x)
@@ -239,7 +253,7 @@ public class CalendarEventController : ControllerBase
 			Convert(request.RecurrentSettings));
 	}
 
-	private static AddRecurrentSettingsData? Convert(RecurrentSettingsRequest? request)
+	private static AddRecurrentSettingsData? Convert(RecurrentSettings? request)
 	{
 		if (request is null)
 		{

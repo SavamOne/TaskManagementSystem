@@ -14,7 +14,7 @@ public class EventInfo
 		CalendarEventType eventType,
 		string? place,
 		DateTimeOffset startTime,
-		DateTimeOffset? endTime,
+		DateTimeOffset endTime,
 		bool isPrivate,
 		DateTimeOffset creationTime,
 		bool isRepeated,
@@ -80,7 +80,7 @@ public class EventInfo
 	///     Время окончания события.
 	/// </summary>
 	[Required]
-	public DateTimeOffset? EndTime { get; }
+	public DateTimeOffset EndTime { get; }
 
 	/// <summary>
 	///     Флаг конфиденциальности события.

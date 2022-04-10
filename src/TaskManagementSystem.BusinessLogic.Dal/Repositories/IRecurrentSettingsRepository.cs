@@ -8,7 +8,7 @@ public interface IRecurrentSettingsRepository
 	
 	Task DeleteForEvent(Guid eventId);
 	
-	Task SaveForEvent(RecurrentEventSettings settings);
+	Task InsertForEvent(RecurrentEventSettings settings);
 
 	Task<ICollection<RecurrentEventSettings>> GetForEvents(ISet<Guid> eventIds);
 }

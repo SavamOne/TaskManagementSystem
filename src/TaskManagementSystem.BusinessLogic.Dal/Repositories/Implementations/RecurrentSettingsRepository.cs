@@ -30,13 +30,8 @@ public class RecurrentSettingsRepository : Repository<DalRecurrentSetting>, IRec
 		return settings.GroupBy(x => x.EventId).Select(x => x.ToRecurrentSettings()).ToList()!;
 	}
 	
-	public async Task SaveForEvent(RecurrentEventSettings settings)
+	public async Task InsertForEvent(RecurrentEventSettings settings)
 	{
-		using IDbTransaction transaction = GetConnection().BeginTransaction();
-		
-		await DeleteMultipleAsync(x => x.EventId == settings.EventId);
 		await InsertAllAsync(settings.ToDalSettings());
-		
-		transaction.Commit();
 	}
 }

@@ -11,9 +11,9 @@ public partial class LocalizationSettingsComponent
 	private IEnumerable<CultureViewModel>? cultureItems;
 
 	private bool firstDayChanged;
-	private IEnumerable<FirstDayOfWeekViewModel>? firstDayItems;
+	private IEnumerable<DayOfWeekViewModel>? firstDayItems;
 	private CultureViewModel? selectedCulture;
-	private FirstDayOfWeekViewModel? selectedFirstDay;
+	private DayOfWeekViewModel? selectedFirstDay;
 
 	[Inject]
 	public ILocalizationService? LocalizationService { get; set; }
@@ -31,8 +31,8 @@ public partial class LocalizationSettingsComponent
 		selectedCulture = new CultureViewModel(await LocalizationService!.GetApplicationCultureAsync());
 		cultureItems = LocalizationService!.GetAvailableCultures().Select(x => new CultureViewModel(x)).ToList();
 
-		selectedFirstDay = new FirstDayOfWeekViewModel(await LocalizationService!.GetApplicationFirstDayOfWeekAsync(), selectedCulture.Value);
-		firstDayItems = Enum.GetValues<DayOfWeek>().Select(x => new FirstDayOfWeekViewModel(x, selectedCulture.Value));
+		selectedFirstDay = new DayOfWeekViewModel(await LocalizationService!.GetApplicationFirstDayOfWeekAsync(), false, selectedCulture.Value);
+		firstDayItems = Enum.GetValues<DayOfWeek>().Select(x => new DayOfWeekViewModel(x, false, selectedCulture.Value));
 	}
 
 	private void ChangeCulture(CultureViewModel viewModel)
@@ -42,7 +42,7 @@ public partial class LocalizationSettingsComponent
 		StateHasChanged();
 	}
 
-	private void ChangeFirstDay(FirstDayOfWeekViewModel viewModel)
+	private void ChangeFirstDay(DayOfWeekViewModel viewModel)
 	{
 		selectedFirstDay = viewModel;
 		firstDayChanged = true;

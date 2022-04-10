@@ -5,7 +5,6 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
-	private bool changed;
 	private string? description;
 	private DateTimeOffset endDate = DateTimeOffset.Now.AddHours(1);
 	private CalendarEventType eventType;
@@ -13,6 +12,8 @@ public record EventViewModel
 	private string? name;
 	private string? place;
 	private DateTimeOffset startDate = DateTimeOffset.Now;
+	private EventRepeatType repeatType;
+	private ISet<DayOfWeek>? dayOfWeeks;
 
 	public EventViewModel()
 	{
@@ -20,8 +21,14 @@ public record EventViewModel
 		CanChangeParticipants = true;
 		CanDeleteEvent = false;
 	}
-
+	
+	public EventViewModel(EventInfo eventInfo)
+		: this(eventInfo, null, false, false, false)
+	{
+	}
+	
 	public EventViewModel(EventInfo eventInfo,
+		RecurrentSettings? recurrentSettings,
 		bool canEditEvent,
 		bool canChangeParticipants,
 		bool canDeleteEvent)
@@ -31,24 +38,18 @@ public record EventViewModel
 		place = eventInfo.Place;
 		description = eventInfo.Description;
 		startDate = eventInfo.StartTime.ToLocalTime();
-		endDate = eventInfo.EndTime?.ToLocalTime() ?? DateTimeOffset.Now;
+		endDate = eventInfo.EndTime.ToLocalTime();
 		isPrivate = eventInfo.IsPrivate;
 		eventType = eventInfo.EventType;
+		repeatType = recurrentSettings?.RepeatType ?? EventRepeatType.None;
+		dayOfWeeks = recurrentSettings?.DayOfWeeks;
 
 		CanEditEvent = canEditEvent;
 		CanChangeParticipants = canChangeParticipants;
 		CanDeleteEvent = canDeleteEvent;
 	}
 
-	public bool Changed
-	{
-		get => changed;
-		private set
-		{
-			changed = value;
-			Console.WriteLine(value);
-		}
-	}
+	public bool Changed { get; private set; }
 
 	public bool CanEditEvent { get; }
 
@@ -117,6 +118,7 @@ public record EventViewModel
 			Changed = true;
 		}
 	}
+	
 
 	public DateTimeOffset EndDate
 	{
@@ -126,6 +128,31 @@ public record EventViewModel
 			endDate = value;
 			Changed = true;
 		}
+	}
+
+	public EventRepeatType RepeatType
+	{
+		get => repeatType;
+		set
+		{
+			repeatType = value;
+			Changed = true;
+		}
+	}
+
+	public ISet<DayOfWeek> DayOfWeeks => dayOfWeeks ??= new HashSet<DayOfWeek>();
+
+	public void CheckDayOfWeek(DayOfWeek dayOfWeek)
+	{
+		if (!DayOfWeeks.Contains(dayOfWeek))
+		{
+			DayOfWeeks.Add(dayOfWeek);
+		}
+		else
+		{
+			DayOfWeeks.Remove(dayOfWeek);
+		}
+		Changed = true;
 	}
 
 	public string StartDateStr
@@ -154,6 +181,10 @@ public record EventViewModel
 
 	public CreateEventRequest GetCreateRequest(Guid calendarId)
 	{
+		RecurrentSettings? recurrentSettings = repeatType is not EventRepeatType.None
+			? new RecurrentSettings(repeatType, dayOfWeeks, uint.MaxValue, DateTimeOffset.MaxValue)
+			: null;
+		
 		return new CreateEventRequest(calendarId,
 			Name,
 			Description,
@@ -162,13 +193,17 @@ public record EventViewModel
 			StartDate,
 			EndDate,
 			IsPrivate,
-			null);
+			recurrentSettings);
 	}
 
 	public EditEventRequest GetEditRequest()
 	{
+		RecurrentSettings? recurrentSettings = repeatType is not EventRepeatType.None
+			? new RecurrentSettings(repeatType, dayOfWeeks, UInt32.MaxValue, DateTimeOffset.MaxValue)
+			: null;
+		
 		return new EditEventRequest(Id,
-			false,
+			recurrentSettings is not null,
 			Name,
 			Description,
 			Place,
@@ -176,6 +211,6 @@ public record EventViewModel
 			StartDate,
 			EndDate,
 			IsPrivate,
-			null);
+			recurrentSettings);
 	}
 }

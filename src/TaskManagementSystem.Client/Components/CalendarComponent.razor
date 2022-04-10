@@ -24,9 +24,9 @@
     @if (IsLoaded)
     {
         <div class="day-names">
-            @foreach (string day in DayOfWeekNamesWithFirstDay!)
+            @foreach (var dayOfWeekViewModel in DayOfWeekNamesWithFirstDay!)
             {
-                <div class="value day-name">@day</div>
+                <div class="value day-name">@dayOfWeekViewModel</div>
             }
         </div>
         <div class="days">
@@ -35,9 +35,9 @@
                 <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
                     <div class="day-container">
                         <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay ? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
-                        @foreach (EventViewModel ev in dayNum.Events)
+                        @foreach (EventInfo ev in dayNum.Events)
                         {
-                            <div class="event all-day end bg-success cursor-pointer" @onclick="async () => await EditEventModal.EditAsync(ev.Id)">@ev.Name</div>
+                            <div class="event all-day end bg-success cursor-pointer" @onclick="async () => await EditEventModal.EditAsync(ev)">@ev.Name</div>
                         }
                     </div>
                 </div>
