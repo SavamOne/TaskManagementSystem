@@ -17,4 +17,6 @@ public interface ICalendarEventRepository
 	Task<ICollection<CalendarEvent>> GetRepeatedEventsInRange(Guid calendarId);
 
 	Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod);
+
+	Task<ICollection<CalendarEvent>> GetAllRepeatedEvents();
 }

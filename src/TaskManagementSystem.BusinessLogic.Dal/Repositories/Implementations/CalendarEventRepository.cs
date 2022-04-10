@@ -55,4 +55,11 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
+	
+	public async Task<ICollection<CalendarEvent>> GetAllRepeatedEvents()
+	{
+		var dalEvents = await SelectAsync(x => x.IsRepeated);
+
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
 }
