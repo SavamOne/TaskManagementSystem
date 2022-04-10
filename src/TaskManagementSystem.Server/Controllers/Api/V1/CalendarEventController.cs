@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -18,12 +19,14 @@ namespace TaskManagementSystem.Server.Controllers.Api.V1;
 public class CalendarEventController : ControllerBase
 {
 	private readonly ICalendarEventService eventService;
+	private readonly ILogger<CalendarEventController> logger;
 	private readonly ITokenService tokenService;
 
-	public CalendarEventController(ITokenService tokenService, ICalendarEventService eventService)
+	public CalendarEventController(ITokenService tokenService, ICalendarEventService eventService, ILogger<CalendarEventController> logger)
 	{
 		this.tokenService = tokenService;
 		this.eventService = eventService;
+		this.logger = logger;
 	}
 
 	/// <summary>
@@ -161,8 +164,11 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
+		var stopWatch = Stopwatch.StartNew();
 		var result = await eventService.GetEventsInPeriodAsync(new GetEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
-
+		
+		logger.LogInformation("{0} processed in {1:g}", nameof(GetEventsInPeriodAsync), stopWatch.Elapsed);
+		
 		return Ok(result.Select(Convert).ToList());
 	}
 
@@ -173,7 +179,21 @@ public class CalendarEventController : ControllerBase
 			eventWithParticipants.Participants.Select(Convert).ToList(),
 			eventWithParticipants.CanUserEditEvent,
 			eventWithParticipants.CanUserEditParticipants,
-			eventWithParticipants.CanUserDeleteEvent);
+			eventWithParticipants.CanUserDeleteEvent,
+			Convert(eventWithParticipants.RecurrentEventSettings));
+	}
+
+	private static RecurrentSettings? Convert(RecurrentEventSettings? recurrentEventSettings)
+	{
+		if (recurrentEventSettings is null)
+		{
+			return null;
+		}
+
+		return new RecurrentSettings((EventRepeatType)recurrentEventSettings.RepeatType,
+			recurrentEventSettings.DayOfWeeks,
+			recurrentEventSettings.RepeatCount,
+			recurrentEventSettings.UntilUtc);
 	}
 
 	private static EventParticipantUser Convert(CalendarEventParticipant x)
@@ -199,7 +219,9 @@ public class CalendarEventController : ControllerBase
 			x.StartTimeUtc,
 			x.EndTimeUtc,
 			x.IsPrivate,
-			x.CreationTimeUtc);
+			x.CreationTimeUtc,
+			x.IsRepeated,
+			x.RepeatNum);
 	}
 
 	private static AddCalendarEventData Convert(CreateEventRequest request, Guid userId)
@@ -212,20 +234,36 @@ public class CalendarEventController : ControllerBase
 			request.Place,
 			request.StartTime,
 			request.EndTime,
-			request.IsPrivate);
+			request.IsPrivate,
+			Convert(request.RecurrentSettings));
 	}
 
 	private static ChangeCalendarEventData Convert(EditEventRequest request, Guid userId)
 	{
 		return new ChangeCalendarEventData(userId,
 			request.EventId,
+			request.IsRepeated,
 			request.Name,
 			request.Description,
-			(EventType)request.Type,
+			(EventType?)request.Type,
 			request.Place,
 			request.StartTime,
 			request.EndTime,
-			request.IsPrivate);
+			request.IsPrivate,
+			Convert(request.RecurrentSettings));
+	}
+
+	private static AddRecurrentSettingsData? Convert(RecurrentSettings? request)
+	{
+		if (request is null)
+		{
+			return null;
+		}
+		
+		return new AddRecurrentSettingsData((RepeatType)request.RepeatType,
+			request.DayOfWeeks,
+			request.Until,
+			request.Count);
 	}
 
 	private static AddEventParticipantsData Convert(AddEventParticipantsRequest request, Guid userId)

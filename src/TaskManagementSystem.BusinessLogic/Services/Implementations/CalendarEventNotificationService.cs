@@ -2,26 +2,32 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
 using TaskManagementSystem.BusinessLogic.Extensions;
+using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Shared.Dal.Extensions;
 using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 
-public class CalendarEventNotificationService
+public class CalendarEventNotificationService : ICalendarEventNotificationService
 {
-	private readonly ConcurrentDictionary<(Guid, Guid), CalendarEventNotification> eventNotifications = new();
+	private const int DeltaMinutes = 20;
+	
+	private ICollection<CalendarEventNotification> eventNotifications = Array.Empty<CalendarEventNotification>();
 
 	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
 	private readonly ICalendarEventRepository eventRepository;
+	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
 	private readonly ILogger<CalendarEventNotificationService> logger;
 
 	public CalendarEventNotificationService(ICalendarEventParticipantRepository eventParticipantRepository,
 		ICalendarEventRepository eventRepository,
+		IRecurrentSettingsRepository recurrentSettingsRepository,
 		ILogger<CalendarEventNotificationService> logger)
 	{
 		this.eventParticipantRepository = eventParticipantRepository;
 		this.eventRepository = eventRepository;
+		this.recurrentSettingsRepository = recurrentSettingsRepository;
 		this.logger = logger;
 	}
 
@@ -38,8 +44,7 @@ public class CalendarEventNotificationService
 		{
 			DateTime minuteToSend = DateTime.UtcNow.StripSeconds();
 
-			foreach (CalendarEventNotification notification in eventNotifications.Values
-			   .OrderBy(x => x.NotificationTimeUtc))
+			foreach (CalendarEventNotification notification in eventNotifications)
 			{
 				if (notification.NotificationTimeUtc > minuteToSend)
 				{
@@ -57,9 +62,9 @@ public class CalendarEventNotificationService
 			logger.LogDebug("{0:HH:mm:ss:ffff} - Getting events", DateTime.Now);
 
 			DateTime nextMinute = minuteToSend.AddMinutes(1);
-			uint count = await UpdateNotificationsAsync(nextMinute);
+			int count = await UpdateNotificationsAsync(nextMinute);
 
-			logger.LogDebug("Found {0} events with start time >= {1:HH:mm}", count, nextMinute.ToLocalTime());
+			logger.LogDebug("{0:HH:mm:ss:ffff} - Found {1} events with start time >= {2:HH:mm} and <= {3:HH:mm}", DateTime.Now, count, nextMinute.ToLocalTime(), nextMinute.AddMinutes(DeltaMinutes).ToLocalTime());
 
 			await DelayUntil(stoppingToken, nextMinute);
 
@@ -72,7 +77,6 @@ public class CalendarEventNotificationService
 		try
 		{
 			await func(notification);
-			eventNotifications.TryRemove(notification.Key, out _);
 		}
 		catch (Exception e)
 		{
@@ -80,12 +84,37 @@ public class CalendarEventNotificationService
 		}
 	}
 
-	private async Task<uint> UpdateNotificationsAsync(DateTime start)
+	private async Task<int> UpdateNotificationsAsync(DateTime start)
 	{
-		uint count = 0;
-		var events = await eventRepository.GetAllStandardEventsWithStartTimeInRange(start, start + TimeSpan.FromDays(8));
+		var standardEvents = await eventRepository.GetAllStandardEventsWithStartTimeInRange(start, start + TimeSpan.FromDays(8));
+		
+		var repeatedEvents = await eventRepository.GetAllRepeatedEvents();
+		var recurrentEventSettings = (await recurrentSettingsRepository.GetForEvents(repeatedEvents.Select(x => x.Id).ToHashSet())).ToDictionary(x=> x.EventId);
+		
+		var orderedEvents = new List<CalendarEventNotification>();
+		
+		foreach (CalendarEvent repeatedEvent in repeatedEvents)
+		{
+			var participants = (await eventParticipantRepository.GetByEventId(repeatedEvent.Id))
+			   .Where(x => x.State is not EventParticipantState.Rejected && x.IsParticipantOrCreator())
+			   .ToList();
 
-		foreach (CalendarEvent @event in events)
+			foreach (CalendarEvent @event in RecurrenceCalculator.Calculate(repeatedEvent, recurrentEventSettings[repeatedEvent.Id], start, start + TimeSpan.FromDays(8)))
+			{
+				var notifications = participants
+				   .Select(x => new CalendarEventNotification(x.CalendarParticipant!.UserId,
+						@event.Id,
+						@event.RepeatNum,
+						@event.StartTimeUtc - x.NotifyBefore,
+						@event.Name))
+				   .Where(x=> x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
+				
+				orderedEvents.AddRange(notifications);
+			}
+			
+		}
+		
+		foreach (CalendarEvent @event in standardEvents)
 		{
 			var participants = await eventParticipantRepository.GetByEventId(@event.Id);
 
@@ -94,17 +123,17 @@ public class CalendarEventNotificationService
 			   .Select(x =>
 					new CalendarEventNotification(x.CalendarParticipant!.UserId,
 						@event.Id,
+						@event.RepeatNum,
 						@event.StartTimeUtc - x.NotifyBefore,
-						@event.Name));
-
-			foreach (CalendarEventNotification notification in notifications)
-			{
-				eventNotifications.AddOrUpdate(notification.Key, notification, (_, _) => notification);
-				count++;
-			}
+						@event.Name))
+			   .Where(x=> x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
+			
+			orderedEvents.AddRange(notifications);
 		}
 
-		return count;
+		eventNotifications = orderedEvents.OrderBy(x => x.NotificationTimeUtc).ToList();
+
+		return eventNotifications.Count;
 	}
 
 	private async Task DelayUntil(CancellationToken stoppingToken, DateTime until)

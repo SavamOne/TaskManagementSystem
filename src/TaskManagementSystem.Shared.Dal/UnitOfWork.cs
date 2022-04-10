@@ -15,7 +15,7 @@ public class UnitOfWork : IUnitOfWork
 
 	public void BeginTransaction()
 	{
-		transaction = connectionProvider.GetConnection().BeginTransaction();
+		transaction ??= connectionProvider.GetConnection().BeginTransaction();
 	}
 
 	public void CommitTransaction()
@@ -33,5 +33,6 @@ public class UnitOfWork : IUnitOfWork
 	public void Dispose()
 	{
 		transaction?.Dispose();
+		transaction = null;
 	}
 }

@@ -28,11 +28,14 @@ public class DalEvent
 	public DateTime StartTime { get; set; }
 
 	[Column("end_time")]
-	public DateTime? EndTime { get; set; }
+	public DateTime EndTime { get; set; }
 
 	[Column("is_private")]
 	public bool IsPrivate { get; set; }
 
 	[Column("creation_time")]
 	public DateTime CreationTime { get; set; }
+	
+	[Column("is_repeated")]
+	public bool IsRepeated { get; set; }
 }

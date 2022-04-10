@@ -1,5 +1,5 @@
 using TaskManagementSystem.BusinessLogic.Models.Models;
-using TaskManagementSystem.BusinessLogic.Services.Implementations;
+using TaskManagementSystem.BusinessLogic.Services;
 using TaskManagementSystem.Server.Services;
 using TaskManagementSystem.Shared.Models;
 
@@ -7,12 +7,12 @@ namespace TaskManagementSystem.Server.Workers.Implementations;
 
 public class EventNotificationWorker : IScopedHostedService
 {
-	private readonly CalendarEventNotificationService eventNotificationService;
+	private readonly ICalendarEventNotificationService eventNotificationService;
 	private readonly ILogger<EventNotificationWorker> logger;
 	private readonly INotificationService notificationService;
 	private readonly IServiceProvider serviceProvider;
 
-	public EventNotificationWorker(CalendarEventNotificationService eventNotificationService,
+	public EventNotificationWorker(ICalendarEventNotificationService eventNotificationService,
 		INotificationService notificationService,
 		ILogger<EventNotificationWorker> logger,
 		IServiceProvider serviceProvider)

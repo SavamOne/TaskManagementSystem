@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using TaskManagementSystem.Client.Components.Modals;
+using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
@@ -28,7 +29,7 @@ public partial class CalendarComponent
 
 	private EventEditFormModal EditEventModal { get; set; } = new();
 
-	private DateTimeFormatInfo? DateTimeFormat { get; set; }
+	private CultureInfo? CultureInfo { get; set; }
 
 	private DateRangeViewModel? DateRangeViewModel { get; set; }
 
@@ -38,25 +39,19 @@ public partial class CalendarComponent
 
 	private int Year { get; set; }
 
-	private IEnumerable<string>? DayOfWeekNamesWithFirstDay { get; set; }
+	private ICollection<DayOfWeekViewModel>? DayOfWeekNamesWithFirstDay { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
 		IsLoaded = false;
 
-		DateTimeFormat = await LocalizationService!.GetApplicationDateTimeFormatAsync();
-		FirstDayOfWeek = DateTimeFormat.FirstDayOfWeek;
+		CultureInfo = await LocalizationService!.GetApplicationCultureAsync();
+		FirstDayOfWeek = CultureInfo.DateTimeFormat.FirstDayOfWeek;
 
-		UpdateFirstDayOfWeekState();
 		UpdateFirstDayOfWeekState();
 		await UpdateCurrentMonthStateAsync();
 
 		IsLoaded = true;
-	}
-
-	private string GetDayName(DayOfWeek dayOfWeek)
-	{
-		return DateTimeFormat!.GetShortestDayName(dayOfWeek);
 	}
 
 	private async Task AppendMonth()
@@ -88,7 +83,7 @@ public partial class CalendarComponent
 	private int GetDayOfWeek(DateOnly date)
 	{
 		int day = (int)date.DayOfWeek;
-		int calendarFirstDay = (int)DateTimeFormat!.FirstDayOfWeek;
+		int calendarFirstDay = (int)CultureInfo!.DateTimeFormat.FirstDayOfWeek;
 		int mod = ( day - calendarFirstDay ) % 7;
 
 		return mod >= 0 ? mod : mod + 7;
@@ -96,7 +91,7 @@ public partial class CalendarComponent
 
 	private async Task UpdateCurrentMonthStateAsync()
 	{
-		Month = DateTimeFormat!.GetMonthName(WorkingDate.Month);
+		Month = CultureInfo!.DateTimeFormat.GetMonthName(WorkingDate.Month);
 		Year = WorkingDate.Year;
 
 		int daysInMonth = DateTime.DaysInMonth(WorkingDate.Year, WorkingDate.Month);
@@ -129,11 +124,7 @@ public partial class CalendarComponent
 
 	private void UpdateFirstDayOfWeekState()
 	{
-		DayOfWeekNamesWithFirstDay = Enumerable.Range((int)DateTimeFormat!.FirstDayOfWeek, 7)
-		   .Select(x => x % 7)
-		   .Cast<DayOfWeek>()
-		   .Select(GetDayName)
-		   .ToList();
+		DayOfWeekNamesWithFirstDay = DayOfWeekHelper.GetDayOfWeeksOrderedByFirstDay(CultureInfo!, true);
 	}
 
 	private static DateOnly GetDefaultWorkingDate()

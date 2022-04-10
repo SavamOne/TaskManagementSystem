@@ -6,13 +6,15 @@ public class ChangeCalendarEventData
 {
 	public ChangeCalendarEventData(Guid userId,
 		Guid eventId,
+		bool isRepeated,
 		string? name,
 		string? description,
 		EventType? eventType,
 		string? place,
 		DateTimeOffset? startTime,
 		DateTimeOffset? endTime,
-		bool? isPrivate)
+		bool? isPrivate,
+		AddRecurrentSettingsData? recurrentSettingsData)
 	{
 		UserId = userId;
 		EventId = eventId;
@@ -23,6 +25,8 @@ public class ChangeCalendarEventData
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		IsRepeated = isRepeated;
+		RecurrentSettingsData = recurrentSettingsData;
 	}
 
 	public Guid UserId { get; }
@@ -42,4 +46,8 @@ public class ChangeCalendarEventData
 	public DateTimeOffset? EndTime { get; }
 
 	public bool? IsPrivate { get; }
+	
+	public bool IsRepeated { get; }
+	
+	public AddRecurrentSettingsData? RecurrentSettingsData { get; }
 }

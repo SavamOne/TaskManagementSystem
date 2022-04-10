@@ -2,6 +2,7 @@ namespace TaskManagementSystem.BusinessLogic.Models.Models;
 
 public record CalendarEventNotification(Guid UserId,
 	Guid EventId,
+	uint RepeatNum,
 	DateTime NotificationTimeUtc,
 	string EventName)
 {

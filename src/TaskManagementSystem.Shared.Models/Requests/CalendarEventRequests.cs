@@ -13,8 +13,9 @@ public class CreateEventRequest
 		string? place,
 		CalendarEventType type,
 		DateTimeOffset startTime,
-		DateTimeOffset? endTime,
-		bool isPrivate)
+		DateTimeOffset endTime,
+		bool isPrivate,
+		RecurrentSettings? recurrentSettings)
 	{
 		CalendarId = calendarId;
 		Name = name;
@@ -24,6 +25,7 @@ public class CreateEventRequest
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		RecurrentSettings = recurrentSettings;
 	}
 
 	/// <summary>
@@ -66,13 +68,18 @@ public class CreateEventRequest
 	///     Время окончания.
 	/// </summary>
 	[Required]
-	public DateTimeOffset? EndTime { get; }
+	public DateTimeOffset EndTime { get; }
 
 	/// <summary>
 	///     Флаг конфиденциальности.
 	/// </summary>
 	[Required]
 	public bool IsPrivate { get; }
+
+	/// <summary>
+	///     Настройки повторения событий.
+	/// </summary>
+	public RecurrentSettings? RecurrentSettings { get; }
 }
 
 /// <summary>
@@ -81,15 +88,18 @@ public class CreateEventRequest
 public class EditEventRequest
 {
 	public EditEventRequest(Guid eventId,
+		bool isRepeated,
 		string? name,
 		string? description,
 		string? place,
 		CalendarEventType? type,
 		DateTimeOffset? startTime,
 		DateTimeOffset? endTime,
-		bool? isPrivate)
+		bool? isPrivate,
+		RecurrentSettings? recurrentSettings)
 	{
 		EventId = eventId;
+		IsRepeated = isRepeated;
 		Name = name;
 		Description = description;
 		Place = place;
@@ -97,6 +107,7 @@ public class EditEventRequest
 		StartTime = startTime;
 		EndTime = endTime;
 		IsPrivate = isPrivate;
+		RecurrentSettings = recurrentSettings;
 	}
 
 	/// <summary>
@@ -104,6 +115,12 @@ public class EditEventRequest
 	/// </summary>
 	[Required]
 	public Guid EventId { get; }
+
+	/// <summary>
+	///     Флаг повторения события.
+	/// </summary>
+	[Required]
+	public bool IsRepeated { get; }
 
 	/// <summary>
 	///     Имя.
@@ -139,6 +156,11 @@ public class EditEventRequest
 	///     Флаг конфиденциальности.
 	/// </summary>
 	public bool? IsPrivate { get; }
+
+	/// <summary>
+	///    Настройки повторения события. Учитывается только если <see cref="IsRepeated"/> истина.
+	/// </summary>
+	public RecurrentSettings? RecurrentSettings { get; }
 }
 
 /// <summary>
