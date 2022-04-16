@@ -114,6 +114,7 @@ public record EventViewModel
 		get => startDate;
 		set
 		{
+			endDate += value - startDate;
 			startDate = value;
 			Changed = true;
 		}

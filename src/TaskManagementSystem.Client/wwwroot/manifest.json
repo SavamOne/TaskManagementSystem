@@ -1,6 +1,6 @@
 {
   "name": "TaskManagementSystem",
-  "short_name": "TaskManagementSystem",
+  "short_name": "TMS",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -12,10 +12,5 @@
       "type": "image/png",
       "sizes": "512x512"
     },
-    {
-      "src": "icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    }
   ]
 }

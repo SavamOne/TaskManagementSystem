@@ -1,4 +1,4 @@
-<EditFormModal @ref="Modal" Item="Calendar" Submit="x => _ = Submit(x)" Title="Создание календаря">
+<EditFormModal @ref="Modal" Item="Calendar" SubmitAsync="Submit" Title="Создание календаря">
     <Body>
     <p class="m-0">Название календаря</p>
     <InputText @bind-Value="Calendar.Name" type="text" class="mb-2 form-control"/>

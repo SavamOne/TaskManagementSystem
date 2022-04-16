@@ -44,8 +44,9 @@
                         @foreach (EventInfo ev in dayNum.Events)
                         {
                             <div class="event all-day end cursor-pointer"
-                                 style="@($"background:{StringHelper.GetHexColorForText(CalendarName)}")"
+                                 style="background:@(StringHelper.GetHexColorForText(CalendarName));opacity:@(ev.EndTime >= DateTime.Now ? "1.0" : "0.85")"
                                  @onclick="async () => await EditEventModal.EditAsync(ev)">
+                                <span class="oi @(ev.EventType.GetIcon())" style="margin-left: 5px"></span>
                                 @ev.Name
                             </div>
                         }

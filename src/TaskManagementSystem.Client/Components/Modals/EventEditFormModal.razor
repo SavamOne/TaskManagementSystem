@@ -19,7 +19,7 @@
                 <DropdownComponent Items="eventTypes" SelectedItem="Event.EventType"
                                    Disabled="@(!CanUserChangeEvent)"
                                    ItemToStringFunc="CalendarEventTypeExtensions.GetDescription"
-                                   ItemSelectedFunc="type => { Event.EventType = type; Console.WriteLine(Event.EventType);}"/>
+                                   ItemSelectedFunc="type => { Event.EventType = type; Console.WriteLine(Event.EventType); StateHasChanged();}"/>
             </div>
             <div class="d-flex flex-row align-items-baseline mb-2">
                 <span style="width: 35px">
