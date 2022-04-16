@@ -33,7 +33,7 @@ public class DateRangeViewModel
 	{
 		ClearEvents();
 
-		var result = await serverProxy.GetEventsInPeriod(new GetEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
+		var result = await serverProxy.GetEventsInPeriod(new GetCalendarEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
 		Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
 

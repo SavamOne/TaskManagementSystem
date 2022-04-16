@@ -226,10 +226,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<IEnumerable<EventInfo>>> GetEventsInPeriod(GetEventsInPeriodRequest request)
+	public async Task<Result<IEnumerable<EventInfo>>> GetEventsInPeriod(GetCalendarEventsInPeriodRequest request)
 	{
 		var result =
-			await SendRequestAsync<GetEventsInPeriodRequest, IEnumerable<EventInfo>>(new Uri("Api/V1/CalendarEvent/GetInPeriod", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<GetCalendarEventsInPeriodRequest, IEnumerable<EventInfo>>(new Uri("Api/V1/CalendarEvent/GetInPeriod", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

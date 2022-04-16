@@ -150,9 +150,9 @@ public class CalendarEventController : ControllerBase
 	}
 
 	/// <summary>
-	///     Получить спискок событий в периоде.
+	///     Получить список событий в периоде для конкретного календаря.
 	/// </summary>
-	/// <param name="request"><see cref="GetEventsInPeriodRequest" />.</param>
+	/// <param name="request"><see cref="GetCalendarEventsInPeriodRequest" />.</param>
 	/// <returns>Коллекция <see cref="EventInfo" />.</returns>
 	/// <response code="200">Возвращает коллекцию <see cref="EventInfo" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
@@ -160,19 +160,41 @@ public class CalendarEventController : ControllerBase
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("GetInPeriod")]
-	public async Task<IActionResult> GetEventsInPeriodAsync([Required] GetEventsInPeriodRequest request)
+	public async Task<IActionResult> GetCalendarEventsInPeriodAsync([Required] GetCalendarEventsInPeriodRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		var stopWatch = Stopwatch.StartNew();
-		var result = await eventService.GetEventsInPeriodAsync(new GetEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
+		Stopwatch stopWatch = Stopwatch.StartNew();
+		var result = await eventService.GetCalendarEventsInPeriodAsync(new GetCalendarEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
 		
-		logger.LogInformation("{0} processed in {1:g}", nameof(GetEventsInPeriodAsync), stopWatch.Elapsed);
+		logger.LogInformation("{0} processed in {1:g}", nameof(GetCalendarEventsInPeriodAsync), stopWatch.Elapsed);
 		
 		return Ok(result.Select(Convert).ToList());
 	}
 
+	/// <summary>
+	///     Получить список событий в периоде для пользователя.
+	/// </summary>
+	/// <param name="request"><see cref="GetEventsInPeriodForUserData" />.</param>
+	/// <returns>Коллекция <see cref="EventInfo" />.</returns>
+	/// <response code="200">Возвращает коллекцию <see cref="EventInfo" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
+	[ProducesResponseType(typeof(IEnumerable<EventInfo>), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[HttpPost("GetInPeriodForUser")]
+	public async Task<IActionResult> GetEventsInPeriodForUserAsync([Required] GetEventsInPeriodForUserData request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
 
+		Stopwatch stopWatch = Stopwatch.StartNew();
+		var result = await eventService.GetEventsForUserInPeriodAsync(new GetEventsInPeriodForUserData(userId, request.StartPeriod, request.EndPeriod));
+		
+		logger.LogInformation("{0} processed in {1:g}", nameof(GetCalendarEventsInPeriodAsync), stopWatch.Elapsed);
+		
+		return Ok(result.Select(Convert).ToList());
+	}
+	
 	private static EventWithParticipants Convert(CalendarEventWithParticipants eventWithParticipants)
 	{
 		return new EventWithParticipants(Convert(eventWithParticipants.Event),
