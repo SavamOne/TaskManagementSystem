@@ -41,12 +41,12 @@
                 <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
                     <div class="day-container">
                         <div class="value @(dayNum.IsHidden ? "outside" : dayNum.IsTodayDay ? "fw-bold text-danger" : string.Empty)">@dayNum.Day</div>
-                        @foreach (EventInfo ev in dayNum.Events)
+                        @foreach (EventInfoViewModel ev in dayNum.Events)
                         {
                             <div class="event all-day end cursor-pointer"
-                                 style="background:@(StringHelper.GetHexColorForText(CalendarName));opacity:@(ev.EndTime >= DateTime.Now ? "1.0" : "0.85")"
-                                 @onclick="async () => await EditEventModal.EditAsync(ev)">
-                                <span class="oi @(ev.EventType.GetIcon())" style="margin-left: 5px"></span>
+                                 style="background:@ev.Color;opacity:@ev.Opacity"
+                                 @onclick="async () => await EditEventModal.EditAsync(ev.Data)">
+                                <span class="oi @(ev.Icon)" style="margin-left: 5px"></span>
                                 @ev.Name
                             </div>
                         }

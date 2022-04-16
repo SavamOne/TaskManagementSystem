@@ -33,16 +33,31 @@ public class DateRangeViewModel
 	{
 		ClearEvents();
 
-		var result = await serverProxy.GetEventsInPeriod(new GetCalendarEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
+		var eventResult = await serverProxy.GetEventsInPeriod(new GetCalendarEventsInPeriodRequest(calendarId, FirstDay.DateTimeOffset, LastDay.DateTimeOffset.AddDays(1)));
 
-		Console.WriteLine(JsonSerializer.Serialize(result, ApplicationJsonOptions.Options));
+		Console.WriteLine(JsonSerializer.Serialize(eventResult, ApplicationJsonOptions.Options));
 
-		if (!result.IsSuccess)
+		if (!eventResult.IsSuccess)
 		{
-			toastService.AddSystemErrorToast(result.ErrorDescription!);
+			toastService.AddSystemErrorToast(eventResult.ErrorDescription!);
 		}
 
-		var events = result.Value!.ToList();
+		var unknownNames = EventInfoViewModel.GetUnknownCalendarNames(eventResult.Value!);
+		if (unknownNames.Any())
+		{
+			var calendarNamesResult = await serverProxy.GetCalendarName(new GetCalendarNameRequest(unknownNames));
+
+			if (!calendarNamesResult.IsSuccess)
+			{
+				toastService.AddSystemErrorToast(calendarNamesResult.ErrorDescription!);
+			}
+			
+			EventInfoViewModel.AddCalendarName(calendarNamesResult.Value!);
+		}
+
+		var events = eventResult.Value!
+		   .Select(x => new EventInfoViewModel(x))
+		   .ToList();
 
 		foreach (DayViewModel dayViewModel in Days)
 		{
