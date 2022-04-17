@@ -1,6 +1,14 @@
 @page "/Events/{CalendarId:guid}"
+@page "/Events"
 
-<CalendarComponentWithCalendarEvents CalendarId="CalendarId"/>
+@if (CalendarId != default)
+{
+    <CalendarComponentWithCalendarEvents CalendarId="CalendarId"/>
+}
+else
+{
+    <CalendarComponentWithUserEvents/>
+}
 
 @code
 {

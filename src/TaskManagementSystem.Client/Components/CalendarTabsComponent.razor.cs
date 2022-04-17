@@ -15,9 +15,13 @@ public partial class CalendarTabsComponent
 
 	public IEnumerable<CalendarInfo> Calendars { get; set; } = Enumerable.Empty<CalendarInfo>();
 
+	private bool isLoaded;
+
 	protected override async Task OnInitializedAsync()
 	{
+		isLoaded = false;
 		await RefreshCalendarsStateAsync();
+		isLoaded = true;
 	}
 
 	public async Task RefreshCalendarsStateAsync()

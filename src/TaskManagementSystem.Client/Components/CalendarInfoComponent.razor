@@ -16,7 +16,7 @@
                 <button type="button" class="btn btn-warning w-100 @ChangedState" @onclick="SaveChanges">Сохранить изменения</button>
             </div>
             <div class="col col-sm-3">
-                <NavLink href="@(Path.Combine("events", CalendarId.ToString()))" class="btn btn-success w-100 text-decoration-none">Перейти к событиям</NavLink>
+                <NavLink href="@(Path.Combine("Events", CalendarId.ToString()))" class="btn btn-success w-100 text-decoration-none">Перейти к событиям</NavLink>
             </div>
         </div>
         @foreach (UserInfoWithParticipantRoleViewModel user in possibleParticipants)

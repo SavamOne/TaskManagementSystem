@@ -1,10 +1,10 @@
 <div class="row row-cols-1 row-cols-md-4 g-4">
-    @if (Calendars.Any())
+    @if (isLoaded)
     {
         foreach (CalendarInfo calendar in Calendars)
         {
             <div class="col p-4">
-                <NavLink href="@(Path.Combine("events", calendar.Id.ToString()))"
+                <NavLink href="@(Path.Combine("Events", calendar.Id.ToString()))"
                          class="card text-white mb-3 h-100 text-decoration-none"
                          style="@($"background:{StringHelper.GetHexColorForText(calendar.Name)}")">
                     <div class="card-header">

@@ -34,8 +34,11 @@ public class ServerProxy : BaseProxy
 			HttpMethod.Post,
 			request);
 
-		await ProcessRefreshTokensResponse(result);
-
+		if (result.IsSuccess)
+		{
+			await ProcessRefreshTokensResponse(result);
+		}
+		
 		return result;
 	}
 

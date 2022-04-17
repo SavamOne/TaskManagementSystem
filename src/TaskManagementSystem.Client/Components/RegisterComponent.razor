@@ -1,0 +1,29 @@
+<main class="form-signin w-100">
+    <EditForm Model="@registerViewModel" OnValidSubmit="OnLogin">
+        <DataAnnotationsValidator/>
+
+        <img class="mb-4" src="favicon.svg" alt="" width="72" height="72">
+        <h3 class="mb-4 fw-bold">Регистрация</h3>
+
+        <div class="mb-1 form-floating">
+            <InputText @bind-Value="registerViewModel.Email" type="email" class="form-control email-input" id="floatingEmail" placeholder="name@example.com"/>
+            <label for="floatingEmail">@LocalizedResources.LoginComponent_Email</label>
+        </div>
+        <div class="mb-1 form-floating">
+            <InputText @bind-Value="registerViewModel.Name" type="text" class="form-control email-input" id="floatingName" placeholder="Иванонв Иван Иванович"/>
+            <label for="floatingName">Имя</label>
+        </div>
+        <div class="mb-1 form-floating">
+            <InputText @bind-Value="registerViewModel.Password" type="password" class="form-control password-input" id="floatingPassword" placeholder="Password"/>
+            <label for="floatingPassword">@LocalizedResources.LoginComponent_Password</label>
+        </div>
+        <div class="mb-4 form-floating">
+            <InputText @bind-Value="registerViewModel.PasswordRepeat" type="password" class="form-control password-input" id="floatingPasswordSecond" placeholder="Password"/>
+            <label for="floatingPasswordSecond">Повтор пароля</label>
+        </div>
+
+        <button class="w-100 mb-2 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
+        <NavLink href="login">Уже зарегистрированы?</NavLink>
+        <p class="mt-5 text-muted">@string.Format(LocalizedResources.LoginComponent_Copyright, DateTime.Now.Year)</p>
+    </EditForm>
+</main>

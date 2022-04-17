@@ -4,19 +4,19 @@
 <div class="calendar">
     <div class="w-100 d-flex flex-row align-items-center justify-content-between">
         <div class="d-flex flex-row">
-            <button class="btn btn-outline-primary m-lg-1" @onclick="RemoveMonth">
+            <button class="btn btn-outline-primary navbar-margin" @onclick="RemoveMonth">
                 <span class="oi oi-arrow-left"></span>
             </button>
-            <button class="btn btn-outline-primary m-lg-1" @onclick="AppendMonth">
+            <button class="btn btn-outline-primary navbar-margin" @onclick="AppendMonth">
                 <span class="oi oi-arrow-right"></span>
             </button>
             <!--TODO: HACK -->
             @if (this is CalendarComponentWithCalendarEvents)
             {
-                <button class="btn btn-outline-success m-lg-1" @onclick="() => EditEventModal.Create(CalendarId)">
+                <button class="btn btn-outline-success navbar-margin" @onclick="() => EditEventModal.Create(CalendarId)">
                     <span class="oi oi-plus"></span>
                 </button>
-                <NavLink href="@(Path.Combine("calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none m-lg-1">О календаре</NavLink>
+                <NavLink href="@(Path.Combine("Calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none navbar-margin">О календаре</NavLink>
             }
         </div>
         <div class="d-flex flex-row">
