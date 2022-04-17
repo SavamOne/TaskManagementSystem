@@ -1,4 +1,5 @@
-﻿using TaskManagementSystem.BusinessLogic.Dal.Repositories;
+﻿using System.Net.Mail;
+using TaskManagementSystem.BusinessLogic.Dal.Repositories;
 using TaskManagementSystem.BusinessLogic.Helpers;
 using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -21,6 +22,11 @@ public class UserService : IUserService
 	{
 		data.AssertNotNull();
 
+		if (!MailAddress.TryCreate(data.Email, out _))
+		{
+			throw new BusinessLogicException("Некорректный адрес электронной почты.");
+		}
+		
 		User? existedUser = await userRepository.GetByEmailAsync(data.Email);
 		if (existedUser is not null)
 		{
