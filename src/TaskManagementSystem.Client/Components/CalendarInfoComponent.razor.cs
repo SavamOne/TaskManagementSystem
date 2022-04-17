@@ -89,7 +89,7 @@ public partial class CalendarInfoComponent
 		possibleParticipants = result.Value!
 		   .Where(x => !participants.ContainsKey(x.Id))
 		   .Select(x => new UserInfoWithParticipantRoleViewModel(x))
-		   .OrderBy(x => x.Role)
+		   .OrderByDescending(x => x.Role)
 		   .ThenBy(x => x.Name)
 		   .ToList();
 	}

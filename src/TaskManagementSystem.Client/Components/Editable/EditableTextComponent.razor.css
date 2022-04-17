@@ -1,19 +1,6 @@
-.h3-size {
-    font-size: calc(1.3rem + .6vw);
-}
-
-.h4-size {
-    font-size: calc(1.275rem + .3vw);
-}
-
-.p-size {
-    font-size: calc(1.3rem + .6vw);
-}
-
 .editable-text {
     width: auto;
     padding: 0;
-    line-height: inherit;
     border: 0;
 }
 

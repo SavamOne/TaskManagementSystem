@@ -300,11 +300,11 @@ public class GetEventInfoRequest
 }
 
 /// <summary>
-///     Запрос на получения списка событий в периоде.
+///     Запрос на получения списка событий в периоде в конкретном календаре.
 /// </summary>
-public class GetEventsInPeriodRequest
+public class GetCalendarEventsInPeriodRequest
 {
-	public GetEventsInPeriodRequest(Guid calendarId, DateTimeOffset startPeriod, DateTimeOffset endPeriod)
+	public GetCalendarEventsInPeriodRequest(Guid calendarId, DateTimeOffset startPeriod, DateTimeOffset endPeriod)
 	{
 		CalendarId = calendarId;
 		StartPeriod = startPeriod;
@@ -317,6 +317,30 @@ public class GetEventsInPeriodRequest
 	[Required]
 	public Guid CalendarId { get; }
 
+	/// <summary>
+	///     Начальный период.
+	/// </summary>
+	[Required]
+	public DateTimeOffset StartPeriod { get; }
+
+	/// <summary>
+	///     Конечный период.
+	/// </summary>
+	[Required]
+	public DateTimeOffset EndPeriod { get; }
+}
+
+/// <summary>
+///     Запрос на получения списка событий для пользователя в периоде.
+/// </summary>
+public class GetEventsInPeriodForUserRequest
+{
+	public GetEventsInPeriodForUserRequest(DateTimeOffset startPeriod, DateTimeOffset endPeriod)
+	{
+		StartPeriod = startPeriod;
+		EndPeriod = endPeriod;
+	}
+	
 	/// <summary>
 	///     Начальный период.
 	/// </summary>

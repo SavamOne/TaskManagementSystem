@@ -218,7 +218,7 @@ public class GetCalendarParticipantsByFilterRequest
 /// <summary>
 ///		Запрос на получение имен календарей.
 /// </summary>
-public class GetCalendarNameRequest
+public record GetCalendarNameRequest
 {
 	public GetCalendarNameRequest(ISet<Guid> calendarIds) 
 	{
@@ -235,7 +235,7 @@ public class GetCalendarNameRequest
 /// <summary>
 ///		Имя календаря.
 /// </summary>
-public class CalendarNameResponse
+public record CalendarNameResponse
 {
 	public CalendarNameResponse(Guid calendarId, string name)
 	{
@@ -243,7 +243,6 @@ public class CalendarNameResponse
 		Name = name;
 	}
 
-	
 	/// <summary>
 	///     Идентификатор календаря.
 	/// </summary>

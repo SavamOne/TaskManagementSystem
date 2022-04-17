@@ -5,11 +5,10 @@ using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
-using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
-public partial class CalendarComponent
+public abstract partial class CalendarComponent
 {
 	[Parameter]
 	public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();
@@ -26,13 +25,11 @@ public partial class CalendarComponent
 	[Inject]
 	public ILocalizationService? LocalizationService { get; set; }
 
-	private DayOfWeek FirstDayOfWeek { get; set; }
-
 	private EventEditFormModal EditEventModal { get; set; } = new();
 
 	private CultureInfo? CultureInfo { get; set; }
 
-	private DateRangeViewModel? DateRangeViewModel { get; set; }
+	private ICollection<DayViewModel> Days { get; set; } = Array.Empty<DayViewModel>();
 
 	private bool IsLoaded { get; set; }
 
@@ -42,33 +39,26 @@ public partial class CalendarComponent
 
 	private ICollection<DayOfWeekViewModel>? DayOfWeekNamesWithFirstDay { get; set; }
 	
-	private string? CalendarName { get; set; }
+	protected string? CalendarName { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
 		IsLoaded = false;
 
-		var result = await ServerProxy!.GetCalendarName(new GetCalendarNameRequest(new HashSet<Guid>
-		{
-			CalendarId
-		}));
-
-		if (!result.IsSuccess)
-		{
-			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
-			return;
-		}
-
-		CalendarName = result.Value!.FirstOrDefault()?.Name;
-
-		CultureInfo = await LocalizationService!.GetApplicationCultureAsync();
-		FirstDayOfWeek = CultureInfo.DateTimeFormat.FirstDayOfWeek;
-
-		UpdateFirstDayOfWeekState();
-		await UpdateCurrentMonthStateAsync();
-
+		await OnLoadAsync();
+		
 		IsLoaded = true;
 	}
+
+	protected virtual async Task OnLoadAsync()
+	{
+		CultureInfo = await LocalizationService!.GetApplicationCultureAsync();
+		DayOfWeekNamesWithFirstDay = DayOfWeekHelper.GetDayOfWeeksOrderedByFirstDay(CultureInfo!, true);
+
+		await UpdateCurrentMonthStateAsync();
+	}
+	
+	protected abstract Task<IEnumerable<EventInfoViewModel>> GetEventsInDateRange(DateTimeOffset startTime, DateTimeOffset endTime);
 
 	private async Task AppendMonth()
 	{
@@ -88,12 +78,6 @@ public partial class CalendarComponent
 		await UpdateCurrentMonthStateAsync();
 
 		IsLoaded = true;
-	}
-
-	private void ChangeFirstDayOfWeek(DayOfWeek day)
-	{
-		FirstDayOfWeek = day;
-		UpdateFirstDayOfWeekState();
 	}
 
 	private int GetDayOfWeek(DateOnly date)
@@ -130,17 +114,22 @@ public partial class CalendarComponent
 		   .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
 		   .ToList();
 
-		DateRangeViewModel = new DateRangeViewModel(ServerProxy!,
-			ToastService!,
-			previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(),
-			CalendarId);
-
-		await DateRangeViewModel.GetEventsAsync();
+		Days = previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(); 
+		
+		await FillDays();
 	}
 
-	private void UpdateFirstDayOfWeekState()
+	private async Task FillDays()
 	{
-		DayOfWeekNamesWithFirstDay = DayOfWeekHelper.GetDayOfWeeksOrderedByFirstDay(CultureInfo!, true);
+		DateTimeOffset firstDay = Days.FirstOrDefault()?.DateTimeOffset ?? DateTimeOffset.Now;
+		DateTimeOffset lastDay = Days.LastOrDefault()?.DateTimeOffset.AddDays(1) ?? DateTimeOffset.Now;
+		var events = (await GetEventsInDateRange(firstDay, lastDay)).ToList();
+		
+		foreach (DayViewModel dayViewModel in Days)
+		{
+			dayViewModel.InterceptDateEvents(events);
+			events.RemoveAll(x => x.EndTime < dayViewModel.DateTimeOffset.AddDays(1));
+		}
 	}
 
 	private static DateOnly GetDefaultWorkingDate()

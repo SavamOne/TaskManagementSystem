@@ -1,3 +1,4 @@
+using Dapper;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -32,7 +33,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 		return dalEvent?.ToCalendarEvent();
 	}
 
-	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod)
+	public async Task<ICollection<CalendarEvent>> GetStandardCalendarEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod)
 	{
 		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId
 											&& x.EndTime >= startPeriod
@@ -42,7 +43,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
 
-	public async Task<ICollection<CalendarEvent>> GetRepeatedEventsInRange(Guid calendarId)
+	public async Task<ICollection<CalendarEvent>> GetRepeatedCalendarEvents(Guid calendarId)
 	{
 		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId && x.IsRepeated);
 
@@ -59,6 +60,43 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	public async Task<ICollection<CalendarEvent>> GetAllRepeatedEvents()
 	{
 		var dalEvents = await SelectAsync(x => x.IsRepeated);
+
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
+	
+	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRangeForUser(Guid userId, DateTime startPeriod, DateTime endPeriod)
+	{
+		const string selectSql = "SELECT e.* FROM event e " 
+						 + "INNER JOIN event_participant ep on e.id = ep.event_id " 
+						+ "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
+						 + "WHERE cp.user_id = @UserId and e.is_repeated = FALSE " 
+						 + "AND e.end_time >= @StartPeriod AND e.start_time <= @EndPeriod";
+
+		var dalEvents = await GetConnection()
+		   .QueryAsync<DalEvent>(selectSql,
+				new
+				{
+					UserId = userId,
+					StartPeriod = startPeriod,
+					EndPeriod = endPeriod
+				});
+
+		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
+	}
+	
+	public async Task<ICollection<CalendarEvent>> GetRepeatedEventsForUser(Guid userId)
+	{
+		const string selectSql = "SELECT e.* FROM event e "
+							   + "INNER JOIN event_participant ep on e.id = ep.event_id "
+							   + "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
+							   + "WHERE cp.user_id = @UserId and e.is_repeated = TRUE ";
+
+		var dalEvents = await GetConnection()
+		   .QueryAsync<DalEvent>(selectSql,
+				new
+				{
+					UserId = userId,
+				});
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}

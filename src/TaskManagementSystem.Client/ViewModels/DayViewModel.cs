@@ -25,15 +25,16 @@ public class DayViewModel
 
 	public bool IsTodayDay => Date == DateOnly.FromDateTime(DateTime.Today);
 
-	public IEnumerable<EventInfo> Events { get; private set; } = Enumerable.Empty<EventInfo>();
+	public ICollection<EventInfoViewModel> Events { get; private set; } = Array.Empty<EventInfoViewModel>();
 
-	public void InterceptDateEvents(IEnumerable<EventInfo> allEvents)
+	public void InterceptDateEvents(IEnumerable<EventInfoViewModel> allEvents)
 	{
-		Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartTime, x.EndTime, Date)).ToList();
+		Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartTime, x.EndTime, Date))
+		   .ToList();
 	}
 
 	public void ClearEvents()
 	{
-		Events = Enumerable.Empty<EventInfo>();
+		Events.ClearIfPossible();
 	}
 }

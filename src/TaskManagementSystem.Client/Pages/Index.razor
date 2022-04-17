@@ -3,22 +3,22 @@
 
 <CreateCalendarModal @ref="createCalendarModal" OnSuccess="tabs.RefreshCalendarsStateAsync"/>
 
-@*<h3>Мои события</h3>
+<h3 class="fw-bold">Выделенные календари</h3>
 <div class="row row-cols-1 row-cols-md-4 g-4">
     <div class="col p-4">
-        <div class="card text-white bg-danger mb-3 pe-auto opacity-75">
+        <NavLink href="events" class="card text-white bg-danger mb-3 h-100 text-decoration-none">
             <div class="card-header">
-                <h5 class="card-title mt-2 mb-2">Календарь с моими событиями</h5>
+                <h5 class="card-title mt-2 mb-2">Cобытия c моим участием</h5>
             </div>
             <div class="card-body">
                 <p class="card-text">Выделенный календарь с событиями, где вы являетесь участником, со всех календарей.</p>
             </div>
-        </div>
+        </NavLink>
     </div>
-</div>*@
+</div>
 
 <div class="d-flex flex-row align-items-baseline">
-    <h3>Календари</h3>
+    <h3 class="fw-bold">Участие в календарях</h3>
     <div class="cursor-pointer mx-2 oi oi-plus" @onclick="Create"></div>
 </div>
 

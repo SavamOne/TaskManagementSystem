@@ -12,11 +12,15 @@ public interface ICalendarEventRepository
 
 	Task<CalendarEvent?> GetById(Guid eventId);
 
-	Task<ICollection<CalendarEvent>> GetStandardEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod);
+	Task<ICollection<CalendarEvent>> GetStandardCalendarEventsInRange(Guid calendarId, DateTime startPeriod, DateTime endPeriod);
 
-	Task<ICollection<CalendarEvent>> GetRepeatedEventsInRange(Guid calendarId);
+	Task<ICollection<CalendarEvent>> GetRepeatedCalendarEvents(Guid calendarId);
 
 	Task<ICollection<CalendarEvent>> GetAllStandardEventsWithStartTimeInRange(DateTime startPeriod, DateTime endPeriod);
 
 	Task<ICollection<CalendarEvent>> GetAllRepeatedEvents();
+	
+	Task<ICollection<CalendarEvent>> GetStandardEventsInRangeForUser(Guid userId, DateTime startPeriod, DateTime endPeriod);
+	
+	Task<ICollection<CalendarEvent>> GetRepeatedEventsForUser(Guid userId);
 }

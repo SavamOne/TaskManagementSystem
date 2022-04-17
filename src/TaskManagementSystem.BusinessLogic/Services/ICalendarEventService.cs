@@ -15,7 +15,9 @@ public interface ICalendarEventService
 
 	Task<CalendarEventWithParticipants> ChangeEventParticipants(ChangeEventParticipantsData data);
 
-	Task<ICollection<CalendarEvent>> GetEventsInPeriodAsync(GetEventsInPeriodData data);
+	Task<ICollection<CalendarEvent>> GetCalendarEventsInPeriodAsync(GetCalendarEventsInPeriodData data);
+	
+	Task<ICollection<CalendarEvent>> GetEventsForUserInPeriodAsync(GetEventsInPeriodForUserData data);
 
 	Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data);
 }

@@ -88,7 +88,7 @@ public class CalendarEventService : ICalendarEventService
 		return calendarEvent;
 	}
 
-	public async Task<ICollection<CalendarEvent>> GetEventsInPeriodAsync(GetEventsInPeriodData data)
+	public async Task<ICollection<CalendarEvent>> GetCalendarEventsInPeriodAsync(GetCalendarEventsInPeriodData data)
 	{
 		data.AssertNotNull();
 
@@ -103,8 +103,8 @@ public class CalendarEventService : ICalendarEventService
 			throw new BusinessLogicException("Пользователя и/или Календаря с таким Id не существует или этот пользователь не участвует в этом календаре.");
 		}
 
-		var events = await eventRepository.GetStandardEventsInRange(data.CalendarId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
-		var repeatedEvents = await eventRepository.GetRepeatedEventsInRange(data.CalendarId);
+		var events = await eventRepository.GetStandardCalendarEventsInRange(data.CalendarId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
+		var repeatedEvents = await eventRepository.GetRepeatedCalendarEvents(data.CalendarId);
 		
 		if (!participant.IsAdminOrCreator())
 		{
@@ -117,17 +117,24 @@ public class CalendarEventService : ICalendarEventService
 			}
 		}
 		
-		var repeatedEventsIds = repeatedEvents.Select(x => x.Id).ToHashSet();
-		var recurrentSettings = (await recurrentSettingsRepository.GetForEvents(repeatedEventsIds)).ToDictionary(x=> x.EventId);
+		return await CalculateEventsInPeriodAsync(repeatedEvents, events, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
+	}
 
-		List<CalendarEvent> finalRepresentation = new(events);
-		foreach (CalendarEvent repeatedEvent in repeatedEvents.AsParallel())
+	public async Task<ICollection<CalendarEvent>> GetEventsForUserInPeriodAsync(GetEventsInPeriodForUserData data)
+	{
+		data.AssertNotNull();
+
+		if (data.StartPeriod - data.EndPeriod >= TimeSpan.FromDays(60))
 		{
-			var calculated = RecurrenceCalculator.Calculate(repeatedEvent, recurrentSettings[repeatedEvent.Id], data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
-			finalRepresentation.AddRange(calculated);
+			throw new BusinessLogicException(LocalizedResources.DaysLimitOutOfRange, 60);
 		}
+		
+		//TODO: Существование Id пользователя.
 
-		return finalRepresentation;
+		var events = await eventRepository.GetStandardEventsInRangeForUser(data.UserId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
+		var repeatedEvents = await eventRepository.GetRepeatedEventsForUser(data.UserId);
+
+		return await CalculateEventsInPeriodAsync(repeatedEvents, events, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
 	}
 
 	public async Task DeleteEventAsync(DeleteEventData data)
@@ -370,6 +377,21 @@ public class CalendarEventService : ICalendarEventService
 			recurrentSettingsData.Until?.UtcDateTime,
 			recurrentSettingsData.Count,
 			recurrentSettingsData.DayOfWeeks);
+	}
+	
+	private async Task<ICollection<CalendarEvent>> CalculateEventsInPeriodAsync(ICollection<CalendarEvent> repeatedEvents, ICollection<CalendarEvent> events, DateTime startPeriodUtc, DateTime endPeriodUtc)
+	{
+		var repeatedEventsIds = repeatedEvents.Select(x => x.Id).ToHashSet();
+		var recurrentSettings = ( await recurrentSettingsRepository.GetForEvents(repeatedEventsIds) ).ToDictionary(x => x.EventId);
+
+		List<CalendarEvent> finalRepresentation = new(events);
+		foreach (CalendarEvent repeatedEvent in repeatedEvents.AsParallel())
+		{
+			var calculated = RecurrenceCalculator.Calculate(repeatedEvent, recurrentSettings[repeatedEvent.Id], startPeriodUtc, endPeriodUtc);
+			finalRepresentation.AddRange(calculated);
+		}
+
+		return finalRepresentation;
 	}
 
 	private async Task<CalendarEventWithParticipants> GetEventInfo(Guid userId, Guid eventId)

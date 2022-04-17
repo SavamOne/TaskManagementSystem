@@ -20,7 +20,7 @@ public static class DateRangeHelper
 
 	public static bool IsEventInCalendarDay(DateTimeOffset eventStartTime, DateTimeOffset eventEndTime, DateOnly calendarDay)
 	{
-		DateTimeOffset startTime = calendarDay.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
+		DateTimeOffset startTime = calendarDay.ToDateTime(new TimeOnly(0, 0, 0, 1), DateTimeKind.Local);
 		DateTimeOffset endTime = calendarDay.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
 
 		return IsEventInCalendarRange(eventStartTime, eventEndTime, startTime, endTime);

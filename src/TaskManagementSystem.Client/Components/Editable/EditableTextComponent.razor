@@ -1,5 +1,5 @@
 <div class="d-flex flex-row align-items-baseline ">
-    <div id="@textId" class="h@(TextSize)-size editable-text form-control" contenteditable="@(isTextEditing)">@text</div>
+    <div id="@textId" class="h@(TextSize) editable-text @Class" contenteditable="@(isTextEditing)">@text</div>
     <div class="cursor-pointer mx-2 oi oi-pencil" @onclick="ChangeValue"></div>
 </div>
 
@@ -20,6 +20,9 @@
 
     [Parameter]
     public int TextSize { get; set; } = 6;
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
 
     [Parameter]
     public Func<string, Task>? OnValueEditedAsync { get; set; }
