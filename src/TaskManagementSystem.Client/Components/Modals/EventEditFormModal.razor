@@ -115,13 +115,16 @@
             @foreach (UserInfoWithEventRoleViewModel user in possibleParticipants)
             {
                 <div class="row mb-1">
-                    <div class="col col-sm-3">
-                        <p class="h-100 d-flex align-items-center">@user.Name</p>
+                    <div class="col col-sm-5">
+                        <div class="d-flex flex-row align-items-center">
+                            <ProfilePicComponent Username="@user.Name" Size="40"/>
+                            <p class="h-100 m-lg-2">@user.Name</p>
+                        </div>
                     </div>
                     <div class="col col-sm-3">
                         <p class="h-100 d-flex align-items-center">@user.Email</p>
                     </div>
-                    <div class="col col-sm-6">
+                    <div class="col col-sm-4">
                         <div class="h-100 d-flex align-items-center">
                             <DropdownComponent Items="roles" SelectedItem="user.Role"
                                                Disabled="!CanUserChangeParticipants"
@@ -135,13 +138,16 @@
             @foreach (EventParticipantViewModel participant in participants)
             {
                 <div class="row mb-1">
-                    <div class="col col-sm-3">
-                        <p class="h-100 d-flex align-items-center">@participant.Name</p>
+                    <div class="col col-sm-5">
+                        <div class="d-flex flex-row align-items-center">
+                            <ProfilePicComponent Username="@participant.Name" Size="40"/>
+                            <p class="h-100 m-lg-2">@participant.Name</p>
+                        </div>
                     </div>
                     <div class="col col-sm-3">
                         <p class="h-100 d-flex align-items-center">@participant.Email</p>
                     </div>
-                    <div class="col col-sm-6">
+                    <div class="col col-sm-4">
                         <div class="h-100 d-flex align-items-center">
                             <DropdownComponent Items="roles" SelectedItem="participant.Role"
                                                Disabled="!CanUserChangeParticipants || participant.Role == EventParticipantRole.Creator"

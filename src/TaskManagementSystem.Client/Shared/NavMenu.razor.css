@@ -22,11 +22,6 @@
     align-items: center;
 }
 
-.profile-pic {
-    width: 40px;
-    height: 40px;
-}
-
 .nav-item {
     font-size: 1.2rem;
     margin-bottom: 10px;
@@ -44,4 +39,8 @@
 .nav-item ::deep a:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: darkgray;
+}
+
+.nav-item ::deep svg:hover {
+    filter: brightness(150%);
 }
