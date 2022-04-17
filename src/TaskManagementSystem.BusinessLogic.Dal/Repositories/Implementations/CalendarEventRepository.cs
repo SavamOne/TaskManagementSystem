@@ -66,7 +66,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	
 	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRangeForUser(Guid userId, DateTime startPeriod, DateTime endPeriod)
 	{
-		const string selectSql = "SELECT * FROM event e " 
+		const string selectSql = "SELECT e.* FROM event e " 
 						 + "INNER JOIN event_participant ep on e.id = ep.event_id " 
 						+ "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
 						 + "WHERE cp.user_id = @UserId and e.is_repeated = FALSE " 
@@ -86,7 +86,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	
 	public async Task<ICollection<CalendarEvent>> GetRepeatedEventsForUser(Guid userId)
 	{
-		const string selectSql = "SELECT * FROM event e "
+		const string selectSql = "SELECT e.* FROM event e "
 							   + "INNER JOIN event_participant ep on e.id = ep.event_id "
 							   + "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
 							   + "WHERE cp.user_id = @UserId and e.is_repeated = TRUE ";

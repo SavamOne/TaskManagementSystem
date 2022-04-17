@@ -1,7 +1,6 @@
 using TaskManagementSystem.Client.Extensions;
 using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Shared.Models;
-using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
@@ -32,12 +31,9 @@ public class EventInfoViewModel
 
 	public EventInfo Data => data;
 	
-	public static void AddCalendarName(IEnumerable<CalendarNameResponse> responses)
+	public static void AddCalendarName(Guid calendarId, string name)
 	{
-		foreach (CalendarNameResponse response in responses)
-		{
-			CalendarNames.TryAdd(response.CalendarId, response.Name);
-		}
+		CalendarNames.TryAdd(calendarId, name);
 	}
 	
 	public static ISet<Guid> GetUnknownCalendarNames(IEnumerable<EventInfo> eventInfos)

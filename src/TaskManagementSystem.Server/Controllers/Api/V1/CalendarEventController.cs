@@ -175,7 +175,7 @@ public class CalendarEventController : ControllerBase
 	/// <summary>
 	///     Получить список событий в периоде для пользователя.
 	/// </summary>
-	/// <param name="request"><see cref="GetEventsInPeriodForUserData" />.</param>
+	/// <param name="request"><see cref="GetEventsInPeriodForUserRequest" />.</param>
 	/// <returns>Коллекция <see cref="EventInfo" />.</returns>
 	/// <response code="200">Возвращает коллекцию <see cref="EventInfo" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
@@ -183,7 +183,7 @@ public class CalendarEventController : ControllerBase
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("GetInPeriodForUser")]
-	public async Task<IActionResult> GetEventsInPeriodForUserAsync([Required] GetEventsInPeriodForUserData request)
+	public async Task<IActionResult> GetEventsInPeriodForUserAsync([Required] GetEventsInPeriodForUserRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 

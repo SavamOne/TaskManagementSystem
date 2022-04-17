@@ -1,24 +1,28 @@
-<EventEditFormModal @ref="EditEventModal" CalendarId="CalendarId" OnEventChanged="async () => { await DateRangeViewModel!.GetEventsAsync(); StateHasChanged(); }"/>
+<EventEditFormModal @ref="EditEventModal" OnEventChanged="async () => { await FillDays(); StateHasChanged(); }"/>
 
 <!-- Calendar -->
 <div class="calendar">
     <div class="w-100 d-flex flex-row align-items-center justify-content-between">
         <div class="d-flex flex-row">
-            <button class="btn btn-outline-success m-lg-1" @onclick="EditEventModal.Create">
-                <span class="oi oi-plus"></span>
-            </button>
             <button class="btn btn-outline-primary m-lg-1" @onclick="RemoveMonth">
                 <span class="oi oi-arrow-left"></span>
             </button>
             <button class="btn btn-outline-primary m-lg-1" @onclick="AppendMonth">
                 <span class="oi oi-arrow-right"></span>
             </button>
-            <NavLink href="@(Path.Combine("calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none m-lg-1">О календаре</NavLink>
+            <!--TODO: HACK -->
+            @if (this is CalendarComponentWithCalendarEvents)
+            {
+                <button class="btn btn-outline-success m-lg-1" @onclick="() => EditEventModal.Create(CalendarId)">
+                    <span class="oi oi-plus"></span>
+                </button>
+                <NavLink href="@(Path.Combine("calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none m-lg-1">О календаре</NavLink>
+            }
         </div>
         <div class="d-flex flex-row">
             @if (IsLoaded)
             {
-                <h2 class="month font-weight-bold mb-0 text-capitalize">@Month @Year</h2>
+                <h2 class="month fw-bold mb-0 text-capitalize">@Month @Year</h2>
             }
         </div>
         <div>
@@ -30,13 +34,13 @@
     @if (IsLoaded)
     {
         <div class="day-names">
-            @foreach (var dayOfWeekViewModel in DayOfWeekNamesWithFirstDay!)
+            @foreach (DayOfWeekViewModel dayOfWeekViewModel in DayOfWeekNamesWithFirstDay!)
             {
                 <div class="value day-name">@dayOfWeekViewModel</div>
             }
         </div>
         <div class="days">
-            @foreach (DayViewModel dayNum in DateRangeViewModel!.Days)
+            @foreach (DayViewModel dayNum in Days)
             {
                 <div class="day-num @(dayNum.IsWeekEndDay ? "weekend" : string.Empty)">
                     <div class="day-container">

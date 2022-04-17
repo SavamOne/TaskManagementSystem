@@ -43,9 +43,6 @@ public partial class EventEditFormModal
 	public ILocalizationService? LocalizationService { get; set; }
 
 	[Parameter]
-	public Guid CalendarId { get; set; }
-
-	[Parameter]
 	public Func<Task> OnEventChanged { get; set; } = () => Task.CompletedTask;
 
 	private EditFormModal<EventViewModel> Modal { get; set; } = new();
@@ -67,6 +64,8 @@ public partial class EventEditFormModal
 	private bool CanUserChangeParticipants => Event.CanChangeParticipants;
 
 	private bool CanUserDeleteEvent => Event.CanDeleteEvent;
+	
+	private Guid calendarId;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -76,6 +75,8 @@ public partial class EventEditFormModal
 	
 	public async Task EditAsync(EventInfo eventInfo)
 	{
+		calendarId = eventInfo.CalendarId;
+		
 		isEditMode = true;
 		Modal.Title = "Редактирование события";
 		participantsChanged = false;
@@ -96,8 +97,10 @@ public partial class EventEditFormModal
 		Modal.Open();
 	}
 
-	public void Create()
+	public void Create(Guid calendarId)
 	{
+		this.calendarId = calendarId;
+		
 		isEditMode = false;
 		Modal.Title = "Создание события";
 		participantsChanged = false;
@@ -238,7 +241,7 @@ public partial class EventEditFormModal
 		}
 		else
 		{
-			result = await ServerProxy!.CreateEvent(Event.GetCreateRequest(CalendarId));
+			result = await ServerProxy!.CreateEvent(Event.GetCreateRequest(calendarId));
 		}
 
 		if (!result.IsSuccess)
@@ -254,7 +257,7 @@ public partial class EventEditFormModal
 
 	private async Task FilterParticipantsAsync()
 	{
-		var result = await ServerProxy!.GetCalendarParticipantsByFilter(new GetCalendarParticipantsByFilterRequest(CalendarId, filter));
+		var result = await ServerProxy!.GetCalendarParticipantsByFilter(new GetCalendarParticipantsByFilterRequest(calendarId, filter));
 
 		if (!result.IsSuccess)
 		{
