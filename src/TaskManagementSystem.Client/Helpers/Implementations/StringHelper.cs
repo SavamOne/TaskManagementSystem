@@ -15,4 +15,16 @@ public static class StringHelper
 
 		return "#" + Convert.ToHexString(array);
 	}
+
+	public static string GetFirstLetters(string? text)
+	{
+		if (string.IsNullOrEmpty(text))
+		{
+			return string.Empty;
+		}
+
+		char[] chars = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(x => x.FirstOrDefault()).ToArray();
+
+		return new string(chars);
+	}
 }

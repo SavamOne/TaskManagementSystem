@@ -15,6 +15,9 @@ public partial class UserInfoComponent
 
 	[Inject]
 	public IToastService? ToastService { get; set; }
+	
+	[Inject]
+	public IUserUpdateService? UserUpdateService { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -36,6 +39,7 @@ public partial class UserInfoComponent
 		if (result.IsSuccess)
 		{
 			ToastService!.AddSystemToast(LocalizedResources.UserInfoComponent_AboutMe, LocalizedResources.UserInfoComponent_AboutSuccessfullyChanged);
+			UserUpdateService!.SetUpdatedInfo(result.Value!);
 			return;
 		}
 

@@ -28,6 +28,7 @@ builder.Services.AddSingleton<IJSInteropWrapper, JSInteropWrapper>();
 
 builder.Services.AddSingleton<ILocalTokensService, LocalTokensService>();
 builder.Services.AddSingleton<IToastService, ToastService>();
+builder.Services.AddSingleton<IUserUpdateService, UserUpdateService>();
 builder.Services.AddSingleton<ILocalizationService, LocalizationService>();
 
 builder.Services.AddAuthorizationCore();
