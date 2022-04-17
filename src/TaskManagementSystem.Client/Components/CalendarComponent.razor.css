@@ -61,3 +61,9 @@
 .outside {
     color: #99999c;
 }
+
+.navbar-margin {
+    margin-left:.25rem;
+    margin-right:.25rem;
+    height: 40px;
+}

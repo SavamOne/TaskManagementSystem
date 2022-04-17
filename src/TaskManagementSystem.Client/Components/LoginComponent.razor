@@ -3,7 +3,7 @@
         <DataAnnotationsValidator/>
 
         <img class="mb-4" src="favicon.svg" alt="" width="72" height="72">
-        <h3 class="mb-4 fw-normal">@LocalizedResources.LoginComponent_SignIn</h3>
+        <h3 class="mb-4 fw-bold">@LocalizedResources.LoginComponent_SignIn</h3>
 
         <div class="mb-1 form-floating">
             <InputText @bind-Value="loginViewModel.Email" type="email" class="form-control email-input" id="floatingInput" placeholder="name@example.com"/>
@@ -14,7 +14,8 @@
             <label for="floatingPassword">@LocalizedResources.LoginComponent_Password</label>
         </div>
 
-        <button class="w-100 btn btn-lg btn-primary" type="submit">@LocalizedResources.LoginComponent_Login</button>
-        <p class="mt-5 mb-4 text-muted">@string.Format(LocalizedResources.LoginComponent_Copyright, DateTime.Now.Year)</p>
+        <button class="w-100 mb-2 btn btn-lg btn-primary" type="submit">@LocalizedResources.LoginComponent_Login</button>
+        <NavLink href="register">Регистрация</NavLink>
+        <p class="mt-5 text-muted">@string.Format(LocalizedResources.LoginComponent_Copyright, DateTime.Now.Year)</p>
     </EditForm>
 </main>

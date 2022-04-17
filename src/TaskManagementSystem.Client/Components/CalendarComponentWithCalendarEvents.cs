@@ -36,8 +36,7 @@ public class CalendarComponentWithCalendarEvents : CalendarComponent
 			ToastService!.AddSystemErrorToast(eventResult.ErrorDescription!);
 			return Array.Empty<EventInfoViewModel>();
 		}
-
-		Console.WriteLine(CalendarName);
+		
 		EventInfoViewModel.AddCalendarName(CalendarId, CalendarName!);
 
 		var events = eventResult.Value!

@@ -29,7 +29,7 @@
 
 .nav-item {
     font-size: 1.2rem;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .nav-item ::deep a {
