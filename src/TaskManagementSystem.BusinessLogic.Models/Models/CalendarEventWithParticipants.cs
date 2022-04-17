@@ -9,12 +9,16 @@ public class CalendarEventWithParticipants
 		bool canUserEditEvent,
 		bool canUserEditParticipants,
 		bool canUserDeleteEvent,
+		CalendarEventParticipantState? participationState,
+		TimeSpan? notifyBefore,
 		RecurrentEventSettings? recurrentEventSettings)
 	{
 		CanUserEditEvent = canUserEditEvent;
 		CanUserEditParticipants = canUserEditParticipants;
 		CanUserDeleteEvent = canUserDeleteEvent;
 		RecurrentEventSettings = recurrentEventSettings;
+		ParticipationState = participationState;
+		NotifyBefore = notifyBefore;
 		Event = @event.AssertNotNull();
 		Participants = participants.AssertNotNull();
 	}
@@ -24,7 +28,11 @@ public class CalendarEventWithParticipants
 	public bool CanUserEditParticipants { get; }
 
 	public bool CanUserDeleteEvent { get; }
+	
+	public CalendarEventParticipantState? ParticipationState { get; }
 
+	public TimeSpan? NotifyBefore { get; }
+	
 	public CalendarEvent Event { get; }
 
 	public IEnumerable<CalendarEventParticipant> Participants { get; }

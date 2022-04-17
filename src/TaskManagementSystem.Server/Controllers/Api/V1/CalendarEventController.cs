@@ -195,6 +195,26 @@ public class CalendarEventController : ControllerBase
 		return Ok(result.Select(Convert).ToList());
 	}
 	
+	/// <summary>
+	///     Обновить состояние участия в событии.
+	/// </summary>
+	/// <param name="request"><see cref="ChangeMyEventParticipationStateRequest" />.</param>
+	/// <returns><see cref="bool" />.</returns>
+	/// <response code="200">Возвращает <see cref="bool" />.</response>
+	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
+	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
+	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[HttpPost("ChangeMyParticipationState")]
+	public async Task<IActionResult> ChangeMyParticipationStateAsync([Required] ChangeMyEventParticipationStateRequest request)
+	{
+		Guid userId = tokenService.GetUserIdFromClaims(User);
+		
+		await eventService.ChangeParticipantState(new ChangeParticipantStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
+
+		return Ok(true);
+	}
+
 	private static EventWithParticipants Convert(CalendarEventWithParticipants eventWithParticipants)
 	{
 		return new EventWithParticipants(Convert(eventWithParticipants.Event),
@@ -202,6 +222,8 @@ public class CalendarEventController : ControllerBase
 			eventWithParticipants.CanUserEditEvent,
 			eventWithParticipants.CanUserEditParticipants,
 			eventWithParticipants.CanUserDeleteEvent,
+			(EventParticipantState?)eventWithParticipants.ParticipationState,
+			eventWithParticipants.NotifyBefore,
 			Convert(eventWithParticipants.RecurrentEventSettings));
 	}
 
@@ -227,7 +249,8 @@ public class CalendarEventController : ControllerBase
 			x.CalendarParticipant!.User!.Id,
 			x.EventId,
 			x.CalendarParticipant!.CalendarId,
-			(EventParticipantRole)x.Role);
+			(EventParticipantRole)x.Role,
+			(EventParticipantState)x.State);
 	}
 
 	private static EventInfo Convert(CalendarEvent x)

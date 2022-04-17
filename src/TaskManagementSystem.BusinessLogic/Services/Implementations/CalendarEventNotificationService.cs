@@ -96,7 +96,7 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 		foreach (CalendarEvent repeatedEvent in repeatedEvents)
 		{
 			var participants = (await eventParticipantRepository.GetByEventId(repeatedEvent.Id))
-			   .Where(x => x.State is not EventParticipantState.Rejected && x.IsParticipantOrCreator())
+			   .Where(x => x.State is not CalendarEventParticipantState.Rejected && x.IsParticipantOrCreator())
 			   .ToList();
 
 			foreach (CalendarEvent @event in RecurrenceCalculator.Calculate(repeatedEvent, recurrentEventSettings[repeatedEvent.Id], start, start + TimeSpan.FromDays(8)))
@@ -119,7 +119,7 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 			var participants = await eventParticipantRepository.GetByEventId(@event.Id);
 
 			var notifications = participants.AsParallel()
-			   .Where(x => x.State is not EventParticipantState.Rejected && x.IsParticipantOrCreator())
+			   .Where(x => x.State is not CalendarEventParticipantState.Rejected && x.IsParticipantOrCreator())
 			   .Select(x =>
 					new CalendarEventNotification(x.CalendarParticipant!.UserId,
 						@event.Id,
