@@ -6,6 +6,10 @@ function getInnerTextById(id) {
     return document.getElementById(id).innerHTML
 }
 
+function getValueById(id) {
+    return document.getElementById(id).value
+}
+
 function set(key, value) {
     localStorage.setItem(key, value);
 }

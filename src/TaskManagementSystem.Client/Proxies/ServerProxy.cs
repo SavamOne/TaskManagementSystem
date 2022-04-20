@@ -244,6 +244,14 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
+	
+	public async Task<Result<EventWithParticipants>> ChangeMyEventParticipationState(ChangeMyEventParticipationStateRequest request)
+	{
+		var result =
+			await SendRequestAsync<ChangeMyEventParticipationStateRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeMyParticipationState", UriKind.Relative), HttpMethod.Post, request);
+
+		return result;
+	}
 
 	public async Task<Result<GetPublicKeyResponse>> GetNotificationsPublicKey()
 	{
@@ -266,7 +274,7 @@ public class ServerProxy : BaseProxy
 		await SendRequestAsync<DeleteNotificationSubscribeRequest, bool>(new Uri("Api/V1/Notification/Unsubscribe", UriKind.Relative), HttpMethod.Post, request);
 	}
 
-	protected override async Task RefreshTokens()
+	protected override async Task RefreshTokensAsync()
 	{
 		string? refreshToken = await StorageService.GetRefreshTokenAsync();
 		RefreshTokensRequest request = new(refreshToken!);

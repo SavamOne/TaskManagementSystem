@@ -344,7 +344,7 @@ public class CalendarEventService : ICalendarEventService
 			eventInfo.RecurrentEventSettings);
 	}
 	
-	public async Task ChangeParticipantState(ChangeParticipantStateData data)
+	public async Task<CalendarEventWithParticipants> ChangeParticipantState(ChangeParticipantStateData data)
 	{
 		data.AssertNotNull();
 		
@@ -358,29 +358,31 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException("Обновлять состояние участия могут только участники события.");
 		}
-		
+
 		if (!Enum.GetValues<CalendarEventParticipantState>().Contains(data.State))
 		{
 			throw new BusinessLogicException("Некорректное состояние");
 		}
 
-		if (data.State is CalendarEventParticipantState.Confirmed && data.NotifyBefore is null)
+		if (data.State is not CalendarEventParticipantState.Rejected && data.NotifyBefore is null)
 		{
 			throw new BusinessLogicException("Не задано время напоминания.");
 		}
 
-		if (data.State is CalendarEventParticipantState.Confirmed && data.NotifyBefore < TimeSpan.Zero && data.NotifyBefore > TimeSpan.FromDays(7))
+		if (data.State is not CalendarEventParticipantState.Rejected && data.NotifyBefore < TimeSpan.Zero && data.NotifyBefore > TimeSpan.FromDays(7))
 		{
 			throw new BusinessLogicException("Время напоминания должно быть в периоде от 0 секунд до 7 дней.");
 		}
 		
 		eventParticipant.State = data.State;
-		eventParticipant.NotifyBefore = data.NotifyBefore ?? TimeSpan.Zero;
+		eventParticipant.NotifyBefore = data.State is not CalendarEventParticipantState.Rejected ? data.NotifyBefore!.Value : TimeSpan.Zero;
 
 		await eventParticipantRepository.UpdateAllAsync(new[]
 		{
 			eventParticipant
 		});
+		
+		return await GetEventInfo(data.UserId, data.EventId);
 	}
 
 	private static void HideEventInfo(CalendarEvent @event)
@@ -459,7 +461,7 @@ public class CalendarEventService : ICalendarEventService
 		bool canUserEditParticipants = userIdParticipant?.IsParticipantOrCreator() ?? false;
 		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
 		var state = userIdParticipant?.State;
-		var notifyBefore = userIdParticipant?.NotifyBefore;
+		var notifyBefore = canUserEditParticipants ? userIdParticipant?.NotifyBefore : null;
 		
 		RecurrentEventSettings? recurrentEventSettings = await recurrentSettingsRepository.GetForEvent(@event.Id);
 

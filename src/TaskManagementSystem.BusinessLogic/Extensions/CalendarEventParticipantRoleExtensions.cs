@@ -13,6 +13,11 @@ public static class CalendarEventParticipantRoleExtensions
 	{
 		return role is CalendarEventParticipantRole.Participant or CalendarEventParticipantRole.Creator;
 	}
+	
+	public static bool IsParticipant(this CalendarEventParticipant? eventParticipant)
+	{
+		return eventParticipant?.Role is CalendarEventParticipantRole.Participant;
+	}
 
 	public static bool IsParticipantOrInform(this CalendarEventParticipantRole role)
 	{

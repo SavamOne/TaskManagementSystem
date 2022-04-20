@@ -21,5 +21,5 @@ public interface ICalendarEventService
 
 	Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data);
 
-	Task ChangeParticipantState(ChangeParticipantStateData data);
+	Task<CalendarEventWithParticipants> ChangeParticipantState(ChangeParticipantStateData data);
 }

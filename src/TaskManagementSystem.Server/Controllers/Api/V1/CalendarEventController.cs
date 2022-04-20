@@ -199,8 +199,8 @@ public class CalendarEventController : ControllerBase
 	///     Обновить состояние участия в событии.
 	/// </summary>
 	/// <param name="request"><see cref="ChangeMyEventParticipationStateRequest" />.</param>
-	/// <returns><see cref="bool" />.</returns>
-	/// <response code="200">Возвращает <see cref="bool" />.</response>
+	/// <returns><see cref="EventWithParticipants" />.</returns>
+	/// <response code="200">Возвращает <see cref="EventWithParticipants" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
@@ -210,9 +210,9 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 		
-		await eventService.ChangeParticipantState(new ChangeParticipantStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
+		CalendarEventWithParticipants result = await eventService.ChangeParticipantState(new ChangeParticipantStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
 
-		return Ok(true);
+		return Ok(Convert(result));
 	}
 
 	private static EventWithParticipants Convert(CalendarEventWithParticipants eventWithParticipants)

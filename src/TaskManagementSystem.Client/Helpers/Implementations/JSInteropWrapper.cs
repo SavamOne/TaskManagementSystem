@@ -55,9 +55,15 @@ public class JSInteropWrapper : IJSInteropWrapper
 
 		await jsRuntime.InvokeAsync<string>("remove", key);
 	}
+	
 	public async Task<string> GetInnerTextByIdAsync(string id)
 	{
 		return await jsRuntime.InvokeAsync<string>("getInnerTextById", id);
+	}
+	
+	public async Task<string> GetValueByIdAsync(string id)
+	{
+		return await jsRuntime.InvokeAsync<string>("getValueById", id);
 	}
 
 	public async Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey)
