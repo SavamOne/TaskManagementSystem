@@ -15,7 +15,8 @@ public class EventParticipantUser
 		Guid userId,
 		Guid eventId,
 		Guid calendarId,
-		EventParticipantRole role)
+		EventParticipantRole role,
+		EventParticipantState participationState)
 	{
 		UserName = userName.AssertNotNull();
 		UserEmail = userEmail.AssertNotNull();
@@ -25,6 +26,7 @@ public class EventParticipantUser
 		EventId = eventId;
 		CalendarId = calendarId;
 		Role = role;
+		ParticipationState = participationState;
 	}
 
 	/// <summary>
@@ -74,4 +76,10 @@ public class EventParticipantUser
 	/// </summary>
 	[Required]
 	public EventParticipantRole Role { get; }
+	
+	/// <summary>
+	///		Состояние участия.
+	/// </summary>
+	[Required]
+	public EventParticipantState ParticipationState { get; }
 }

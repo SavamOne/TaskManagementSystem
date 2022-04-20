@@ -18,6 +18,7 @@ public class EventParticipantViewModel
 		EventParticipantId = eventParticipantUser.EventParticipantId;
 		Name = eventParticipantUser.UserName;
 		Email = eventParticipantUser.UserEmail;
+		State = role is EventParticipantRole.Inform ? null : eventParticipantUser.ParticipationState;
 	}
 
 	public bool RoleChanged { get; private set; }
@@ -39,6 +40,8 @@ public class EventParticipantViewModel
 			role = value;
 		}
 	}
+	
+	public EventParticipantState? State { get; }
 
 	public ChangeEventParticipantRequest GetChangeRequest()
 	{

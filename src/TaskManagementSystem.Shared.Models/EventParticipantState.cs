@@ -1,4 +1,4 @@
-namespace TaskManagementSystem.BusinessLogic.Models.Models;
+namespace TaskManagementSystem.Shared.Models;
 
 public enum EventParticipantState
 {

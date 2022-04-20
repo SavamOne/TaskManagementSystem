@@ -6,7 +6,7 @@ public class CalendarEventParticipant
 		Guid eventId,
 		Guid calendarParticipantId,
 		CalendarEventParticipantRole role,
-		EventParticipantState state)
+		CalendarEventParticipantState state)
 	{
 		Id = id;
 		EventId = eventId;
@@ -21,7 +21,7 @@ public class CalendarEventParticipant
 
 	public Guid CalendarParticipantId { get; }
 
-	public EventParticipantState State { get; set; }
+	public CalendarEventParticipantState State { get; set; }
 
 	public TimeSpan NotifyBefore { get; set; } = TimeSpan.Zero;
 

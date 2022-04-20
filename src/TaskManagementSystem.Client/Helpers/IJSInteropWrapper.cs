@@ -15,6 +15,8 @@ public interface IJSInteropWrapper
 	Task RemoveAsync(string key);
 
 	Task<string> GetInnerTextByIdAsync(string id);
+	
+	Task<string> GetValueByIdAsync(string id);
 
 	Task<AddNotificationSubscribeRequest?> TryRequestNotificationSubscriptionAsync(string publicKey);
 

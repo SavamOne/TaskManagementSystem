@@ -24,7 +24,7 @@ public static class CalendarEventParticipantConverter
 			dalEventParticipant.EventId,
 			dalEventParticipant.CalendarParticipantId,
 			(CalendarEventParticipantRole)dalEventParticipant.Role,
-			(EventParticipantState)dalEventParticipant.StatusType)
+			(CalendarEventParticipantState)dalEventParticipant.StatusType)
 		{
 			NotifyBefore = dalEventParticipant.StartNotificationBefore,
 			CalendarParticipant = dalEventParticipant.CalendarParticipant?.ToCalendarParticipant()

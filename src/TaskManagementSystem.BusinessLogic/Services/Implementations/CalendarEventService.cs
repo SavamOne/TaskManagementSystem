@@ -73,7 +73,7 @@ public class CalendarEventService : ICalendarEventService
 			eventId,
 			participant.Id,
 			CalendarEventParticipantRole.Creator,
-			EventParticipantState.Confirmed);
+			CalendarEventParticipantState.Confirmed);
 
 		unitOfWork.BeginTransaction();
 		await eventRepository.InsertAsync(calendarEvent);
@@ -252,11 +252,14 @@ public class CalendarEventService : ICalendarEventService
 		}
 
 		var participantsToAdd = data.CalendarParticipants
-		   .Select(x => new CalendarEventParticipant(Guid.NewGuid(),
-				info.Event.Id,
-				x.CalendarParticipantId,
-				x.Role,
-				EventParticipantState.Unknown))
+		   .Select(x =>
+			{
+				return new CalendarEventParticipant(Guid.NewGuid(),
+					info.Event.Id,
+					x.CalendarParticipantId,
+					x.Role,
+					CalendarEventParticipantState.Unknown);
+			})
 		   .ToList();
 
 		await eventParticipantRepository.InsertAllAsync(participantsToAdd);
@@ -336,7 +339,50 @@ public class CalendarEventService : ICalendarEventService
 			eventInfo.CanUserEditEvent,
 			eventInfo.CanUserEditParticipants,
 			eventInfo.CanUserDeleteEvent,
+			eventInfo.ParticipationState,
+			eventInfo.NotifyBefore,
 			eventInfo.RecurrentEventSettings);
+	}
+	
+	public async Task<CalendarEventWithParticipants> ChangeParticipantState(ChangeParticipantStateData data)
+	{
+		data.AssertNotNull();
+		
+		CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
+		if (eventParticipant is null)
+		{
+			throw new BusinessLogicException("События и/или Участника события с таким Id не существует или этот пользователь не участвует в этом событии.");
+		}
+
+		if (!eventParticipant.IsParticipantOrCreator())
+		{
+			throw new BusinessLogicException("Обновлять состояние участия могут только участники события.");
+		}
+
+		if (!Enum.GetValues<CalendarEventParticipantState>().Contains(data.State))
+		{
+			throw new BusinessLogicException("Некорректное состояние");
+		}
+
+		if (data.State is not CalendarEventParticipantState.Rejected && data.NotifyBefore is null)
+		{
+			throw new BusinessLogicException("Не задано время напоминания.");
+		}
+
+		if (data.State is not CalendarEventParticipantState.Rejected && data.NotifyBefore < TimeSpan.Zero && data.NotifyBefore > TimeSpan.FromDays(7))
+		{
+			throw new BusinessLogicException("Время напоминания должно быть в периоде от 0 секунд до 7 дней.");
+		}
+		
+		eventParticipant.State = data.State;
+		eventParticipant.NotifyBefore = data.State is not CalendarEventParticipantState.Rejected ? data.NotifyBefore!.Value : TimeSpan.Zero;
+
+		await eventParticipantRepository.UpdateAllAsync(new[]
+		{
+			eventParticipant
+		});
+		
+		return await GetEventInfo(data.UserId, data.EventId);
 	}
 
 	private static void HideEventInfo(CalendarEvent @event)
@@ -414,6 +460,8 @@ public class CalendarEventService : ICalendarEventService
 		bool canUserEditEvent = userIdParticipant?.IsCreator() ?? false;
 		bool canUserEditParticipants = userIdParticipant?.IsParticipantOrCreator() ?? false;
 		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
+		var state = userIdParticipant?.State;
+		var notifyBefore = canUserEditParticipants ? userIdParticipant?.NotifyBefore : null;
 		
 		RecurrentEventSettings? recurrentEventSettings = await recurrentSettingsRepository.GetForEvent(@event.Id);
 
@@ -422,6 +470,8 @@ public class CalendarEventService : ICalendarEventService
 			canUserEditEvent,
 			canUserEditParticipants,
 			canUserDeleteEvent,
+			state,
+			notifyBefore,
 			recurrentEventSettings);
 	}
 }

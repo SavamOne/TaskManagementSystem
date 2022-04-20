@@ -353,3 +353,33 @@ public class GetEventsInPeriodForUserRequest
 	[Required]
 	public DateTimeOffset EndPeriod { get; }
 }
+
+/// <summary>
+///     Запрос на обновление состояния участия в событии.
+/// </summary>
+public class ChangeMyEventParticipationStateRequest
+{
+	public ChangeMyEventParticipationStateRequest(Guid eventId, EventParticipantState participantState, TimeSpan? notifyBefore)
+	{
+		EventId = eventId;
+		ParticipantState = participantState;
+		NotifyBefore = notifyBefore;
+	}
+	
+	/// <summary>
+	///     Идентификатор события.
+	/// </summary>
+	[Required]
+	public Guid EventId { get; }
+
+	/// <summary>
+	///     Состояние участия в событии.
+	/// </summary>
+	[Required]
+	public EventParticipantState ParticipantState { get; }
+	
+	/// <summary>
+	///     Время, за которое необходимо напомнить о событии.
+	/// </summary>
+	public TimeSpan? NotifyBefore { get; }
+}

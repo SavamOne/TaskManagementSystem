@@ -13,6 +13,8 @@ public class EventWithParticipants
 		bool canUserEditEvent,
 		bool canUserEditParticipants,
 		bool canUserDeleteEvent,
+		EventParticipantState? participationState,
+		TimeSpan? notifyBefore,
 		RecurrentSettings? recurrentSettings)
 	{
 		EventInfo = eventInfo.AssertNotNull();
@@ -21,6 +23,8 @@ public class EventWithParticipants
 		CanUserEditParticipants = canUserEditParticipants;
 		CanUserDeleteEvent = canUserDeleteEvent;
 		RecurrentSettings = recurrentSettings;
+		ParticipationState = participationState;
+		NotifyBefore = notifyBefore;
 	}
 
 	/// <summary>
@@ -46,6 +50,16 @@ public class EventWithParticipants
 	/// </summary>
 	[Required]
 	public EventInfo EventInfo { get; }
+	
+	/// <summary>
+	///		Состояние участия (только если пользователь был добавлен в событие)
+	/// </summary>
+	public EventParticipantState? ParticipationState { get; }
+
+	/// <summary>
+	///		Состояние участия (только если пользователь был добавлен в событие)
+	/// </summary>
+	public TimeSpan? NotifyBefore { get; }
 
 	/// <summary>
 	///     Коллекция участников.

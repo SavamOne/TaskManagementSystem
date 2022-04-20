@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
+using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Helpers.Implementations;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
@@ -20,6 +21,8 @@ public partial class EventEditFormModal
 
 	private readonly IEnumerable<EventRepeatType> repeatTypes = Enum.GetValues<EventRepeatType>();
 
+	private readonly IEnumerable<EventParticipantState> participationStates = Enum.GetValues<EventParticipantState>();
+
 	private IEnumerable<DayOfWeekViewModel>? dayOfWeeks;
 
 	private string filter = string.Empty;
@@ -32,6 +35,10 @@ public partial class EventEditFormModal
 	private bool isRepeated, notifyRepeatChanged;
 	private string repeatedStartDateStr = string.Empty;
 	private string repeatedEndDateStr = string.Empty;
+	
+	private EventParticipantState? participationState;
+	private TimeSpan? notifyMinutes = TimeSpan.Zero;
+	private bool participationStateChanged = false;
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
@@ -41,6 +48,9 @@ public partial class EventEditFormModal
 	
 	[Inject]
 	public ILocalizationService? LocalizationService { get; set; }
+	
+	[Inject]
+	public IJSInteropWrapper? JsInteropWrapper { get; set; }
 
 	[Parameter]
 	public Func<Task> OnEventChanged { get; set; } = () => Task.CompletedTask;
@@ -279,6 +289,9 @@ public partial class EventEditFormModal
 		   .Select(x => new EventParticipantViewModel(x))
 		   .ToList();
 
+		participationState = eventWithParticipants.ParticipationState;
+		notifyMinutes = eventWithParticipants.NotifyBefore;
+
 		possibleParticipants.ClearIfPossible();
 		filter = string.Empty;
 	}
@@ -295,5 +308,42 @@ public partial class EventEditFormModal
 		ToastService!.AddSystemToast(Modal.Title!, "Событие удалено успешно");
 		await OnEventChanged();
 		Modal.Close();
+	}
+
+	private async Task SetParticipationState()
+	{
+		participationStateChanged = false;
+		
+		if (participationState is not EventParticipantState.Rejected)
+		{
+			string minutesStr = await JsInteropWrapper!.GetValueByIdAsync("notifyMinutesInput");
+			Console.WriteLine(minutesStr);
+			if (!uint.TryParse(minutesStr, out uint minutes))
+			{
+				ToastService!.AddSystemErrorToast("Некорректное значение минут.");
+				return;
+			}
+			
+			TimeSpan timespan = TimeSpan.FromMinutes(minutes);
+			if (timespan > TimeSpan.FromDays(7))
+			{
+				ToastService!.AddSystemErrorToast($"Период напоминания не может быть больше, чем {TimeSpan.FromDays(7).TotalMinutes} минут");
+				return;
+			}
+			
+			notifyMinutes = timespan;
+		}
+
+		var result = await ServerProxy!.ChangeMyEventParticipationState(new ChangeMyEventParticipationStateRequest(Event.Id, participationState ?? EventParticipantState.Unknown, notifyMinutes));
+		if (!result.IsSuccess)
+		{
+			ToastService!.AddSystemErrorToast(result.ErrorDescription!);
+		}
+		else
+		{
+			ToastService!.AddSystemToast("Участие в событии", "Обновлено успешно");
+			Fill(result.Value!);
+			StateHasChanged();
+		}
 	}
 }
