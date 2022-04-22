@@ -1,5 +1,11 @@
 <EventEditFormModal @ref="EditEventModal" OnEventChanged="async () => { await FillDays(); StateHasChanged(); }"/>
 
+<!--TODO: HACK -->
+@if (this is CalendarComponentWithCalendarEvents)
+{
+    <CalendarInfoModal @ref="CalendarInfoModal" CalendarId="CalendarId" CalendarNameChanged="name => {EventInfoViewModel.AddCalendarName(CalendarId, name); CalendarName = name; StateHasChanged();}" />
+}
+
 <!-- Calendar -->
 <div class="calendar">
     <div class="w-100 d-flex flex-row align-items-center justify-content-between">
@@ -16,7 +22,10 @@
                 <button class="btn btn-outline-success navbar-margin" @onclick="() => EditEventModal.Create(CalendarId)">
                     <span class="oi oi-plus"></span>
                 </button>
-                <NavLink href="@(Path.Combine("Calendar", CalendarId.ToString()))" class="btn btn-outline-primary text-decoration-none navbar-margin">О календаре</NavLink>
+                <button class="btn btn-outline-warning navbar-margin" @onclick="() => CalendarInfoModal.Show()">
+                    <span class="oi oi-info"></span>
+                    @* О календаре *@
+                </button>
             }
         </div>
         <div class="d-flex flex-row">

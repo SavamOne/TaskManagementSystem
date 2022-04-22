@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
+using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Server.Dal.Repositories;
 using TaskManagementSystem.Server.Exceptions;
@@ -68,8 +69,15 @@ public class TokenService : ITokenService
 
 		Tokens tokens = GenerateTokens(user);
 
-		await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
-		return tokens;
+		try
+		{
+			await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
+			return tokens;
+		}
+		catch
+		{
+			throw new ServerException("Ошибка при обновлении refresh токена.");
+		}
 	}
 
 	public async Task RemoveTokenAsync(string refreshToken)
@@ -139,7 +147,7 @@ public class TokenService : ITokenService
 			options.Value.Audience,
 			claims,
 			nowDate,
-			nowDate.AddMinutes(expirationMinutes),
+			nowDate.AddSeconds(expirationMinutes),
 			credentials);
 		return JwtSecurityTokenHandler.WriteToken(securityToken);
 	}

@@ -10,7 +10,7 @@
   [Parameter]
   public int Size { get; set; } = 40;
 
-  private string HexColor => StringHelper.GetHexColorForText(Username);
+  private string HexColor => !string.IsNullOrEmpty(Username) ? StringHelper.GetHexColorForText(Username) : string.Empty;
 
   private string Letters => new(StringHelper.GetFirstLetters(Username).Take(2).ToArray());
 }

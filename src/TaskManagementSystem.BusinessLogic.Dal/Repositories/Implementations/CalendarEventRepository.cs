@@ -56,7 +56,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
-	
+
 	public async Task<ICollection<CalendarEvent>> GetAllRepeatedEvents()
 	{
 		var dalEvents = await SelectAsync(x => x.IsRepeated);
@@ -66,11 +66,12 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	
 	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRangeForUser(Guid userId, DateTime startPeriod, DateTime endPeriod)
 	{
-		const string selectSql = "SELECT e.* FROM event e " 
-						 + "INNER JOIN event_participant ep on e.id = ep.event_id " 
-						+ "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
-						 + "WHERE cp.user_id = @UserId and e.is_repeated = FALSE " 
-						 + "AND e.end_time >= @StartPeriod AND e.start_time <= @EndPeriod";
+		const string selectSql = "SELECT e.* FROM event e "
+							   + "INNER JOIN event_participant ep on e.id = ep.event_id "
+							   + "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
+							   + "WHERE cp.user_id = @UserId AND e.is_repeated = FALSE "
+							   + "AND ep.is_deleted = FALSE AND cp.is_deleted = FALSE "
+							   + "AND e.end_time >= @StartPeriod AND e.start_time <= @EndPeriod";
 
 		var dalEvents = await GetConnection()
 		   .QueryAsync<DalEvent>(selectSql,
@@ -83,13 +84,14 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
-	
+
 	public async Task<ICollection<CalendarEvent>> GetRepeatedEventsForUser(Guid userId)
 	{
 		const string selectSql = "SELECT e.* FROM event e "
 							   + "INNER JOIN event_participant ep on e.id = ep.event_id "
 							   + "INNER JOIN calendar_participant cp on ep.calendar_participant_id = cp.id "
-							   + "WHERE cp.user_id = @UserId and e.is_repeated = TRUE ";
+							   + "WHERE cp.user_id = @UserId AND e.is_repeated = TRUE "
+							   + "AND ep.is_deleted = FALSE AND cp.is_deleted = FALSE ";
 
 		var dalEvents = await GetConnection()
 		   .QueryAsync<DalEvent>(selectSql,

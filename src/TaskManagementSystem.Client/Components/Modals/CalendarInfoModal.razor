@@ -1,0 +1,65 @@
+<!--TODO: Сделать еще одно базовое модальное окно -->
+<EditFormModal @ref="Modal" Item="calendarForEdit" Title="О календаре">
+    <Body>
+    <EditableTextComponent Value="@(calendarForEdit.Name!)" TextSize="3" Class="fw-bold" OnValueEdited="ChangeCalendarName"/>
+    <EditableTextComponent Value="@(calendarForEdit.Description!)" TextSize="4" OnValueEdited="ChangeCalendarDescription"/>
+
+    <div class="mb-4 w-100 d-flex flex-row align-items-baseline">
+        <input type="text" @bind="filter" class="form-control me-3">
+        <button type="button" class="btn btn-outline-primary" @onclick="GetUsersByFilter">
+            <span class="oi oi-magnifying-glass"></span>
+        </button>
+    </div>
+    @foreach (UserInfoWithParticipantRoleViewModel user in possibleParticipants)
+    {
+        <div class="row mb-1">
+            <div class="col col-sm-4">
+                <div class="d-flex flex-row align-items-end">
+                    <ProfilePicComponent Username="@user.Name" Size="40"/>
+                    <h5 class="h-100 d-flex m-lg-2">@user.Name</h5>
+                </div>
+            </div>
+            <div class="col col-sm-3">
+                <h5 class="h-100 d-flex align-items-center">@user.Email</h5>
+            </div>
+            <div class="col col-sm-2">
+            </div>
+            <div class="col col-sm-3">
+                <div class="h-100 d-flex align-items-center">
+                    <DropdownComponent Items="roles" SelectedItem="user.Role"
+                                       ItemToStringFunc="CalendarParticipantRoleExtensions.GetDescription"
+                                       ItemSelectedFunc="role => { user.Role = role; Changed = true; }"/>
+                </div>
+            </div>
+        </div>
+    }
+    @foreach (CalendarParticipantViewModel user in participants.Values)
+    {
+        <div class="row mb-1">
+            <div class="col col-sm-4">
+                <div class="d-flex flex-row align-items-end">
+                    <ProfilePicComponent Username="@user.Name" Size="40"/>
+                    <h5 class="h-100 d-flex m-lg-2">@user.Name</h5>
+                </div>
+            </div>
+            <div class="col col-sm-3">
+                <h5 class="h-100 d-flex align-items-center">@user.Email</h5>
+            </div>
+            <div class="col col-sm-2">
+                <h5 class="h-100 d-flex align-items-center">@user.CalendarJoinDate</h5>
+            </div>
+            <div class="col col-sm-3">
+                <div class="h-100 d-flex align-items-center">
+                    <DropdownComponent Disabled="user.Role == CalendarParticipantRole.Creator" Items="roles"
+                                       ItemToStringFunc="CalendarParticipantRoleExtensions.GetDescription"
+                                       SelectedItem="user.Role" ItemSelectedFunc="role => { user.Role = role; Changed = true; }"/>
+                </div>
+            </div>
+        </div>
+    }
+
+    </Body>
+    <Footer>
+         <button class="btn btn-primary @ChangedState" @onclick="SaveChanges" type="submit">Подтвердить</button>
+    </Footer>
+</EditFormModal>

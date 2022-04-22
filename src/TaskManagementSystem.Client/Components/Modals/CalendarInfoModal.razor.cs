@@ -7,9 +7,9 @@ using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 using TaskManagementSystem.Shared.Models.Requests;
 
-namespace TaskManagementSystem.Client.Components;
+namespace TaskManagementSystem.Client.Components.Modals;
 
-public partial class CalendarInfoComponent
+public partial class CalendarInfoModal
 {
 	private readonly IEnumerable<CalendarParticipantRole> roles =
 		Enum.GetValues<CalendarParticipantRole>()
@@ -19,7 +19,7 @@ public partial class CalendarInfoComponent
 	private CalendarViewModel calendar = new();
 	private CalendarViewModel calendarForEdit = new();
 
-	private bool changed, isNameEditing, isDescriptionEditing;
+	private bool changed;
 
 	private string filter = string.Empty;
 	private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
@@ -27,6 +27,9 @@ public partial class CalendarInfoComponent
 
 	[Parameter]
 	public Guid CalendarId { get; set; }
+	
+	[Parameter]
+	public Action<string>? CalendarNameChanged { get; set; }
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
@@ -34,8 +37,7 @@ public partial class CalendarInfoComponent
 	[Inject]
 	public IToastService? ToastService { get; set; }
 
-	[Inject]
-	public IJSInteropWrapper? JsInteropWrapper { get; set; }
+	private EditFormModal<CalendarViewModel> Modal { get; set; } = new();
 
 	private bool Changed
 	{
@@ -49,7 +51,11 @@ public partial class CalendarInfoComponent
 
 	private string ChangedState => Changed ? string.Empty : "disabled";
 
-
+	public void Show()
+	{
+		Modal.Open();
+	}
+	
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await ServerProxy!.GetCalendarInfo(new GetCalendarInfoRequest(CalendarId));
@@ -120,8 +126,6 @@ public partial class CalendarInfoComponent
 		}
 
 		CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
-		newParticipantsList = await TryDelete(participantsWithChangedRole) ?? newParticipantsList;
-
 
 		if (newParticipantsList is null)
 		{
@@ -134,35 +138,10 @@ public partial class CalendarInfoComponent
 
 		return true;
 	}
-
-	private async Task<CalendarWithParticipantUsers?> TryDelete(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
-	{
-		var toDeleteIds = participantsWithChangedRole
-		   .Where(x => x.Role == CalendarParticipantRole.NotSet)
-		   .Select(x => x.ParticipantId)
-		   .ToList();
-
-		if (!toDeleteIds.Any())
-		{
-			return null;
-		}
-
-		var deleteResult = await ServerProxy!.DeleteCalendarParticipants(new DeleteParticipantsRequest(CalendarId, toDeleteIds));
-
-		if (!deleteResult.IsSuccess)
-		{
-			ToastService!.AddSystemErrorToast(deleteResult.ErrorDescription!);
-			return null;
-		}
-
-		ToastService!.AddSystemToast("Календарь", "Пользователи успешно удалены");
-		return deleteResult.Value;
-	}
-
+	
 	private async Task<CalendarWithParticipantUsers?> TryChangeRole(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
 	{
 		var toChangeRoleRequests = participantsWithChangedRole
-		   .Where(x => x.Role != CalendarParticipantRole.NotSet)
 		   .Select(x => x.GetChangeRoleRequest())
 		   .ToList();
 
@@ -171,7 +150,7 @@ public partial class CalendarInfoComponent
 			return null;
 		}
 
-		var changeRoleResult = await ServerProxy!.ChangeParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
+		var changeRoleResult = await ServerProxy!.ChangeCalendarParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
 
 		if (!changeRoleResult.IsSuccess)
 		{
@@ -179,7 +158,7 @@ public partial class CalendarInfoComponent
 			return null;
 		}
 
-		ToastService!.AddSystemToast("Календарь", "Роли успешно изменены");
+		ToastService!.AddSystemToast("Календарь", "Роли успешно изменены.");
 		return changeRoleResult.Value;
 	}
 
@@ -231,6 +210,8 @@ public partial class CalendarInfoComponent
 		calendar = new CalendarViewModel(result.Value!);
 
 		ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
+		
+		CalendarNameChanged?.Invoke(calendar.Name!);
 	}
 
 	private void ChangeCalendarName(string newName)
