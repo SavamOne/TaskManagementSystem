@@ -26,6 +26,8 @@ public abstract partial class CalendarComponent
 	public ILocalizationService? LocalizationService { get; set; }
 
 	private EventEditFormModal EditEventModal { get; set; } = new();
+	
+	private CalendarInfoModal CalendarInfoModal{ get; set; } = new();
 
 	private CultureInfo? CultureInfo { get; set; }
 

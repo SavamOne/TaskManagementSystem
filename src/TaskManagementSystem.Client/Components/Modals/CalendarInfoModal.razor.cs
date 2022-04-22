@@ -7,9 +7,9 @@ using TaskManagementSystem.Shared.Helpers;
 using TaskManagementSystem.Shared.Models;
 using TaskManagementSystem.Shared.Models.Requests;
 
-namespace TaskManagementSystem.Client.Components;
+namespace TaskManagementSystem.Client.Components.Modals;
 
-public partial class CalendarInfoComponent
+public partial class CalendarInfoModal
 {
 	private readonly IEnumerable<CalendarParticipantRole> roles =
 		Enum.GetValues<CalendarParticipantRole>()
@@ -19,7 +19,7 @@ public partial class CalendarInfoComponent
 	private CalendarViewModel calendar = new();
 	private CalendarViewModel calendarForEdit = new();
 
-	private bool changed, isNameEditing, isDescriptionEditing;
+	private bool changed;
 
 	private string filter = string.Empty;
 	private Dictionary<Guid, CalendarParticipantViewModel> participants = new();
@@ -27,6 +27,9 @@ public partial class CalendarInfoComponent
 
 	[Parameter]
 	public Guid CalendarId { get; set; }
+	
+	[Parameter]
+	public Action<string>? CalendarNameChanged { get; set; }
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
@@ -34,8 +37,7 @@ public partial class CalendarInfoComponent
 	[Inject]
 	public IToastService? ToastService { get; set; }
 
-	[Inject]
-	public IJSInteropWrapper? JsInteropWrapper { get; set; }
+	private EditFormModal<CalendarViewModel> Modal { get; set; } = new();
 
 	private bool Changed
 	{
@@ -49,7 +51,11 @@ public partial class CalendarInfoComponent
 
 	private string ChangedState => Changed ? string.Empty : "disabled";
 
-
+	public void Show()
+	{
+		Modal.Open();
+	}
+	
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await ServerProxy!.GetCalendarInfo(new GetCalendarInfoRequest(CalendarId));
@@ -204,6 +210,8 @@ public partial class CalendarInfoComponent
 		calendar = new CalendarViewModel(result.Value!);
 
 		ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
+		
+		CalendarNameChanged?.Invoke(calendar.Name!);
 	}
 
 	private void ChangeCalendarName(string newName)

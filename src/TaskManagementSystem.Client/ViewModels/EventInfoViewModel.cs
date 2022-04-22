@@ -33,7 +33,7 @@ public class EventInfoViewModel
 	
 	public static void AddCalendarName(Guid calendarId, string name)
 	{
-		CalendarNames.TryAdd(calendarId, name);
+		CalendarNames[calendarId] = name;
 	}
 	
 	public static ISet<Guid> GetUnknownCalendarNames(IEnumerable<EventInfo> eventInfos)
