@@ -147,7 +147,7 @@ public class TokenService : ITokenService
 			options.Value.Audience,
 			claims,
 			nowDate,
-			nowDate.AddSeconds(expirationMinutes),
+			nowDate.AddMinutes(expirationMinutes),
 			credentials);
 		return JwtSecurityTokenHandler.WriteToken(securityToken);
 	}
