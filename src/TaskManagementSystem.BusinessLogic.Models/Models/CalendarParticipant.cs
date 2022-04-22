@@ -23,7 +23,7 @@ public record CalendarParticipant
 
 	public DateTime JoinDateUtc { get; }
 
-	public CalendarRole Role { get; }
+	public CalendarRole Role { get; set; }
 
 	public User? User { get; set; }
 }

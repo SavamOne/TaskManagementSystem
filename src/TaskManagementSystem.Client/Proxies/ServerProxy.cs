@@ -145,18 +145,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<CalendarWithParticipantUsers>> ChangeParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
+	public async Task<Result<CalendarWithParticipantUsers>> ChangeCalendarParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
 	{
 		var result =
 			await SendRequestAsync<ChangeCalendarParticipantsRoleRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/ChangeParticipantsRole", UriKind.Relative), HttpMethod.Post, request);
-
-		return result;
-	}
-
-	public async Task<Result<CalendarWithParticipantUsers>> DeleteCalendarParticipants(DeleteParticipantsRequest request)
-	{
-		var result =
-			await SendRequestAsync<DeleteParticipantsRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/DeleteParticipants", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

@@ -124,33 +124,11 @@ public class CalendarController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(new ChangeParticipantsRoleData(userId,
+		CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(new ChangeCalendarParticipantsRoleData(userId,
 			request.CalendarId,
 			request.Participants
-			   .Select(x => new ChangeParticipantRoleData(x.ParticipantId, (CalendarRole)x.Role))
+			   .Select(x => new ChangeCalendarParticipantRoleData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
 			   .ToHashSet()));
-
-		return Ok(await ConvertAsync(result));
-	}
-
-	/// <summary>
-	///     Удалить участников календаря.
-	/// </summary>
-	/// <param name="request"><see cref="DeleteParticipantsRequest" />.</param>
-	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
-	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
-	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
-	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
-	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[HttpPost("DeleteParticipants")]
-	public async Task<IActionResult> DeleteParticipantsAsync([Required] DeleteParticipantsRequest request)
-	{
-		Guid userId = tokenService.GetUserIdFromClaims(User);
-
-		CalendarWithParticipants result = await calendarService.DeleteParticipantsAsync(new DeleteParticipantsData(userId,
-			request.CalendarId,
-			request.ParticipantIds.ToHashSet()));
 
 		return Ok(await ConvertAsync(result));
 	}

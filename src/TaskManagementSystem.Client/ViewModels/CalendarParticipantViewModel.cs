@@ -15,7 +15,7 @@ public class CalendarParticipantViewModel
 
 		role = calendarParticipantUser.Role;
 		UserId = calendarParticipantUser.UserId;
-		ParticipantId = calendarParticipantUser.Id;
+		CalendarParticipantId = calendarParticipantUser.Id;
 		Name = calendarParticipantUser.Username;
 		Email = calendarParticipantUser.Email;
 		RegisterDate = calendarParticipantUser.RegisterDate.ToLocalTime().ToString("d");
@@ -26,7 +26,7 @@ public class CalendarParticipantViewModel
 
 	public Guid UserId { get; }
 
-	public Guid ParticipantId { get; }
+	public Guid CalendarParticipantId { get; }
 
 	public string Name { get; }
 
@@ -53,6 +53,8 @@ public class CalendarParticipantViewModel
 			throw new Exception();
 		}
 
-		return new ChangeCalendarParticipantRoleRequest(ParticipantId, Role);
+		return new ChangeCalendarParticipantRoleRequest(CalendarParticipantId, 
+			Role is not CalendarParticipantRole.NotSet ? Role : null, 
+			Role is CalendarParticipantRole.NotSet);
 	}
 }

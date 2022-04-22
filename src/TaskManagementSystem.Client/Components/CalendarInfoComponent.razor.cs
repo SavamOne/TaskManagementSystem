@@ -120,8 +120,6 @@ public partial class CalendarInfoComponent
 		}
 
 		CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
-		newParticipantsList = await TryDelete(participantsWithChangedRole) ?? newParticipantsList;
-
 
 		if (newParticipantsList is null)
 		{
@@ -134,35 +132,10 @@ public partial class CalendarInfoComponent
 
 		return true;
 	}
-
-	private async Task<CalendarWithParticipantUsers?> TryDelete(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
-	{
-		var toDeleteIds = participantsWithChangedRole
-		   .Where(x => x.Role == CalendarParticipantRole.NotSet)
-		   .Select(x => x.ParticipantId)
-		   .ToList();
-
-		if (!toDeleteIds.Any())
-		{
-			return null;
-		}
-
-		var deleteResult = await ServerProxy!.DeleteCalendarParticipants(new DeleteParticipantsRequest(CalendarId, toDeleteIds));
-
-		if (!deleteResult.IsSuccess)
-		{
-			ToastService!.AddSystemErrorToast(deleteResult.ErrorDescription!);
-			return null;
-		}
-
-		ToastService!.AddSystemToast("Календарь", "Пользователи успешно удалены");
-		return deleteResult.Value;
-	}
-
+	
 	private async Task<CalendarWithParticipantUsers?> TryChangeRole(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
 	{
 		var toChangeRoleRequests = participantsWithChangedRole
-		   .Where(x => x.Role != CalendarParticipantRole.NotSet)
 		   .Select(x => x.GetChangeRoleRequest())
 		   .ToList();
 
@@ -171,7 +144,7 @@ public partial class CalendarInfoComponent
 			return null;
 		}
 
-		var changeRoleResult = await ServerProxy!.ChangeParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
+		var changeRoleResult = await ServerProxy!.ChangeCalendarParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
 
 		if (!changeRoleResult.IsSuccess)
 		{
@@ -179,7 +152,7 @@ public partial class CalendarInfoComponent
 			return null;
 		}
 
-		ToastService!.AddSystemToast("Календарь", "Роли успешно изменены");
+		ToastService!.AddSystemToast("Календарь", "Роли успешно изменены.");
 		return changeRoleResult.Value;
 	}
 

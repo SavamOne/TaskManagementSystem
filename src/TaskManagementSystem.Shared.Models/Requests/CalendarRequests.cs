@@ -103,14 +103,15 @@ public class AddCalendarParticipantsRequest
 }
 
 /// <summary>
-///     Запрос на изменение роли участника календаря.
+///     Запрос на изменение роли/удаление участника календаря.
 /// </summary>
 public class ChangeCalendarParticipantRoleRequest
 {
-	public ChangeCalendarParticipantRoleRequest(Guid participantId, CalendarParticipantRole role)
+	public ChangeCalendarParticipantRoleRequest(Guid participantId, CalendarParticipantRole? role, bool delete)
 	{
 		ParticipantId = participantId;
 		Role = role;
+		Delete = delete;
 	}
 
 	/// <summary>
@@ -122,12 +123,17 @@ public class ChangeCalendarParticipantRoleRequest
 	/// <summary>
 	///     Роль участника.
 	/// </summary>
+	public CalendarParticipantRole? Role { get; }
+	
+	/// <summary>
+	///     Флаг удаления.
+	/// </summary>
 	[Required]
-	public CalendarParticipantRole Role { get; }
+	public bool Delete { get;  }
 }
 
 /// <summary>
-///     Запрос на изменение ролей участников календаря.
+///     Запрос на изменение роли/удаление участников календаря.
 /// </summary>
 public class ChangeCalendarParticipantsRoleRequest
 {
@@ -144,34 +150,10 @@ public class ChangeCalendarParticipantsRoleRequest
 	public Guid CalendarId { get; }
 
 	/// <summary>
-	///     Коллекция <see cref="ChangeCalendarParticipantsRoleRequest" />.
+	///     Коллекция <see cref="ChangeCalendarParticipantRoleRequest" />.
 	/// </summary>
 	[Required]
 	public IEnumerable<ChangeCalendarParticipantRoleRequest> Participants { get; }
-}
-
-/// <summary>
-///     Запрос на удаление участников календаря.
-/// </summary>
-public class DeleteParticipantsRequest
-{
-	public DeleteParticipantsRequest(Guid calendarId, IEnumerable<Guid> participantIds)
-	{
-		CalendarId = calendarId;
-		ParticipantIds = participantIds;
-	}
-
-	/// <summary>
-	///     Id календаря.
-	/// </summary>
-	[Required]
-	public Guid CalendarId { get; }
-
-	/// <summary>
-	///     Коллекция Id участников календаря.
-	/// </summary>
-	[Required]
-	public IEnumerable<Guid> ParticipantIds { get; }
 }
 
 /// <summary>
