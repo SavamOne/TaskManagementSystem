@@ -17,6 +17,8 @@ public abstract class BaseProxy
 	private readonly HttpClient httpClient;
 	private readonly ILocalizationService localizationService;
 
+	private Task refreshTokensTask = Task.CompletedTask;
+
 	protected BaseProxy(HttpClient httpClient,
 		ILocalTokensService storageService,
 		IToastService toastService,
@@ -32,7 +34,7 @@ public abstract class BaseProxy
 
 	protected ILocalTokensService StorageService { get; }
 
-	protected abstract Task RefreshTokens();
+	protected abstract Task RefreshTokensAsync();
 
 	protected async Task<Result<TResponse>> SendRequestAsync<TResponse>(Uri url, HttpMethod method)
 	{
@@ -65,7 +67,14 @@ public abstract class BaseProxy
 				return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
 			}
 
-			await RefreshTokens();
+			//TODO: быстрый фикс. Сделать очередь сообщений.
+			if (refreshTokensTask.IsCompleted)
+			{
+				refreshTokensTask = RefreshTokensAsync();
+			}
+
+			await refreshTokensTask;
+
 			isFirstTry = false;
 		}
 	}
@@ -102,8 +111,15 @@ public abstract class BaseProxy
 			{
 				return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
 			}
-
-			await RefreshTokens();
+			
+			//TODO: быстрый фикс. Сделать очередь сообщений.
+			if (refreshTokensTask.IsCompleted)
+			{
+				refreshTokensTask = RefreshTokensAsync();
+			}
+			
+			await refreshTokensTask;
+			
 			isFirstTry = false;
 		}
 	}

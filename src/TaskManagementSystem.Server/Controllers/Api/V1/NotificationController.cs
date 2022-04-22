@@ -55,8 +55,8 @@ public class NotificationController : ControllerBase
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
-	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[HttpPost("Unsubscribe")]
+	[AllowAnonymous]
 	public async Task<IActionResult> Unsubscribe([Required] DeleteNotificationSubscribeRequest request)
 	{
 		await notificationService.DeleteSubscriptionAsync(request.Url.AssertNotNullOrWhiteSpace());
