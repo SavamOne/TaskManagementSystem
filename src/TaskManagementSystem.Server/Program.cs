@@ -9,6 +9,8 @@ using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables(prefix: "TMS_");
+
 //TODO: Придумать, как передавать секцию без установки дополнительного нугета.
 builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection(nameof(PostgresOptions)));
 builder.Services.AddBusinessLogic();
@@ -83,6 +85,7 @@ app.UseRequestLocalization(options =>
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
+app.UseDefaultFiles();
 
 app.UseAuthentication();
 
