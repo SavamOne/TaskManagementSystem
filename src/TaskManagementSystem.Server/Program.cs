@@ -85,7 +85,6 @@ app.UseRequestLocalization(options =>
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
-app.UseDefaultFiles();
 
 app.UseAuthentication();
 
