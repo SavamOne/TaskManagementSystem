@@ -8,6 +8,8 @@ using TaskManagementSystem.Shared.Dal.Options;
 using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Host.ConfigureLogging(loggingBuilder => loggingBuilder.AddSimpleConsole());
+builder.Configuration.AddEnvironmentVariables(prefix: "TMS_");
 
 //TODO: Придумать, как передавать секцию без установки дополнительного нугета.
 builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection(nameof(PostgresOptions)));
@@ -33,46 +35,43 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddRazorPages();
 
-if (builder.Environment.IsDevelopment())
+builder.Services.AddSwaggerGen(options =>
 {
-	builder.Services.AddSwaggerGen(options =>
-	{
-		options.SwaggerDoc("API",
-			new OpenApiInfo
-			{
-				Version = "v1",
-				Title = "TaskManagementSystem Public API Спецификация (v1)",
-				Description = "Web API сервиса по работе с календарями и событиями",
-				Contact = new OpenApiContact
-				{
-					Name = "GitHub",
-					Url = new Uri("https://github.com/SavamOne/TaskManagementSystem")
-				}
-			});
-		options.DescribeAllParametersInCamelCase();
-		foreach (string xmlDocPath in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))
+	options.SwaggerDoc("API",
+		new OpenApiInfo
 		{
-			options.IncludeXmlComments(xmlDocPath);
-		}
-	});
-}
+			Version = "v1",
+			Title = "TaskManagementSystem Public API Спецификация (v1)",
+			Description = "Web API сервиса по работе с календарями и событиями",
+			Contact = new OpenApiContact
+			{
+				Name = "GitHub",
+				Url = new Uri("https://github.com/SavamOne/TaskManagementSystem")
+			}
+		});
+	options.DescribeAllParametersInCamelCase();
+	foreach (string xmlDocPath in Directory.GetFiles(AppContext.BaseDirectory, "*.xml"))
+	{
+		options.IncludeXmlComments(xmlDocPath);
+	}
+});
 
 WebApplication app = builder.Build();
 
-
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger(options =>
-	{
-		options.SerializeAsV2 = true;
-	});
-	app.UseSwaggerUI(options =>
-	{
-		options.SwaggerEndpoint("/swagger/API/swagger.yaml", "API");
-	});
-
 	app.UseWebAssemblyDebugging();
 }
+
+app.UseSwagger(options =>
+{
+	options.SerializeAsV2 = true;
+});
+app.UseSwaggerUI(options =>
+{
+	options.SwaggerEndpoint("/swagger/API/swagger.yaml", "API (YAML)");
+	options.SwaggerEndpoint("/swagger/API/swagger.json", "API (JSON)");
+});
 
 app.UseRequestLocalization(options =>
 {
