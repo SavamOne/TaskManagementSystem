@@ -91,5 +91,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 await app.RunAsync();
