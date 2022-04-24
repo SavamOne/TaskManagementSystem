@@ -106,7 +106,7 @@ public class CalendarController : ControllerBase
 			   .Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role))
 			   .ToHashSet()));
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
@@ -130,7 +130,7 @@ public class CalendarController : ControllerBase
 			   .Select(x => new ChangeCalendarParticipantRoleData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
 			   .ToHashSet()));
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
@@ -148,7 +148,7 @@ public class CalendarController : ControllerBase
 	{
 		CalendarWithParticipants result = await calendarService.GetCalendarInfoAsync(request.CalendarId);
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
@@ -203,7 +203,7 @@ public class CalendarController : ControllerBase
 		return Ok(names.Select(x=> new CalendarNameResponse(x.CalendarId, x.Name)));
 	}
 
-	private async Task<CalendarWithParticipantUsers> ConvertAsync([Required] CalendarWithParticipants request)
+	private static CalendarWithParticipantUsers Convert(CalendarWithParticipants request)
 	{
 		var participantsUsers = request.Participants.Select(participant => new CalendarParticipantUser(participant.Id,
 			participant.CalendarId,

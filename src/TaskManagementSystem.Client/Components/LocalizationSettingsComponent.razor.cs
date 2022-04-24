@@ -35,14 +35,14 @@ public partial class LocalizationSettingsComponent
 		firstDayItems = Enum.GetValues<DayOfWeek>().Select(x => new DayOfWeekViewModel(x, false, selectedCulture.Value));
 	}
 
-	private void ChangeCulture(CultureViewModel viewModel)
+	private void ChangeCulture(CultureViewModel? viewModel)
 	{
 		selectedCulture = viewModel;
 		cultureChanged = true;
 		StateHasChanged();
 	}
 
-	private void ChangeFirstDay(DayOfWeekViewModel viewModel)
+	private void ChangeFirstDay(DayOfWeekViewModel? viewModel)
 	{
 		selectedFirstDay = viewModel;
 		firstDayChanged = true;

@@ -5,11 +5,11 @@
 
 @if (CalendarId != default)
 {
-    <CalendarComponentWithCalendarEvents CalendarId="CalendarId"/>
+    <CalendarEventComponentWithUserEvents CalendarId="CalendarId"/>
 }
 else
 {
-    <CalendarComponentWithUserEvents/>
+    <CalendarEventComponentWithUserEvents/>
 }
 
 @code

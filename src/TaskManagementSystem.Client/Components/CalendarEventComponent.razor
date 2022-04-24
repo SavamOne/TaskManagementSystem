@@ -1,7 +1,7 @@
 <EventEditFormModal @ref="EditEventModal" OnEventChanged="async () => { await FillDays(); StateHasChanged(); }"/>
 
 <!--TODO: HACK -->
-@if (this is CalendarComponentWithCalendarEvents)
+@if (this is CalendarEventComponentWithCalendarEventEvents)
 {
     <CalendarInfoModal @ref="CalendarInfoModal" CalendarId="CalendarId" CalendarNameChanged="name => {EventInfoViewModel.AddCalendarName(CalendarId, name); CalendarName = name; StateHasChanged();}" />
 }
@@ -17,7 +17,7 @@
                 <span class="oi oi-arrow-right"></span>
             </button>
             <!--TODO: HACK -->
-            @if (this is CalendarComponentWithCalendarEvents)
+            @if (this is CalendarEventComponentWithCalendarEventEvents)
             {
                 <button class="btn btn-outline-success navbar-margin" @onclick="() => EditEventModal.Create(CalendarId)">
                     <span class="oi oi-plus"></span>
