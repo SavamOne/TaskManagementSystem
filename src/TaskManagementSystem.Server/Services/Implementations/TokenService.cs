@@ -48,7 +48,7 @@ public class TokenService : ITokenService
 
 		Tokens tokens = GenerateTokens(user);
 
-		await tokenRepository.InsertForUserAsync(user.Id, tokens.RefreshToken);
+		await tokenRepository.InsertForUserAsync(user.Id, tokens.RefreshToken, tokens.RefreshValidUntilUtc);
 		return tokens;
 	}
 
@@ -71,7 +71,7 @@ public class TokenService : ITokenService
 
 		try
 		{
-			await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken);
+			await tokenRepository.UpdateForUserAsync(userId.Value, refreshToken, tokens.RefreshToken, tokens.RefreshValidUntilUtc);
 			return tokens;
 		}
 		catch
@@ -114,11 +114,13 @@ public class TokenService : ITokenService
 
 		string accessToken = Generate(options.Value.SymmetricAccessKey,
 			options.Value.AccessTokenExpirationMinutes,
+			out _,
 			claims);
 		string refreshToken = Generate(options.Value.SymmetricRefreshKey,
-			options.Value.RefreshTokenExpirationMinutes);
+			options.Value.RefreshTokenExpirationMinutes,
+			out DateTime refreshValidUntilUtc);
 
-		return new Tokens(accessToken, refreshToken);
+		return new Tokens(accessToken, refreshToken, refreshValidUntilUtc);
 	}
 
 	private async Task ValidateRefreshToken(string refreshToken)
@@ -139,15 +141,16 @@ public class TokenService : ITokenService
 		}
 	}
 
-	private string Generate(SecurityKey secretKey, int expirationMinutes, IEnumerable<Claim>? claims = null)
+	private string Generate(SecurityKey secretKey, int expirationMinutes, out DateTime validUntilUtc, IEnumerable<Claim>? claims = null)
 	{
 		SigningCredentials credentials = new(secretKey, SecurityAlgorithms.HmacSha256);
-		DateTime nowDate = DateTime.UtcNow;
+		DateTime nowUtc = DateTime.UtcNow;
+		validUntilUtc = nowUtc.AddMinutes(expirationMinutes);
 		JwtSecurityToken securityToken = new(options.Value.Issuer,
 			options.Value.Audience,
 			claims,
-			nowDate,
-			nowDate.AddMinutes(expirationMinutes),
+			nowUtc,
+			validUntilUtc,
 			credentials);
 		return JwtSecurityTokenHandler.WriteToken(securityToken);
 	}
