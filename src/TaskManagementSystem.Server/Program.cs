@@ -69,8 +69,8 @@ app.UseSwagger(options =>
 });
 app.UseSwaggerUI(options =>
 {
-	options.SwaggerEndpoint("/swagger/swagger.yaml", "API (YAML)");
-	options.SwaggerEndpoint("/swagger/swagger.json", "API (JSON)");
+	options.SwaggerEndpoint("/swagger/API/swagger.yaml", "API (YAML)");
+	options.SwaggerEndpoint("/swagger/API/swagger.json", "API (JSON)");
 });
 
 app.UseRequestLocalization(options =>
