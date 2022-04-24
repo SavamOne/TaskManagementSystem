@@ -1,5 +1,6 @@
 ﻿@page "/"
-@using System.Text.Json
+
+<PageTitle>TMS - Календари</PageTitle>
 
 <CreateCalendarModal @ref="createCalendarModal" OnSuccess="tabs.RefreshCalendarsStateAsync"/>
 
@@ -8,10 +9,10 @@
     <div class="col p-4">
         <NavLink href="Events" class="card text-white bg-danger mb-3 h-100 text-decoration-none">
             <div class="card-header">
-                <h5 class="card-title mt-2 mb-2">Cобытия c моим участием</h5>
+                <h5 class="card-title mt-2 mb-2">События c моим участием</h5>
             </div>
             <div class="card-body">
-                <p class="card-text">Выделенный календарь с событиями, где вы являетесь участником, со всех календарей.</p>
+                <p class="card-text">Выделенный список событый со всех ваших календарей, где вы являетесь участником.</p>
             </div>
         </NavLink>
     </div>
@@ -67,8 +68,7 @@
             }
 
             AddNotificationSubscribeRequest? subscriptionRequest = await JsInteropWrapper!.TryRequestNotificationSubscriptionAsync(publicKeyResult.Value!.PublicKey);
-            Console.WriteLine(JsonSerializer.Serialize(subscriptionRequest));
-
+            
             if (subscriptionRequest == null)
             {
                 return;

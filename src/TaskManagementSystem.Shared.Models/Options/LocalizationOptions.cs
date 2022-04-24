@@ -6,15 +6,15 @@ public static class LocalizationOptions
 {
 	private static readonly Dictionary<string, CultureInfo> SupportedCultures = new(StringComparer.InvariantCultureIgnoreCase)
 	{
-		{
-			"en", CultureInfo.GetCultureInfo("en")
-		},
+		// {
+		// 	"en", CultureInfo.GetCultureInfo("en")
+		// },
 		{
 			"ru", CultureInfo.GetCultureInfo("ru")
 		}
 	};
 
-	public static CultureInfo DefaultCultureInfo { get; } = SupportedCultures["en"];
+	public static CultureInfo DefaultCultureInfo { get; } = SupportedCultures.First().Value;
 
 	public static List<CultureInfo> AvailableCultureInfos { get; } = SupportedCultures.Values.ToList();
 
