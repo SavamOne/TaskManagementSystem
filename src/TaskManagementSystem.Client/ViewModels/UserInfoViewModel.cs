@@ -23,8 +23,8 @@ public class UserInfoViewModel
 
 	public string? RegisterDate { get; set; }
 
-	public ChangeUserInfoRequest GetChangeInfoRequest()
+	public EditUserInfoRequest GetEditInfoRequest()
 	{
-		return new ChangeUserInfoRequest(Name!, Email!);
+		return new EditUserInfoRequest(Name!, Email!);
 	}
 }

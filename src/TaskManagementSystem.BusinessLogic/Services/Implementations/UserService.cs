@@ -96,7 +96,7 @@ public class UserService : IUserService
 		return await userRepository.GetByFilter(filter, 50);
 	}
 
-	public async Task<User> ChangeUserInfoAsync(ChangeUserInfoData data)
+	public async Task<User> EditUserInfoAsync(EditUserInfoData data)
 	{
 		data.AssertNotNull();
 

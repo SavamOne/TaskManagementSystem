@@ -84,7 +84,7 @@ public class CalendarEventController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEvent result = await eventService.ChangeEventAsync(Convert(request, userId));
+		CalendarEvent result = await eventService.EditEventAsync(Convert(request, userId));
 
 		return Ok(Convert(result));
 	}
@@ -283,9 +283,9 @@ public class CalendarEventController : ControllerBase
 			Convert(request.RecurrentSettings));
 	}
 
-	private static ChangeCalendarEventData Convert(EditEventRequest request, Guid userId)
+	private static EditCalendarEventData Convert(EditEventRequest request, Guid userId)
 	{
-		return new ChangeCalendarEventData(userId,
+		return new EditCalendarEventData(userId,
 			request.EventId,
 			request.IsRepeated,
 			request.Name,

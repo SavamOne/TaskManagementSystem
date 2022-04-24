@@ -172,7 +172,7 @@ public class CalendarEventService : ICalendarEventService
 		await eventRepository.DeleteByIdAsync(data.EventId);
 	}
 
-	public async Task<CalendarEvent> ChangeEventAsync(ChangeCalendarEventData data)
+	public async Task<CalendarEvent> EditEventAsync(EditCalendarEventData data)
 	{
 		CalendarEventParticipant? participant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
 		if (participant is null)

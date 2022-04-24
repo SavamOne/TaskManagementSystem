@@ -97,10 +97,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<UserInfo>> ChangeUserInfoAsync(ChangeUserInfoRequest request)
+	public async Task<Result<UserInfo>> EditUserInfoAsync(EditUserInfoRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeUserInfoRequest, UserInfo>(new Uri("Api/V1/User/ChangeInfo", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditUserInfoRequest, UserInfo>(new Uri("Api/V1/User/EditInfo", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

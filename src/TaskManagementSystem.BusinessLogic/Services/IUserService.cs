@@ -15,7 +15,7 @@ public interface IUserService
 
 	Task<ISet<User>> GetUsersByFilter(string filter);
 
-	Task<User> ChangeUserInfoAsync(ChangeUserInfoData data);
+	Task<User> EditUserInfoAsync(EditUserInfoData data);
 
 	Task<User> ChangePasswordAsync(ChangePasswordData data);
 }

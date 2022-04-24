@@ -2,9 +2,9 @@ using TaskManagementSystem.BusinessLogic.Models.Models;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class ChangeCalendarEventData
+public class EditCalendarEventData
 {
-	public ChangeCalendarEventData(Guid userId,
+	public EditCalendarEventData(Guid userId,
 		Guid eventId,
 		bool isRepeated,
 		string? name,

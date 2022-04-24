@@ -102,7 +102,7 @@ public class CalendarService : ICalendarService
 		return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
 	}
 
-	public async Task<CalendarWithParticipants> EditParticipantsAsync(ChangeCalendarParticipantsRoleData data)
+	public async Task<CalendarWithParticipants> EditParticipantsAsync(EditCalendarParticipantsData data)
 	{
 		data.AssertNotNull();
 		CheckRolesAreAdminOrParticipant(data.Participants);
@@ -149,11 +149,11 @@ public class CalendarService : ICalendarService
 		return calendars.Select(x => new CalendarName(x.Id, x.Name)).ToList();
 	}
 	
-	private async Task ValidateAndUpdateParticipantsAsync(ChangeCalendarParticipantsRoleData data, CalendarWithParticipants calendarInfo)
+	private async Task ValidateAndUpdateParticipantsAsync(EditCalendarParticipantsData data, CalendarWithParticipants calendarInfo)
 	{
 		var toChange = new HashSet<CalendarParticipant>();
 		var toDelete = new HashSet<Guid>();
-		foreach (ChangeCalendarParticipantRoleData changeParticipantRoleData in data.Participants)
+		foreach (EditCalendarParticipantData changeParticipantRoleData in data.Participants)
 		{
 			CalendarParticipant? participant = calendarInfo.Participants
 			   .FirstOrDefault(x => changeParticipantRoleData.ParticipantId == x.Id);
@@ -244,7 +244,7 @@ public class CalendarService : ICalendarService
 		}
 	}
 
-	private static void CheckRolesAreAdminOrParticipant(IEnumerable<ChangeCalendarParticipantRoleData> participants)
+	private static void CheckRolesAreAdminOrParticipant(IEnumerable<EditCalendarParticipantData> participants)
 	{
 		if (!participants.All(x => x.Role?.IsAdminOrParticipant() ?? x.Delete))
 		{

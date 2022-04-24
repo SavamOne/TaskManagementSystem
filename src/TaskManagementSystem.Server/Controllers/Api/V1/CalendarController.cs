@@ -124,10 +124,10 @@ public class CalendarController : ControllerBase
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarWithParticipants result = await calendarService.EditParticipantsAsync(new ChangeCalendarParticipantsRoleData(userId,
+		CalendarWithParticipants result = await calendarService.EditParticipantsAsync(new EditCalendarParticipantsData(userId,
 			request.CalendarId,
 			request.Participants
-			   .Select(x => new ChangeCalendarParticipantRoleData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
+			   .Select(x => new EditCalendarParticipantData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
 			   .ToHashSet()));
 
 		return Ok(Convert(result));

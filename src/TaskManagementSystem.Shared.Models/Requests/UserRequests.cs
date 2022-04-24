@@ -101,9 +101,9 @@ public class ChangePasswordRequest
 /// <summary>
 ///     Запрос на изменение пользовательской информации.
 /// </summary>
-public class ChangeUserInfoRequest
+public class EditUserInfoRequest
 {
-	public ChangeUserInfoRequest(string name, string email)
+	public EditUserInfoRequest(string name, string email)
 	{
 		Name = name;
 		Email = email;
