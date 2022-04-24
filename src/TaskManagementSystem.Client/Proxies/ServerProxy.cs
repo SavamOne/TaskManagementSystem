@@ -205,10 +205,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<EventWithParticipants>> ChangeEventParticipants(ChangeEventParticipantsRequest request)
+	public async Task<Result<EventWithParticipants>> EditEventParticipants(EditEventParticipantsRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeParticipants", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/EditParticipants", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -237,10 +237,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 	
-	public async Task<Result<EventWithParticipants>> ChangeMyEventParticipationState(ChangeMyEventParticipationStateRequest request)
+	public async Task<Result<EventWithParticipants>> EditMyEventParticipationState(EditMyEventParticipationStateRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeMyEventParticipationStateRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeMyParticipationState", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditMyEventParticipationStateRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/EditMyParticipationState", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

@@ -43,14 +43,14 @@ public class EventParticipantViewModel
 	
 	public EventParticipantState? State { get; }
 
-	public ChangeEventParticipantRequest GetChangeRequest()
+	public EditEventParticipantRequest GetEditRequest()
 	{
 		if (!RoleChanged)
 		{
 			throw new Exception();
 		}
 
-		return new ChangeEventParticipantRequest(EventParticipantId,
+		return new EditEventParticipantRequest(EventParticipantId,
 			Role != EventParticipantRole.NotSet ? Role : null,
 			Role == EventParticipantRole.NotSet);
 	}

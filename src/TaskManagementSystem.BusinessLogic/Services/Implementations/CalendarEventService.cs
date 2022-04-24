@@ -267,7 +267,7 @@ public class CalendarEventService : ICalendarEventService
 		return await GetEventInfo(data.UserId, data.EventId);
 	}
 
-	public async Task<CalendarEventWithParticipants> ChangeEventParticipants(ChangeEventParticipantsData data)
+	public async Task<CalendarEventWithParticipants> EditEventParticipants(EditEventParticipantsData data)
 	{
 		if (!data.EventParticipants.All(x => x.Role?.IsParticipantOrInform() ?? x.Delete))
 		{
@@ -284,7 +284,7 @@ public class CalendarEventService : ICalendarEventService
 		var toChange = new List<CalendarEventParticipant>();
 		var toDelete = new HashSet<Guid>();
 
-		foreach (ChangeEventParticipantData changeEventParticipantData in data.EventParticipants)
+		foreach (EditEventParticipantData changeEventParticipantData in data.EventParticipants)
 		{
 			CalendarEventParticipant? participant = info.Participants
 			   .FirstOrDefault(x => x.Id == changeEventParticipantData.EventParticipantId);
@@ -344,7 +344,7 @@ public class CalendarEventService : ICalendarEventService
 			eventInfo.RecurrentEventSettings);
 	}
 	
-	public async Task<CalendarEventWithParticipants> ChangeParticipantState(ChangeParticipantStateData data)
+	public async Task<CalendarEventWithParticipants> EditParticipationState(EditParticipationStateData data)
 	{
 		data.AssertNotNull();
 		

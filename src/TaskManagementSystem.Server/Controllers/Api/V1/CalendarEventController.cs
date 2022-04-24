@@ -110,21 +110,21 @@ public class CalendarEventController : ControllerBase
 	}
 
 	/// <summary>
-	///     Изменить роль/удалить участников.
+	///     Изменить роль/удалить участников события.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeEventParticipantsRequest" />.</param>
+	/// <param name="request"><see cref="EditEventParticipantsRequest" />.</param>
 	/// <returns><see cref="EventWithParticipants" />.</returns>
 	/// <response code="200">Возвращает <see cref="EventWithParticipants" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(EventWithParticipants), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[HttpPost("ChangeParticipants")]
-	public async Task<IActionResult> ChangeParticipantsAsync([Required] ChangeEventParticipantsRequest request)
+	[HttpPost("EditParticipants")]
+	public async Task<IActionResult> EditParticipantsAsync([Required] EditEventParticipantsRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarEventWithParticipants result = await eventService.ChangeEventParticipants(Convert(request, userId));
+		CalendarEventWithParticipants result = await eventService.EditEventParticipants(Convert(request, userId));
 
 		return Ok(Convert(result));
 	}
@@ -198,19 +198,19 @@ public class CalendarEventController : ControllerBase
 	/// <summary>
 	///     Обновить состояние участия в событии.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeMyEventParticipationStateRequest" />.</param>
+	/// <param name="request"><see cref="EditMyEventParticipationStateRequest" />.</param>
 	/// <returns><see cref="EventWithParticipants" />.</returns>
 	/// <response code="200">Возвращает <see cref="EventWithParticipants" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(bool), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[HttpPost("ChangeMyParticipationState")]
-	public async Task<IActionResult> ChangeMyParticipationStateAsync([Required] ChangeMyEventParticipationStateRequest request)
+	[HttpPost("EditMyParticipationState")]
+	public async Task<IActionResult> EditMyParticipationStateAsync([Required] EditMyEventParticipationStateRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 		
-		CalendarEventWithParticipants result = await eventService.ChangeParticipantState(new ChangeParticipantStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
+		CalendarEventWithParticipants result = await eventService.EditParticipationState(new EditParticipationStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
 
 		return Ok(Convert(result));
 	}
@@ -321,12 +321,12 @@ public class CalendarEventController : ControllerBase
 			   .ToList());
 	}
 
-	private static ChangeEventParticipantsData Convert(ChangeEventParticipantsRequest request, Guid userId)
+	private static EditEventParticipantsData Convert(EditEventParticipantsRequest request, Guid userId)
 	{
-		return new ChangeEventParticipantsData(userId,
+		return new EditEventParticipantsData(userId,
 			request.EventId,
 			request.Participants.Select(x =>
-					new ChangeEventParticipantData(x.EventParticipantId, (CalendarEventParticipantRole?)x.Role, x.Delete))
+					new EditEventParticipantData(x.EventParticipantId, (CalendarEventParticipantRole?)x.Role, x.Delete))
 			   .ToList());
 	}
 }

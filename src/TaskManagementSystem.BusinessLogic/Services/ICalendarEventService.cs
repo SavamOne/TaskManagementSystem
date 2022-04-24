@@ -13,7 +13,7 @@ public interface ICalendarEventService
 
 	Task<CalendarEventWithParticipants> AddEventParticipant(AddEventParticipantsData data);
 
-	Task<CalendarEventWithParticipants> ChangeEventParticipants(ChangeEventParticipantsData data);
+	Task<CalendarEventWithParticipants> EditEventParticipants(EditEventParticipantsData data);
 
 	Task<ICollection<CalendarEvent>> GetCalendarEventsInPeriodAsync(GetCalendarEventsInPeriodData data);
 	
@@ -21,5 +21,5 @@ public interface ICalendarEventService
 
 	Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data);
 
-	Task<CalendarEventWithParticipants> ChangeParticipantState(ChangeParticipantStateData data);
+	Task<CalendarEventWithParticipants> EditParticipationState(EditParticipationStateData data);
 }

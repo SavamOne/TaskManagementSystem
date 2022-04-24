@@ -231,9 +231,9 @@ public class AddEventParticipantsRequest
 /// <summary>
 ///     Запрос на изменение роли/удаление участника события.
 /// </summary>
-public class ChangeEventParticipantRequest
+public class EditEventParticipantRequest
 {
-	public ChangeEventParticipantRequest(Guid eventParticipantId, EventParticipantRole? role, bool delete)
+	public EditEventParticipantRequest(Guid eventParticipantId, EventParticipantRole? role, bool delete)
 	{
 		EventParticipantId = eventParticipantId;
 		Role = role;
@@ -261,9 +261,9 @@ public class ChangeEventParticipantRequest
 /// <summary>
 ///     Запрос на изменение роли/удаление участников события.
 /// </summary>
-public class ChangeEventParticipantsRequest
+public class EditEventParticipantsRequest
 {
-	public ChangeEventParticipantsRequest(Guid eventId, ICollection<ChangeEventParticipantRequest> participants)
+	public EditEventParticipantsRequest(Guid eventId, ICollection<EditEventParticipantRequest> participants)
 	{
 		EventId = eventId;
 		Participants = participants;
@@ -276,10 +276,10 @@ public class ChangeEventParticipantsRequest
 	public Guid EventId { get; }
 
 	/// <summary>
-	///     Коллекция <see cref="ChangeEventParticipantRequest" />.
+	///     Коллекция <see cref="EditEventParticipantRequest" />.
 	/// </summary>
 	[Required]
-	public ICollection<ChangeEventParticipantRequest> Participants { get; }
+	public ICollection<EditEventParticipantRequest> Participants { get; }
 }
 
 /// <summary>
@@ -357,9 +357,9 @@ public class GetEventsInPeriodForUserRequest
 /// <summary>
 ///     Запрос на обновление состояния участия в событии.
 /// </summary>
-public class ChangeMyEventParticipationStateRequest
+public class EditMyEventParticipationStateRequest
 {
-	public ChangeMyEventParticipationStateRequest(Guid eventId, EventParticipantState participantState, TimeSpan? notifyBefore)
+	public EditMyEventParticipationStateRequest(Guid eventId, EventParticipantState participantState, TimeSpan? notifyBefore)
 	{
 		EventId = eventId;
 		ParticipantState = participantState;
