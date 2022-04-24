@@ -59,16 +59,16 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 				}
 			}
 
-			logger.LogDebug("{0:HH:mm:ss:ffff} - Getting events", DateTime.Now);
+			logger.LogDebug("Getting events");
 
 			DateTime nextMinute = minuteToSend.AddMinutes(1);
 			int count = await UpdateNotificationsAsync(nextMinute);
 
-			logger.LogDebug("{0:HH:mm:ss:ffff} - Found {1} events with start time >= {2:HH:mm} and <= {3:HH:mm}", DateTime.Now, count, nextMinute.ToLocalTime(), nextMinute.AddMinutes(DeltaMinutes).ToLocalTime());
+			logger.LogDebug("Found {0} events with start time >= {1:HH:mm} and <= {2:HH:mm}", count, nextMinute.ToLocalTime(), nextMinute.AddMinutes(DeltaMinutes).ToLocalTime());
 
 			await DelayUntil(stoppingToken, nextMinute);
 
-			logger.LogDebug("{0:HH:mm:ss:ffff} - Next iteration", DateTime.Now);
+			logger.LogDebug("Next iteration");
 		}
 	}
 
