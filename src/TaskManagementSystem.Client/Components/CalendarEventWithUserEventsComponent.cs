@@ -29,7 +29,7 @@ public class CalendarEventComponentWithUserEvents : CalendarEventComponent
 		var unknownNames = EventInfoViewModel.GetUnknownCalendarNames(eventResult.Value!);
 		if (unknownNames.Any())
 		{
-			var calendarNamesResult = await ServerProxy!.GetCalendarName(new GetCalendarNameRequest(unknownNames));
+			var calendarNamesResult = await ServerProxy!.GetCalendarName(new GetCalendarNamesRequest(unknownNames));
 
 			if (!calendarNamesResult.IsSuccess)
 			{

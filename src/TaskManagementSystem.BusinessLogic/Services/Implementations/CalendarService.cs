@@ -102,7 +102,7 @@ public class CalendarService : ICalendarService
 		return new CalendarWithParticipants(calendarInfo.Calendar, newParticipants);
 	}
 
-	public async Task<CalendarWithParticipants> ChangeParticipantRoleAsync(ChangeCalendarParticipantsRoleData data)
+	public async Task<CalendarWithParticipants> EditParticipantsAsync(ChangeCalendarParticipantsRoleData data)
 	{
 		data.AssertNotNull();
 		CheckRolesAreAdminOrParticipant(data.Participants);

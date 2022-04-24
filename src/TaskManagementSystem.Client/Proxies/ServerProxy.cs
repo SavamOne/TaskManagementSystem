@@ -108,7 +108,7 @@ public class ServerProxy : BaseProxy
 	public async Task<Result<IEnumerable<CalendarInfo>>> GetUserCalendars()
 	{
 		var result =
-			await SendRequestAsync<IEnumerable<CalendarInfo>>(new Uri("Api/V1/Calendar/GetMyList", UriKind.Relative), HttpMethod.Post);
+			await SendRequestAsync<IEnumerable<CalendarInfo>>(new Uri("Api/V1/Calendar/GetMyCalendars", UriKind.Relative), HttpMethod.Post);
 
 		return result;
 	}
@@ -145,10 +145,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<CalendarWithParticipantUsers>> ChangeCalendarParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
+	public async Task<Result<CalendarWithParticipantUsers>> EditCalendarParticipants(EditCalendarParticipantsRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeCalendarParticipantsRoleRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/ChangeParticipantsRole", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditCalendarParticipantsRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/EditParticipants", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -163,10 +163,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 	
-	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNameRequest request)
+	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNamesRequest request)
 	{
 		var result =
-			await SendRequestAsync<GetCalendarNameRequest, ICollection<CalendarNameResponse>>(new Uri("Api/V1/Calendar/GetCalendarName", UriKind.Relative),
+			await SendRequestAsync<GetCalendarNamesRequest, ICollection<CalendarNameResponse>>(new Uri("Api/V1/Calendar/GetNames", UriKind.Relative),
 				HttpMethod.Post,
 				request);
 
