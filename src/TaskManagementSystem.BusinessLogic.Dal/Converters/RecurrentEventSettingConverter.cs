@@ -7,14 +7,14 @@ public static class RecurrentEventSettingConverter
 {
 	private static long ToDalDayOfWeek(this ISet<DayOfWeek> dayOfWeeks)
 	{
-		return dayOfWeeks.Aggregate(0, (current, dayOfWeek) => current | 1 << (int)dayOfWeek);
+		return dayOfWeeks.Aggregate(0, (current, dayOfWeek) => current | ( 1 << (int)dayOfWeek ));
 	}
 
 	private static ISet<DayOfWeek> ToDayOfWeek(this long dalDayOfWeek)
 	{
-		return Enumerable.Range(0, 7).Where(i => ( dalDayOfWeek >> i & 1 ) > 0).Select(i => (DayOfWeek)i).ToHashSet();
+		return Enumerable.Range(0, 7).Where(i => ( ( dalDayOfWeek >> i ) & 1 ) > 0).Select(i => (DayOfWeek)i).ToHashSet();
 	}
-	
+
 	public static ICollection<DalRecurrentSetting> ToDalSettings(this RecurrentEventSettings settings)
 	{
 		var list = new List<DalRecurrentSetting>
@@ -61,15 +61,19 @@ public static class RecurrentEventSettingConverter
 	public static RecurrentEventSettings? ToRecurrentSettings(this IEnumerable<DalRecurrentSetting> settingCollection)
 	{
 		RecurrentEventSettings? settings = null;
-		
+
 		foreach (DalRecurrentSetting setting in settingCollection)
 		{
 			if (!Enum.TryParse(setting.Key, out RecurrentSettingKeys key))
 			{
 				continue;
 			}
-			
-			settings ??= new RecurrentEventSettings(setting.EventId, default, null, null, null);
+
+			settings ??= new RecurrentEventSettings(setting.EventId,
+				default,
+				null,
+				null,
+				null);
 
 			switch (key)
 			{
@@ -89,7 +93,7 @@ public static class RecurrentEventSettingConverter
 					throw new ArgumentOutOfRangeException();
 			}
 		}
-		
+
 		return settings;
 	}
 }

@@ -19,7 +19,7 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
 		{
 			UserId = userId,
 			RefreshToken = refreshToken,
-			ValidUntil = validUntilUtc,
+			ValidUntil = validUntilUtc
 		};
 
 		await InsertAsync(entry);

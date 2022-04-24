@@ -10,7 +10,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 {
 	public CalendarEventRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
-	
+
 	public async Task InsertAsync(CalendarEvent calendarEvent)
 	{
 		await InsertAsync(calendarEvent.ToDalEvent());
@@ -37,7 +37,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 	{
 		var dalEvents = await SelectAsync(x => x.CalendarId == calendarId
 											&& x.EndTime >= startPeriod
-											&& x.StartTime <= endPeriod 
+											&& x.StartTime <= endPeriod
 											&& !x.IsRepeated);
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
@@ -63,7 +63,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();
 	}
-	
+
 	public async Task<ICollection<CalendarEvent>> GetStandardEventsInRangeForUser(Guid userId, DateTime startPeriod, DateTime endPeriod)
 	{
 		const string selectSql = "SELECT e.* FROM event e "
@@ -97,7 +97,7 @@ public class CalendarEventRepository : Repository<DalEvent>, ICalendarEventRepos
 		   .QueryAsync<DalEvent>(selectSql,
 				new
 				{
-					UserId = userId,
+					UserId = userId
 				});
 
 		return dalEvents.Select(x => x.ToCalendarEvent()).ToList();

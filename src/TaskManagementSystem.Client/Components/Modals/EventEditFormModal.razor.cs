@@ -15,13 +15,15 @@ public partial class EventEditFormModal
 {
 	private readonly IEnumerable<CalendarEventType> eventTypes = Enum.GetValues<CalendarEventType>();
 
+	private readonly IEnumerable<EventParticipantState> participationStates = Enum.GetValues<EventParticipantState>();
+
+	private readonly IEnumerable<EventRepeatType> repeatTypes = Enum.GetValues<EventRepeatType>();
+
 	private readonly IEnumerable<EventParticipantRole> roles = Enum.GetValues<EventParticipantRole>()
 	   .Where(x => x != EventParticipantRole.Creator)
 	   .ToList();
 
-	private readonly IEnumerable<EventRepeatType> repeatTypes = Enum.GetValues<EventRepeatType>();
-
-	private readonly IEnumerable<EventParticipantState> participationStates = Enum.GetValues<EventParticipantState>();
+	private Guid calendarId;
 
 	private IEnumerable<DayOfWeekViewModel>? dayOfWeeks;
 
@@ -29,26 +31,26 @@ public partial class EventEditFormModal
 
 	private bool isEditMode, participantsChanged;
 
-	private ICollection<EventParticipantViewModel> participants = Array.Empty<EventParticipantViewModel>();
-	private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
-
 	private bool isRepeated, notifyRepeatChanged;
-	private string repeatedStartDateStr = string.Empty;
-	private string repeatedEndDateStr = string.Empty;
-	
-	private EventParticipantState? participationState;
 	private TimeSpan? notifyMinutes = TimeSpan.Zero;
+
+	private ICollection<EventParticipantViewModel> participants = Array.Empty<EventParticipantViewModel>();
+
+	private EventParticipantState? participationState;
 	private bool participationStateChanged = false;
+	private ICollection<UserInfoWithEventRoleViewModel> possibleParticipants = Array.Empty<UserInfoWithEventRoleViewModel>();
+	private string repeatedEndDateStr = string.Empty;
+	private string repeatedStartDateStr = string.Empty;
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
 
 	[Inject]
 	public IToastService? ToastService { get; set; }
-	
+
 	[Inject]
 	public ILocalizationService? LocalizationService { get; set; }
-	
+
 	[Inject]
 	public IJSInteropWrapper? JsInteropWrapper { get; set; }
 
@@ -74,19 +76,17 @@ public partial class EventEditFormModal
 	private bool CanUserChangeParticipants => Event.CanChangeParticipants;
 
 	private bool CanUserDeleteEvent => Event.CanDeleteEvent;
-	
-	private Guid calendarId;
 
 	protected override async Task OnInitializedAsync()
 	{
 		CultureInfo culture = await LocalizationService!.GetApplicationCultureAsync();
 		dayOfWeeks = DayOfWeekHelper.GetDayOfWeeksOrderedByFirstDay(culture, false);
 	}
-	
+
 	public async Task EditAsync(EventInfo eventInfo)
 	{
 		calendarId = eventInfo.CalendarId;
-		
+
 		isEditMode = true;
 		Modal.Title = "Редактирование события";
 		participantsChanged = false;
@@ -110,7 +110,7 @@ public partial class EventEditFormModal
 	public void Create(Guid calendarId)
 	{
 		this.calendarId = calendarId;
-		
+
 		isEditMode = false;
 		Modal.Title = "Создание события";
 		participantsChanged = false;
@@ -131,7 +131,7 @@ public partial class EventEditFormModal
 	private async Task SubmitAsync()
 	{
 		Guid eventId = default;
-		
+
 		if (CanUserChangeEvent && Event.Changed)
 		{
 			EventInfo? eventInfo = await CreateOrEditEventAsync();
@@ -282,7 +282,11 @@ public partial class EventEditFormModal
 
 	private void Fill(EventWithParticipants eventWithParticipants)
 	{
-		Event = new EventViewModel(eventWithParticipants.EventInfo, eventWithParticipants.RecurrentSettings, eventWithParticipants.CanUserEditEvent, eventWithParticipants.CanUserEditParticipants, eventWithParticipants.CanUserDeleteEvent);
+		Event = new EventViewModel(eventWithParticipants.EventInfo,
+			eventWithParticipants.RecurrentSettings,
+			eventWithParticipants.CanUserEditEvent,
+			eventWithParticipants.CanUserEditParticipants,
+			eventWithParticipants.CanUserDeleteEvent);
 		participants = eventWithParticipants.Participants
 		   .OrderByDescending(x => x.Role)
 		   .ThenBy(x => x.UserName)
@@ -313,7 +317,7 @@ public partial class EventEditFormModal
 	private async Task SetParticipationState()
 	{
 		participationStateChanged = false;
-		
+
 		if (participationState is not EventParticipantState.Rejected)
 		{
 			string minutesStr = await JsInteropWrapper!.GetValueByIdAsync("notifyMinutesInput");
@@ -323,14 +327,14 @@ public partial class EventEditFormModal
 				ToastService!.AddSystemErrorToast("Некорректное значение минут.");
 				return;
 			}
-			
+
 			TimeSpan timespan = TimeSpan.FromMinutes(minutes);
 			if (timespan > TimeSpan.FromDays(7))
 			{
 				ToastService!.AddSystemErrorToast($"Период напоминания не может быть больше, чем {TimeSpan.FromDays(7).TotalMinutes} минут");
 				return;
 			}
-			
+
 			notifyMinutes = timespan;
 		}
 

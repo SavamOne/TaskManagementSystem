@@ -1,16 +1,18 @@
 <svg style="width: @(Size)px; height: @(Size)px;overflow: initial;" width="1050" height="1050" viewBox="0 0 1050 1050" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect rx="150" ry="150" width="1050" height="1050" fill="@(HexColor)"/>
-  <text x="50%" y="53%" alignment-baseline="middle" text-anchor="middle" font-size="500" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-weight="bold">@(Letters)</text>
+    <rect rx="150" ry="150" width="1050" height="1050" fill="@(HexColor)"/>
+    <text x="50%" y="53%" alignment-baseline="middle" text-anchor="middle" font-size="500" fill="#fff" font-family="Helvetica, Arial, sans-serif" font-weight="bold">@(Letters)</text>
 </svg>
 
 @code {
-  [Parameter]
-  public string? Username { get; set; }
 
-  [Parameter]
-  public int Size { get; set; } = 40;
+    [Parameter]
+    public string? Username { get; set; }
 
-  private string HexColor => !string.IsNullOrEmpty(Username) ? StringHelper.GetHexColorForText(Username) : string.Empty;
+    [Parameter]
+    public int Size { get; set; } = 40;
 
-  private string Letters => new(StringHelper.GetFirstLetters(Username).Take(2).ToArray());
+    private string HexColor => !string.IsNullOrEmpty(Username) ? StringHelper.GetHexColorForText(Username) : string.Empty;
+
+    private string Letters => new(StringHelper.GetFirstLetters(Username).Take(2).ToArray());
+
 }

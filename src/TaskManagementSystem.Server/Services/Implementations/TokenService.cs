@@ -3,7 +3,6 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
-using TaskManagementSystem.BusinessLogic.Models.Exceptions;
 using TaskManagementSystem.BusinessLogic.Models.Models;
 using TaskManagementSystem.Server.Dal.Repositories;
 using TaskManagementSystem.Server.Exceptions;
@@ -141,7 +140,10 @@ public class TokenService : ITokenService
 		}
 	}
 
-	private string Generate(SecurityKey secretKey, int expirationMinutes, out DateTime validUntilUtc, IEnumerable<Claim>? claims = null)
+	private string Generate(SecurityKey secretKey,
+		int expirationMinutes,
+		out DateTime validUntilUtc,
+		IEnumerable<Claim>? claims = null)
 	{
 		SigningCredentials credentials = new(secretKey, SecurityAlgorithms.HmacSha256);
 		DateTime nowUtc = DateTime.UtcNow;

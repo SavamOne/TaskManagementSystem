@@ -45,6 +45,6 @@ public class AddCalendarEventData
 	public DateTimeOffset EndTime { get; }
 
 	public bool IsPrivate { get; }
-	
+
 	public AddRecurrentSettingsData? RecurrentSettingsData { get; }
 }

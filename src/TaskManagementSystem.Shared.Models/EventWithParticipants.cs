@@ -50,14 +50,14 @@ public class EventWithParticipants
 	/// </summary>
 	[Required]
 	public EventInfo EventInfo { get; }
-	
+
 	/// <summary>
-	///		Состояние участия (только если пользователь был добавлен в событие)
+	///     Состояние участия (только если пользователь был добавлен в событие)
 	/// </summary>
 	public EventParticipantState? ParticipationState { get; }
 
 	/// <summary>
-	///		Состояние участия (только если пользователь был добавлен в событие)
+	///     Состояние участия (только если пользователь был добавлен в событие)
 	/// </summary>
 	public TimeSpan? NotifyBefore { get; }
 
@@ -66,7 +66,7 @@ public class EventWithParticipants
 	/// </summary>
 	[Required]
 	public ICollection<EventParticipantUser> Participants { get; }
-	
+
 	/// <summary>
 	///     Настройки повторения.
 	/// </summary>

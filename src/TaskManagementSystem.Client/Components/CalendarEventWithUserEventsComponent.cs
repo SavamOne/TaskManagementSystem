@@ -13,7 +13,7 @@ public class CalendarEventWithUserEventsComponent : CalendarEventComponent
 
 		return base.OnLoadAsync();
 	}
-	
+
 	protected override async Task<IEnumerable<EventInfoViewModel>> GetEventsInDateRange(DateTimeOffset startTime, DateTimeOffset endTime)
 	{
 		var eventResult = await ServerProxy!.GetEventsInPeriodForUser(new GetEventsInPeriodForUserRequest(startTime, endTime));

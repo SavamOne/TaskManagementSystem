@@ -21,7 +21,7 @@ public class CalendarEventWithCalendarEventsComponent : CalendarEventComponent
 		}
 
 		CalendarName = result.Value!.FirstOrDefault()?.Name;
-		
+
 		await base.OnLoadAsync();
 	}
 
@@ -36,7 +36,7 @@ public class CalendarEventWithCalendarEventsComponent : CalendarEventComponent
 			ToastService!.AddSystemErrorToast(eventResult.ErrorDescription!);
 			return Array.Empty<EventInfoViewModel>();
 		}
-		
+
 		EventInfoViewModel.AddCalendarName(CalendarId, CalendarName!);
 
 		var events = eventResult.Value!

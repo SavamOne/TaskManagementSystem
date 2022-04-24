@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using TaskManagementSystem.Client.Helpers;
 using TaskManagementSystem.Client.Proxies;
 using TaskManagementSystem.Client.Services;
 using TaskManagementSystem.Client.ViewModels;
@@ -27,7 +26,7 @@ public partial class CalendarInfoModal
 
 	[Parameter]
 	public Guid CalendarId { get; set; }
-	
+
 	[Parameter]
 	public Action<string>? CalendarNameChanged { get; set; }
 
@@ -55,7 +54,7 @@ public partial class CalendarInfoModal
 	{
 		Modal.Open();
 	}
-	
+
 	protected override async Task OnInitializedAsync()
 	{
 		var result = await ServerProxy!.GetCalendarInfo(new GetCalendarInfoRequest(CalendarId));
@@ -138,7 +137,7 @@ public partial class CalendarInfoModal
 
 		return true;
 	}
-	
+
 	private async Task<CalendarWithParticipantUsers?> TryEdit(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
 	{
 		var toEditRoleParticipants = participantsWithChangedRole
@@ -210,7 +209,7 @@ public partial class CalendarInfoModal
 		calendar = new CalendarViewModel(result.Value!);
 
 		ToastService!.AddSystemToast("Календарь", "Информация о календаре обновлена");
-		
+
 		CalendarNameChanged?.Invoke(calendar.Name!);
 	}
 

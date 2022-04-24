@@ -35,7 +35,7 @@ public class DalEvent
 
 	[Column("creation_time")]
 	public DateTime CreationTime { get; set; }
-	
+
 	[Column("is_repeated")]
 	public bool IsRepeated { get; set; }
 }

@@ -5,15 +5,15 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public record EventViewModel
 {
+	private ISet<DayOfWeek>? dayOfWeeks;
 	private string? description;
 	private DateTimeOffset endDate = DateTimeOffset.Now.AddHours(1);
 	private CalendarEventType eventType;
 	private bool isPrivate;
 	private string? name;
 	private string? place;
-	private DateTimeOffset startDate = DateTimeOffset.Now;
 	private EventRepeatType repeatType;
-	private ISet<DayOfWeek>? dayOfWeeks;
+	private DateTimeOffset startDate = DateTimeOffset.Now;
 
 	public EventViewModel()
 	{
@@ -21,12 +21,14 @@ public record EventViewModel
 		CanChangeParticipants = true;
 		CanDeleteEvent = false;
 	}
-	
+
 	public EventViewModel(EventInfo eventInfo)
-		: this(eventInfo, null, false, false, false)
-	{
-	}
-	
+		: this(eventInfo,
+			null,
+			false,
+			false,
+			false) {}
+
 	public EventViewModel(EventInfo eventInfo,
 		RecurrentSettings? recurrentSettings,
 		bool canEditEvent,
@@ -119,7 +121,7 @@ public record EventViewModel
 			Changed = true;
 		}
 	}
-	
+
 
 	public DateTimeOffset EndDate
 	{
@@ -142,19 +144,6 @@ public record EventViewModel
 	}
 
 	public ISet<DayOfWeek> DayOfWeeks => dayOfWeeks ??= new HashSet<DayOfWeek>();
-
-	public void CheckDayOfWeek(DayOfWeek dayOfWeek)
-	{
-		if (!DayOfWeeks.Contains(dayOfWeek))
-		{
-			DayOfWeeks.Add(dayOfWeek);
-		}
-		else
-		{
-			DayOfWeeks.Remove(dayOfWeek);
-		}
-		Changed = true;
-	}
 
 	public string StartDateStr
 	{
@@ -180,12 +169,25 @@ public record EventViewModel
 		}
 	}
 
+	public void CheckDayOfWeek(DayOfWeek dayOfWeek)
+	{
+		if (!DayOfWeeks.Contains(dayOfWeek))
+		{
+			DayOfWeeks.Add(dayOfWeek);
+		}
+		else
+		{
+			DayOfWeeks.Remove(dayOfWeek);
+		}
+		Changed = true;
+	}
+
 	public CreateEventRequest GetCreateRequest(Guid calendarId)
 	{
 		RecurrentSettings? recurrentSettings = repeatType is not EventRepeatType.None
 			? new RecurrentSettings(repeatType, dayOfWeeks, uint.MaxValue, DateTimeOffset.MaxValue)
 			: null;
-		
+
 		return new CreateEventRequest(calendarId,
 			Name,
 			Description,
@@ -202,7 +204,7 @@ public record EventViewModel
 		RecurrentSettings? recurrentSettings = repeatType is not EventRepeatType.None
 			? new RecurrentSettings(repeatType, dayOfWeeks, uint.MaxValue, DateTimeOffset.MaxValue)
 			: null;
-		
+
 		return new EditEventRequest(Id,
 			recurrentSettings is not null,
 			Name,

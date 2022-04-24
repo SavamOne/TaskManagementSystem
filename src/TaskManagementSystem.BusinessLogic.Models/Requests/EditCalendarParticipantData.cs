@@ -14,6 +14,6 @@ public class EditCalendarParticipantData
 	public Guid ParticipantId { get; }
 
 	public CalendarRole? Role { get; }
-	
+
 	public bool Delete { get; }
 }

@@ -76,9 +76,9 @@ public class EventParticipantUser
 	/// </summary>
 	[Required]
 	public EventParticipantRole Role { get; }
-	
+
 	/// <summary>
-	///		Состояние участия.
+	///     Состояние участия.
 	/// </summary>
 	[Required]
 	public EventParticipantState ParticipationState { get; }

@@ -46,8 +46,8 @@ public class EditCalendarEventData
 	public DateTimeOffset? EndTime { get; }
 
 	public bool? IsPrivate { get; }
-	
+
 	public bool IsRepeated { get; }
-	
+
 	public AddRecurrentSettingsData? RecurrentSettingsData { get; }
 }

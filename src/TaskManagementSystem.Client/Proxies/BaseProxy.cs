@@ -111,15 +111,15 @@ public abstract class BaseProxy
 			{
 				return Result<TResponse>.Error(string.Format(LocalizedResources.BaseProxy_UnhandledStatusCode, response.StatusCode));
 			}
-			
+
 			//TODO: быстрый фикс. Сделать очередь сообщений.
 			if (refreshTokensTask.IsCompleted)
 			{
 				refreshTokensTask = RefreshTokensAsync();
 			}
-			
+
 			await refreshTokensTask;
-			
+
 			isFirstTry = false;
 		}
 	}

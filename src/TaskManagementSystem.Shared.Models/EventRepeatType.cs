@@ -1,37 +1,37 @@
 namespace TaskManagementSystem.Shared.Models;
 
 /// <summary>
-/// Период повторения событий.
+///     Период повторения событий.
 /// </summary>
 public enum EventRepeatType
 {
 	/// <summary>
-	/// Не повторять.
+	///     Не повторять.
 	/// </summary>
 	None = 0,
-	
+
 	/// <summary>
-	/// Каждый день.
+	///     Каждый день.
 	/// </summary>
 	EveryDay = 1,
-	
+
 	/// <summary>
-	/// Каждую неделю.
+	///     Каждую неделю.
 	/// </summary>
 	EveryWeek = 2,
-	
+
 	/// <summary>
-	/// Каждый месяц.
+	///     Каждый месяц.
 	/// </summary>
 	EveryMonth = 3,
-	
+
 	/// <summary>
-	/// Каждый год.
+	///     Каждый год.
 	/// </summary>
 	EveryYear = 4,
-	
+
 	/// <summary>
-	/// По дням недели.
+	///     По дням недели.
 	/// </summary>
 	OnWeekDays = 5
 }

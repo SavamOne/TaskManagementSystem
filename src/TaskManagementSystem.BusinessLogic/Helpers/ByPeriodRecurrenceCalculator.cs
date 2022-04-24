@@ -5,7 +5,7 @@ namespace TaskManagementSystem.BusinessLogic.Helpers;
 
 public static class ByPeriodRecurrenceCalculator
 {
-	private static Dictionary<RepeatType, Func<DateTime, DateTime>> ConvertFuncDict = new()
+	private static readonly Dictionary<RepeatType, Func<DateTime, DateTime>> ConvertFuncDict = new()
 	{
 		{
 			RepeatType.EveryDay, time => time.AddDays(1)
@@ -20,8 +20,11 @@ public static class ByPeriodRecurrenceCalculator
 			RepeatType.EveryYear, time => time.AddYears(1)
 		}
 	};
-	
-	public static IEnumerable<CalendarEvent> Calculate(CalendarEvent @event, RecurrentEventSettings settings, DateTime calendarStartTime, DateTime calendarEndTime)
+
+	public static IEnumerable<CalendarEvent> Calculate(CalendarEvent @event,
+		RecurrentEventSettings settings,
+		DateTime calendarStartTime,
+		DateTime calendarEndTime)
 	{
 		var periodFunc = ConvertFuncDict[settings.RepeatType];
 		uint maxEventCount = settings.RepeatCount ?? uint.MaxValue;
@@ -44,7 +47,7 @@ public static class ByPeriodRecurrenceCalculator
 				{
 					StartTimeUtc = eventStartTime,
 					EndTimeUtc = eventEndTime,
-					RepeatNum = eventCount,
+					RepeatNum = eventCount
 				};
 			}
 

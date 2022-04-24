@@ -26,9 +26,9 @@ public class Tokens
 	/// </summary>
 	[Required]
 	public string RefreshToken { get; }
-	
+
 	/// <summary>
-	///		Срок действия Refresh токена.
+	///     Срок действия Refresh токена.
 	/// </summary>
 	[Required]
 	public DateTime RefreshValidUntilUtc { get; }

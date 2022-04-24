@@ -3,7 +3,7 @@
 <!--TODO: HACK -->
 @if (this is CalendarEventWithCalendarEventsComponent)
 {
-    <CalendarInfoModal @ref="CalendarInfoModal" CalendarId="CalendarId" CalendarNameChanged="name => {EventInfoViewModel.AddCalendarName(CalendarId, name); CalendarName = name; StateHasChanged();}" />
+    <CalendarInfoModal @ref="CalendarInfoModal" CalendarId="CalendarId" CalendarNameChanged="name => {EventInfoViewModel.AddCalendarName(CalendarId, name); CalendarName = name; StateHasChanged();}"/>
 }
 
 <!-- Calendar -->

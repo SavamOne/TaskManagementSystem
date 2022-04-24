@@ -40,7 +40,7 @@ public class EventParticipantViewModel
 			role = value;
 		}
 	}
-	
+
 	public EventParticipantState? State { get; }
 
 	public EditEventParticipantRequest GetEditRequest()

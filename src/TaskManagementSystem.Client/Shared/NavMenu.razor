@@ -25,12 +25,12 @@
 {
     [Inject]
     public IUserUpdateService? UserUpdateService { get; set; }
-    
+
     [Inject]
     public ServerProxy? ServerProxy { get; set; }
 
     private string username = string.Empty;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var result = await ServerProxy!.GetUserInfoAsync();

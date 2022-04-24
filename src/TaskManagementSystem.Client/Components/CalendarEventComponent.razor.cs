@@ -26,8 +26,8 @@ public abstract partial class CalendarEventComponent
 	public ILocalizationService? LocalizationService { get; set; }
 
 	private EventEditFormModal EditEventModal { get; set; } = new();
-	
-	private CalendarInfoModal CalendarInfoModal{ get; set; } = new();
+
+	private CalendarInfoModal CalendarInfoModal { get; set; } = new();
 
 	private CultureInfo? CultureInfo { get; set; }
 
@@ -40,7 +40,7 @@ public abstract partial class CalendarEventComponent
 	private int Year { get; set; }
 
 	private ICollection<DayOfWeekViewModel>? DayOfWeekNamesWithFirstDay { get; set; }
-	
+
 	protected string? CalendarName { get; set; }
 
 	protected override async Task OnInitializedAsync()
@@ -48,7 +48,7 @@ public abstract partial class CalendarEventComponent
 		IsLoaded = false;
 
 		await OnLoadAsync();
-		
+
 		IsLoaded = true;
 	}
 
@@ -59,7 +59,7 @@ public abstract partial class CalendarEventComponent
 
 		await UpdateCurrentMonthStateAsync();
 	}
-	
+
 	protected abstract Task<IEnumerable<EventInfoViewModel>> GetEventsInDateRange(DateTimeOffset startTime, DateTimeOffset endTime);
 
 	private async Task AppendMonth()
@@ -116,8 +116,8 @@ public abstract partial class CalendarEventComponent
 		   .Select(day => new DayViewModel(new DateOnly(nextMonth.Year, nextMonth.Month, day), true))
 		   .ToList();
 
-		Days = previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList(); 
-		
+		Days = previousMonthDaysEnumerable.Union(monthDaysEnumerable).Union(nextMonthDaysEnumerable).ToList();
+
 		await FillDays();
 	}
 
@@ -125,8 +125,8 @@ public abstract partial class CalendarEventComponent
 	{
 		DateTimeOffset firstDay = Days.FirstOrDefault()?.DateTimeOffset ?? DateTimeOffset.Now;
 		DateTimeOffset lastDay = Days.LastOrDefault()?.DateTimeOffset.AddDays(1) ?? DateTimeOffset.Now;
-		var events = (await GetEventsInDateRange(firstDay, lastDay)).ToList();
-		
+		var events = ( await GetEventsInDateRange(firstDay, lastDay) ).ToList();
+
 		foreach (DayViewModel dayViewModel in Days)
 		{
 			dayViewModel.InterceptDateEvents(events);

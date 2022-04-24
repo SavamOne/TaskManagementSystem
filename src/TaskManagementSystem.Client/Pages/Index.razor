@@ -68,7 +68,7 @@
             }
 
             AddNotificationSubscribeRequest? subscriptionRequest = await JsInteropWrapper!.TryRequestNotificationSubscriptionAsync(publicKeyResult.Value!.PublicKey);
-            
+
             if (subscriptionRequest == null)
             {
                 return;

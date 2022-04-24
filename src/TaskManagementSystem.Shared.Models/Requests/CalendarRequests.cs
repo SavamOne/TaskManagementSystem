@@ -124,12 +124,12 @@ public record EditCalendarParticipantRequest
 	///     Роль участника.
 	/// </summary>
 	public CalendarParticipantRole? Role { get; }
-	
+
 	/// <summary>
 	///     Флаг удаления.
 	/// </summary>
 	[Required]
-	public bool Delete { get;  }
+	public bool Delete { get; }
 }
 
 /// <summary>
@@ -198,11 +198,11 @@ public record GetCalendarParticipantsByFilterRequest
 }
 
 /// <summary>
-///		Запрос на получение имен календарей.
+///     Запрос на получение имен календарей.
 /// </summary>
 public record GetCalendarNamesRequest
 {
-	public GetCalendarNamesRequest(ISet<Guid> calendarIds) 
+	public GetCalendarNamesRequest(ISet<Guid> calendarIds)
 	{
 		CalendarIds = calendarIds;
 	}
@@ -215,7 +215,7 @@ public record GetCalendarNamesRequest
 }
 
 /// <summary>
-///		Имя календаря.
+///     Имя календаря.
 /// </summary>
 public record CalendarNameResponse
 {
