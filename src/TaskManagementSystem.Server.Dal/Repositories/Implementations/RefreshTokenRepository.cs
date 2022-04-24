@@ -11,27 +11,31 @@ public class RefreshTokenRepository : Repository<DalUserToken>, IRefreshTokenRep
 	public RefreshTokenRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
 
-	public async Task InsertForUserAsync(Guid userId, string refreshToken)
+	public async Task InsertForUserAsync(Guid userId, string refreshToken, DateTime validUntilUtc)
 	{
 		refreshToken.AssertNotNullOrWhiteSpace();
 
 		DalUserToken entry = new()
 		{
 			UserId = userId,
-			RefreshToken = refreshToken
+			RefreshToken = refreshToken,
+			ValidUntil = validUntilUtc,
 		};
 
 		await InsertAsync(entry);
 	}
 
-	public async Task UpdateForUserAsync(Guid userId, string oldRefreshToken, string newRefreshToken)
+	public async Task UpdateForUserAsync(Guid userId,
+		string oldRefreshToken,
+		string newRefreshToken,
+		DateTime validUntilUtc)
 	{
 		oldRefreshToken.AssertNotNullOrWhiteSpace();
 		newRefreshToken.AssertNotNullOrWhiteSpace();
 
 		using IDbTransaction transaction = GetConnection().BeginTransaction();
 		await RemoveTokenAsync(oldRefreshToken);
-		await InsertForUserAsync(userId, newRefreshToken);
+		await InsertForUserAsync(userId, newRefreshToken, validUntilUtc);
 		transaction.Commit();
 	}
 

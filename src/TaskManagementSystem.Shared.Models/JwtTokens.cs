@@ -8,8 +8,9 @@ namespace TaskManagementSystem.Shared.Models;
 /// </summary>
 public class Tokens
 {
-	public Tokens(string accessToken, string refreshToken)
+	public Tokens(string accessToken, string refreshToken, DateTime refreshValidUntilUtc)
 	{
+		RefreshValidUntilUtc = refreshValidUntilUtc;
 		AccessToken = accessToken.AssertNotNullOrWhiteSpace();
 		RefreshToken = refreshToken.AssertNotNullOrWhiteSpace();
 	}
@@ -25,4 +26,10 @@ public class Tokens
 	/// </summary>
 	[Required]
 	public string RefreshToken { get; }
+	
+	/// <summary>
+	///		Срок действия Refresh токена.
+	/// </summary>
+	[Required]
+	public DateTime RefreshValidUntilUtc { get; }
 }

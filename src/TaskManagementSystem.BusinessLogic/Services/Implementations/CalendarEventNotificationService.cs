@@ -138,16 +138,18 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 
 	private async Task DelayUntil(CancellationToken stoppingToken, DateTime until)
 	{
-		DateTime now = DateTime.UtcNow;
-		TimeSpan sleepInterval = until - now;
-
-		if (sleepInterval >= TimeSpan.Zero)
+		TimeSpan sleepInterval = until - DateTime.UtcNow;
+		if (sleepInterval > TimeSpan.Zero)
 		{
 			await Task.Delay(sleepInterval, stoppingToken);
+			while (DateTime.UtcNow < until && !stoppingToken.IsCancellationRequested)
+			{
+				await Task.Delay(10, stoppingToken);
+			}
 		}
 		else
 		{
-			logger.LogCritical("Sleep interval is negative {0:g}", sleepInterval);
+			logger.LogCritical("Sleep interval is negative {0:g}", DateTime.UtcNow - until);
 		}
 	}
 }
