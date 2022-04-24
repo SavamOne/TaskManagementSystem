@@ -65,7 +65,7 @@ CREATE TABLE Event
     Event_Type    INT                     NOT NULL,
     Name          VARCHAR(100)            NOT NULL,
     Place         VARCHAR(200),
-    Description   TEXT                    NOT NULL,
+    Description   TEXT,
     Start_Time    TIMESTAMP               NOT NULL,
     End_Time      TIMESTAMP               NOT NULL,
     Is_Private    BOOL                    NOT NULL,
