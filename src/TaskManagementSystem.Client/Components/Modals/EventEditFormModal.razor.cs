@@ -183,16 +183,16 @@ public partial class EventEditFormModal
 			return null;
 		}
 
-		var editResut = await ServerProxy!.EditEventParticipants(new EditEventParticipantsRequest(Event.Id, changeRequests));
-		if (!editResut.IsSuccess)
+		var editResult = await ServerProxy!.EditEventParticipants(new EditEventParticipantsRequest(Event.Id, changeRequests));
+		if (!editResult.IsSuccess)
 		{
-			ToastService!.AddSystemErrorToast(editResut.ErrorDescription!);
+			ToastService!.AddSystemErrorToast(editResult.ErrorDescription!);
 			return null;
 		}
 
 		ToastService!.AddSystemToast(Modal.Title!, "Успешно изменены участники события");
 
-		return editResut.Value;
+		return editResult.Value;
 	}
 
 	private async Task<EventWithParticipants?> AddParticipantsAsync()
