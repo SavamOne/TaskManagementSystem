@@ -12,7 +12,7 @@ public class GetEventsInPeriodForUserData
 	}
 
 	public Guid UserId { get; }
-	
+
 	public DateTimeOffset StartPeriod { get; }
 
 	public DateTimeOffset EndPeriod { get; }

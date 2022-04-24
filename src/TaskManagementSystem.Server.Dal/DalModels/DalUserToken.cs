@@ -15,7 +15,7 @@ public class DalUserToken
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
 	[Column("refresh_token")]
 	public string RefreshToken { get; set; }
-	
+
 	[Column("valid_until")]
 	public DateTime ValidUntil { get; set; }
 }

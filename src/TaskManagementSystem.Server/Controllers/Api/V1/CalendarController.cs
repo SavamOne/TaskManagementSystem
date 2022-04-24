@@ -188,7 +188,7 @@ public class CalendarController : ControllerBase
 	/// </summary>
 	/// <param name="request"><see cref="GetCalendarNamesRequest" />.</param>
 	/// <returns>Коллекция <see cref="CalendarNameResponse" />.</returns>
-	/// <response code="200">Возвращает коллекцию <see cref="CalendarNameResponse"/>.</response>
+	/// <response code="200">Возвращает коллекцию <see cref="CalendarNameResponse" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(IEnumerable<CalendarNameResponse>), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
@@ -199,8 +199,8 @@ public class CalendarController : ControllerBase
 		request.AssertNotNull();
 
 		var names = await calendarService.GetCalendarNamesAsync(request.CalendarIds);
-		
-		return Ok(names.Select(x=> new CalendarNameResponse(x.CalendarId, x.Name)));
+
+		return Ok(names.Select(x => new CalendarNameResponse(x.CalendarId, x.Name)));
 	}
 
 	private static CalendarWithParticipantUsers Convert(CalendarWithParticipants request)

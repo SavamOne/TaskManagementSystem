@@ -15,8 +15,8 @@ public class CalendarEventService : ICalendarEventService
 {
 	private readonly ICalendarParticipantRepository calendarParticipantRepository;
 	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
-	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
 	private readonly ICalendarEventRepository eventRepository;
+	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
 	private readonly IUnitOfWork unitOfWork;
 
 	public CalendarEventService(IUnitOfWork unitOfWork,
@@ -53,10 +53,10 @@ public class CalendarEventService : ICalendarEventService
 		}
 
 		Guid eventId = Guid.NewGuid();
-		RecurrentEventSettings? recurrentSettings = data.RecurrentSettingsData is not null 
-			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData, eventId, data.EndTime.UtcDateTime) 
+		RecurrentEventSettings? recurrentSettings = data.RecurrentSettingsData is not null
+			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData, eventId, data.EndTime.UtcDateTime)
 			: null;
-		
+
 		CalendarEvent calendarEvent = new(eventId,
 			data.CalendarId,
 			data.Name,
@@ -69,7 +69,7 @@ public class CalendarEventService : ICalendarEventService
 			DateTime.UtcNow,
 			recurrentSettings is not null);
 
-		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(), 
+		CalendarEventParticipant calendarEventParticipant = new(Guid.NewGuid(),
 			eventId,
 			participant.Id,
 			CalendarEventParticipantRole.Creator,
@@ -105,7 +105,7 @@ public class CalendarEventService : ICalendarEventService
 
 		var events = await eventRepository.GetStandardCalendarEventsInRange(data.CalendarId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
 		var repeatedEvents = await eventRepository.GetRepeatedCalendarEvents(data.CalendarId);
-		
+
 		if (!participant.IsAdminOrCreator())
 		{
 			foreach (CalendarEvent @event in events.Union(repeatedEvents).Where(x => x.IsPrivate))
@@ -116,7 +116,7 @@ public class CalendarEventService : ICalendarEventService
 				}
 			}
 		}
-		
+
 		return await CalculateEventsInPeriodAsync(repeatedEvents, events, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
 	}
 
@@ -128,7 +128,7 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException(LocalizedResources.DaysLimitOutOfRange, 60);
 		}
-		
+
 		//TODO: Существование Id пользователя.
 
 		var events = await eventRepository.GetStandardEventsInRangeForUser(data.UserId, data.StartPeriod.UtcDateTime, data.EndPeriod.UtcDateTime);
@@ -203,15 +203,15 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException("Дата окончания события меньше, чем дата начала");
 		}
-		
-		RecurrentEventSettings? recurrentSettings = data.IsRepeated 
-			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData!, @event.Id, @event.EndTimeUtc) 
+
+		RecurrentEventSettings? recurrentSettings = data.IsRepeated
+			? ValidateAndCreateRecurrentSettings(data.RecurrentSettingsData!, @event.Id, @event.EndTimeUtc)
 			: null;
 
 		unitOfWork.BeginTransaction();
 		await eventRepository.UpdateAsync(@event);
 		await recurrentSettingsRepository.DeleteForEvent(@event.Id);
-		
+
 		if (data.IsRepeated)
 		{
 			await recurrentSettingsRepository.InsertForEvent(recurrentSettings!);
@@ -325,7 +325,7 @@ public class CalendarEventService : ICalendarEventService
 	public async Task<CalendarEventWithParticipants> GetEventInfo(GetEventInfoData data)
 	{
 		CalendarEventWithParticipants eventInfo = await GetEventInfo(data.UserId, data.EventId);
-		
+
 		CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
 		// HACK: CanUserDeleteEvent == Админ или Создатель календаря
 		if (!eventInfo.Event.IsPrivate || eventParticipant != null || eventInfo.CanUserDeleteEvent)
@@ -343,11 +343,11 @@ public class CalendarEventService : ICalendarEventService
 			eventInfo.NotifyBefore,
 			eventInfo.RecurrentEventSettings);
 	}
-	
+
 	public async Task<CalendarEventWithParticipants> EditParticipationState(EditParticipationStateData data)
 	{
 		data.AssertNotNull();
-		
+
 		CalendarEventParticipant? eventParticipant = await eventParticipantRepository.GetByUserAndEventId(data.UserId, data.EventId);
 		if (eventParticipant is null)
 		{
@@ -373,7 +373,7 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException("Время напоминания должно быть в периоде от 0 секунд до 7 дней.");
 		}
-		
+
 		eventParticipant.State = data.State;
 		eventParticipant.NotifyBefore = data.State is not CalendarEventParticipantState.Rejected ? data.NotifyBefore!.Value : TimeSpan.Zero;
 
@@ -381,7 +381,7 @@ public class CalendarEventService : ICalendarEventService
 		{
 			eventParticipant
 		});
-		
+
 		return await GetEventInfo(data.UserId, data.EventId);
 	}
 
@@ -392,7 +392,7 @@ public class CalendarEventService : ICalendarEventService
 		@event.Place = "[Приватное событие]";
 		@event.EventType = EventType.Unknown;
 	}
-	
+
 	private static RecurrentEventSettings ValidateAndCreateRecurrentSettings(AddRecurrentSettingsData recurrentSettingsData, Guid eventId, DateTime eventEndTimeUtc)
 	{
 		if (!Enum.GetValues<RepeatType>().Contains(recurrentSettingsData.RepeatType))
@@ -424,8 +424,11 @@ public class CalendarEventService : ICalendarEventService
 			recurrentSettingsData.Count,
 			recurrentSettingsData.DayOfWeeks);
 	}
-	
-	private async Task<ICollection<CalendarEvent>> CalculateEventsInPeriodAsync(ICollection<CalendarEvent> repeatedEvents, ICollection<CalendarEvent> events, DateTime startPeriodUtc, DateTime endPeriodUtc)
+
+	private async Task<ICollection<CalendarEvent>> CalculateEventsInPeriodAsync(ICollection<CalendarEvent> repeatedEvents,
+		ICollection<CalendarEvent> events,
+		DateTime startPeriodUtc,
+		DateTime endPeriodUtc)
 	{
 		var repeatedEventsIds = repeatedEvents.Select(x => x.Id).ToHashSet();
 		var recurrentSettings = ( await recurrentSettingsRepository.GetForEvents(repeatedEventsIds) ).ToDictionary(x => x.EventId);
@@ -462,7 +465,7 @@ public class CalendarEventService : ICalendarEventService
 		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
 		var state = userIdParticipant?.State;
 		var notifyBefore = canUserEditParticipants ? userIdParticipant?.NotifyBefore : null;
-		
+
 		RecurrentEventSettings? recurrentEventSettings = await recurrentSettingsRepository.GetForEvent(@event.Id);
 
 		return new CalendarEventWithParticipants(@event,

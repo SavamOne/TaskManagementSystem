@@ -28,14 +28,14 @@ public class CalendarEventWithParticipants
 	public bool CanUserEditParticipants { get; }
 
 	public bool CanUserDeleteEvent { get; }
-	
+
 	public CalendarEventParticipantState? ParticipationState { get; }
 
 	public TimeSpan? NotifyBefore { get; }
-	
+
 	public CalendarEvent Event { get; }
 
 	public IEnumerable<CalendarEventParticipant> Participants { get; }
-	
+
 	public RecurrentEventSettings? RecurrentEventSettings { get; }
 }

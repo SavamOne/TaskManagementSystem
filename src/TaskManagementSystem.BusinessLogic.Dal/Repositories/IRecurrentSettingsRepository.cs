@@ -5,9 +5,9 @@ namespace TaskManagementSystem.BusinessLogic.Dal.Repositories;
 public interface IRecurrentSettingsRepository
 {
 	Task<RecurrentEventSettings?> GetForEvent(Guid eventId);
-	
+
 	Task DeleteForEvent(Guid eventId);
-	
+
 	Task InsertForEvent(RecurrentEventSettings settings);
 
 	Task<ICollection<RecurrentEventSettings>> GetForEvents(ISet<Guid> eventIds);

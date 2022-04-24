@@ -26,7 +26,7 @@ public class UserService : IUserService
 		{
 			throw new BusinessLogicException("Некорректный адрес электронной почты.");
 		}
-		
+
 		User? existedUser = await userRepository.GetByEmailAsync(data.Email);
 		if (existedUser is not null)
 		{

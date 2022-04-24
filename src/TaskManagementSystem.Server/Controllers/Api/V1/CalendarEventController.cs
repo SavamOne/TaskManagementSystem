@@ -166,9 +166,9 @@ public class CalendarEventController : ControllerBase
 
 		Stopwatch stopWatch = Stopwatch.StartNew();
 		var result = await eventService.GetCalendarEventsInPeriodAsync(new GetCalendarEventsInPeriodData(userId, request.CalendarId, request.StartPeriod, request.EndPeriod));
-		
+
 		logger.LogInformation("{0} processed in {1:g}", nameof(GetCalendarEventsInPeriodAsync), stopWatch.Elapsed);
-		
+
 		return Ok(result.Select(Convert).ToList());
 	}
 
@@ -189,12 +189,12 @@ public class CalendarEventController : ControllerBase
 
 		Stopwatch stopWatch = Stopwatch.StartNew();
 		var result = await eventService.GetEventsForUserInPeriodAsync(new GetEventsInPeriodForUserData(userId, request.StartPeriod, request.EndPeriod));
-		
+
 		logger.LogInformation("{0} processed in {1:g}", nameof(GetCalendarEventsInPeriodAsync), stopWatch.Elapsed);
-		
+
 		return Ok(result.Select(Convert).ToList());
 	}
-	
+
 	/// <summary>
 	///     Обновить состояние участия в событии.
 	/// </summary>
@@ -209,8 +209,9 @@ public class CalendarEventController : ControllerBase
 	public async Task<IActionResult> EditMyParticipationStateAsync([Required] EditMyEventParticipationStateRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
-		
-		CalendarEventWithParticipants result = await eventService.EditParticipationState(new EditParticipationStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
+
+		CalendarEventWithParticipants result =
+			await eventService.EditParticipationState(new EditParticipationStateData(userId, request.EventId, (CalendarEventParticipantState)request.ParticipantState, request.NotifyBefore));
 
 		return Ok(Convert(result));
 	}
@@ -304,7 +305,7 @@ public class CalendarEventController : ControllerBase
 		{
 			return null;
 		}
-		
+
 		return new AddRecurrentSettingsData((RepeatType)request.RepeatType,
 			request.DayOfWeeks,
 			request.Until,

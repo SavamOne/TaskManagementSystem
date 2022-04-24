@@ -53,8 +53,8 @@ public class CalendarParticipantViewModel
 			throw new Exception();
 		}
 
-		return new EditCalendarParticipantRequest(CalendarParticipantId, 
-			Role is not CalendarParticipantRole.NotSet ? Role : null, 
+		return new EditCalendarParticipantRequest(CalendarParticipantId,
+			Role is not CalendarParticipantRole.NotSet ? Role : null,
 			Role is CalendarParticipantRole.NotSet);
 	}
 }

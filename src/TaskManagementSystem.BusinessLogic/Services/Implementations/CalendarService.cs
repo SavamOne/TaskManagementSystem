@@ -137,7 +137,7 @@ public class CalendarService : ICalendarService
 
 		return await calendarParticipantRepository.GetByFilter(data.CalendarId, data.Filter, 50);
 	}
-	
+
 	public async Task<ICollection<CalendarName>> GetCalendarNamesAsync(ISet<Guid> calendarIds)
 	{
 		var calendars = await calendarRepository.GetByIdsAsync(calendarIds);
@@ -148,7 +148,7 @@ public class CalendarService : ICalendarService
 
 		return calendars.Select(x => new CalendarName(x.Id, x.Name)).ToList();
 	}
-	
+
 	private async Task ValidateAndUpdateParticipantsAsync(EditCalendarParticipantsData data, CalendarWithParticipants calendarInfo)
 	{
 		var toChange = new HashSet<CalendarParticipant>();
@@ -182,13 +182,13 @@ public class CalendarService : ICalendarService
 				toDelete.Add(participant.Id);
 			}
 		}
-		
+
 		unitOfWork.BeginTransaction();
 		await calendarParticipantRepository.UpdateAllAsync(toChange);
 		await calendarParticipantRepository.DeleteByIdsAsync(toDelete);
 		unitOfWork.CommitTransaction();
 	}
-	
+
 	private static void CheckNotRemovingCreator(IEnumerable<Guid> participantIds, IEnumerable<CalendarParticipant> allParticipants)
 	{
 		//Проверка, что нельзя удалить создателя календаря

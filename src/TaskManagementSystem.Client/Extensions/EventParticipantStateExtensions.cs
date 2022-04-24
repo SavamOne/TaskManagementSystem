@@ -15,7 +15,7 @@ public static class EventParticipantStateExtensions
 			_ => throw new ArgumentOutOfRangeException(nameof(state))
 		};
 	}
-	
+
 	public static string GetDescription(this EventParticipantState state)
 	{
 		return state switch

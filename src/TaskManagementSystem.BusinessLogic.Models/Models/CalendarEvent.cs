@@ -48,8 +48,8 @@ public record CalendarEvent
 	public bool IsPrivate { get; set; }
 
 	public DateTime CreationTimeUtc { get; }
-	
+
 	public bool IsRepeated { get; set; }
-	
+
 	public uint RepeatNum { get; set; }
 }

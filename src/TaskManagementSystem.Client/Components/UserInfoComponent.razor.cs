@@ -15,7 +15,7 @@ public partial class UserInfoComponent
 
 	[Inject]
 	public IToastService? ToastService { get; set; }
-	
+
 	[Inject]
 	public IUserUpdateService? UserUpdateService { get; set; }
 

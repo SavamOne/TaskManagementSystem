@@ -1,5 +1,4 @@
 using TaskManagementSystem.Shared.Helpers;
-using TaskManagementSystem.Shared.Models;
 
 namespace TaskManagementSystem.Client.ViewModels;
 

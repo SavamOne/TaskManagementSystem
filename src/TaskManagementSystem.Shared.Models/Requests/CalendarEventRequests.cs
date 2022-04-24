@@ -158,7 +158,7 @@ public class EditEventRequest
 	public bool? IsPrivate { get; }
 
 	/// <summary>
-	///    Настройки повторения события. Учитывается только если <see cref="IsRepeated"/> истина.
+	///     Настройки повторения события. Учитывается только если <see cref="IsRepeated" /> истина.
 	/// </summary>
 	public RecurrentSettings? RecurrentSettings { get; }
 }
@@ -340,7 +340,7 @@ public class GetEventsInPeriodForUserRequest
 		StartPeriod = startPeriod;
 		EndPeriod = endPeriod;
 	}
-	
+
 	/// <summary>
 	///     Начальный период.
 	/// </summary>
@@ -365,7 +365,7 @@ public class EditMyEventParticipationStateRequest
 		ParticipantState = participantState;
 		NotifyBefore = notifyBefore;
 	}
-	
+
 	/// <summary>
 	///     Идентификатор события.
 	/// </summary>
@@ -377,7 +377,7 @@ public class EditMyEventParticipationStateRequest
 	/// </summary>
 	[Required]
 	public EventParticipantState ParticipantState { get; }
-	
+
 	/// <summary>
 	///     Время, за которое необходимо напомнить о событии.
 	/// </summary>

@@ -4,8 +4,8 @@ namespace TaskManagementSystem.Client.ViewModels;
 
 public class DayOfWeekViewModel
 {
-	private readonly bool shortName;
 	private readonly CultureInfo cultureInfo;
+	private readonly bool shortName;
 
 	public DayOfWeekViewModel(DayOfWeek firstDay, bool shortName, CultureInfo cultureInfo)
 	{
@@ -18,10 +18,8 @@ public class DayOfWeekViewModel
 
 	public override string ToString()
 	{
-		string name = shortName ? 
-			cultureInfo.DateTimeFormat.GetShortestDayName(Value) : 
-			cultureInfo.DateTimeFormat.GetDayName(Value);
-		
+		string name = shortName ? cultureInfo.DateTimeFormat.GetShortestDayName(Value) : cultureInfo.DateTimeFormat.GetDayName(Value);
+
 		return cultureInfo.TextInfo.ToTitleCase(name);
 	}
 }

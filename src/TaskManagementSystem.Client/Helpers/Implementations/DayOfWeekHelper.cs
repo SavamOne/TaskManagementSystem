@@ -10,7 +10,7 @@ public static class DayOfWeekHelper
 		return Enumerable.Range((int)cultureInfo.DateTimeFormat.FirstDayOfWeek, 7)
 		   .Select(x => x % 7)
 		   .Cast<DayOfWeek>()
-		   .Select(x=> new DayOfWeekViewModel(x, shortName, cultureInfo))
+		   .Select(x => new DayOfWeekViewModel(x, shortName, cultureInfo))
 		   .ToList();
 	}
 }

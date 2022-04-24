@@ -1,4 +1,3 @@
-using System.Data;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -10,14 +9,14 @@ public class RecurrentSettingsRepository : Repository<DalRecurrentSetting>, IRec
 {
 	public RecurrentSettingsRepository(DatabaseConnectionProvider connectionProvider)
 		: base(connectionProvider) {}
-	
+
 	public async Task<RecurrentEventSettings?> GetForEvent(Guid eventId)
 	{
 		var settings = await SelectAsync(x => x.EventId == eventId);
 
 		return settings.ToRecurrentSettings();
 	}
-	
+
 	public async Task DeleteForEvent(Guid eventId)
 	{
 		await DeleteMultipleAsync(x => x.EventId == eventId);
@@ -29,7 +28,7 @@ public class RecurrentSettingsRepository : Repository<DalRecurrentSetting>, IRec
 
 		return settings.GroupBy(x => x.EventId).Select(x => x.ToRecurrentSettings()).ToList()!;
 	}
-	
+
 	public async Task InsertForEvent(RecurrentEventSettings settings)
 	{
 		await InsertAllAsync(settings.ToDalSettings());

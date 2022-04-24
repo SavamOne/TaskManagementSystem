@@ -7,6 +7,9 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class CalendarTabsComponent
 {
+
+	private bool isLoaded;
+
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }
 
@@ -14,8 +17,6 @@ public partial class CalendarTabsComponent
 	public IToastService? ToastService { get; set; }
 
 	public IEnumerable<CalendarInfo> Calendars { get; set; } = Enumerable.Empty<CalendarInfo>();
-
-	private bool isLoaded;
 
 	protected override async Task OnInitializedAsync()
 	{

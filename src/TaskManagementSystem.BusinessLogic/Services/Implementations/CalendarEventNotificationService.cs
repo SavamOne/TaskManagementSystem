@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using TaskManagementSystem.BusinessLogic.Dal.Repositories;
 using TaskManagementSystem.BusinessLogic.Extensions;
@@ -12,13 +11,13 @@ namespace TaskManagementSystem.BusinessLogic.Services.Implementations;
 public class CalendarEventNotificationService : ICalendarEventNotificationService
 {
 	private const int DeltaMinutes = 20;
-	
-	private ICollection<CalendarEventNotification> eventNotifications = Array.Empty<CalendarEventNotification>();
 
 	private readonly ICalendarEventParticipantRepository eventParticipantRepository;
 	private readonly ICalendarEventRepository eventRepository;
-	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
 	private readonly ILogger<CalendarEventNotificationService> logger;
+	private readonly IRecurrentSettingsRepository recurrentSettingsRepository;
+
+	private ICollection<CalendarEventNotification> eventNotifications = Array.Empty<CalendarEventNotification>();
 
 	public CalendarEventNotificationService(ICalendarEventParticipantRepository eventParticipantRepository,
 		ICalendarEventRepository eventRepository,
@@ -87,15 +86,15 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 	private async Task<int> UpdateNotificationsAsync(DateTime start)
 	{
 		var standardEvents = await eventRepository.GetAllStandardEventsWithStartTimeInRange(start, start + TimeSpan.FromDays(8));
-		
+
 		var repeatedEvents = await eventRepository.GetAllRepeatedEvents();
-		var recurrentEventSettings = (await recurrentSettingsRepository.GetForEvents(repeatedEvents.Select(x => x.Id).ToHashSet())).ToDictionary(x=> x.EventId);
-		
+		var recurrentEventSettings = ( await recurrentSettingsRepository.GetForEvents(repeatedEvents.Select(x => x.Id).ToHashSet()) ).ToDictionary(x => x.EventId);
+
 		var orderedEvents = new List<CalendarEventNotification>();
-		
+
 		foreach (CalendarEvent repeatedEvent in repeatedEvents)
 		{
-			var participants = (await eventParticipantRepository.GetByEventId(repeatedEvent.Id))
+			var participants = ( await eventParticipantRepository.GetByEventId(repeatedEvent.Id) )
 			   .Where(x => x.State is not CalendarEventParticipantState.Rejected && x.IsParticipantOrCreator())
 			   .ToList();
 
@@ -107,13 +106,13 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 						@event.RepeatNum,
 						@event.StartTimeUtc - x.NotifyBefore,
 						@event.Name))
-				   .Where(x=> x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
-				
+				   .Where(x => x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
+
 				orderedEvents.AddRange(notifications);
 			}
-			
+
 		}
-		
+
 		foreach (CalendarEvent @event in standardEvents)
 		{
 			var participants = await eventParticipantRepository.GetByEventId(@event.Id);
@@ -126,8 +125,8 @@ public class CalendarEventNotificationService : ICalendarEventNotificationServic
 						@event.RepeatNum,
 						@event.StartTimeUtc - x.NotifyBefore,
 						@event.Name))
-			   .Where(x=> x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
-			
+			   .Where(x => x.NotificationTimeUtc >= start && x.NotificationTimeUtc <= start.AddMinutes(DeltaMinutes));
+
 			orderedEvents.AddRange(notifications);
 		}
 

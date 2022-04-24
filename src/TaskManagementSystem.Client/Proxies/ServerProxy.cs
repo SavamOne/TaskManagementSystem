@@ -38,7 +38,7 @@ public class ServerProxy : BaseProxy
 		{
 			await ProcessRefreshTokensResponse(result);
 		}
-		
+
 		return result;
 	}
 
@@ -162,7 +162,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNamesRequest request)
 	{
 		var result =
@@ -228,7 +228,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<IEnumerable<EventInfo>>> GetEventsInPeriodForUser(GetEventsInPeriodForUserRequest request)
 	{
 		var result =
@@ -236,7 +236,7 @@ public class ServerProxy : BaseProxy
 
 		return result;
 	}
-	
+
 	public async Task<Result<EventWithParticipants>> EditMyEventParticipationState(EditMyEventParticipationStateRequest request)
 	{
 		var result =

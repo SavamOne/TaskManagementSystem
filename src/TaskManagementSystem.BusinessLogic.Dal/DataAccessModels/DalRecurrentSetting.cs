@@ -10,12 +10,12 @@ public class DalRecurrentSetting
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
 	[Column("event_id")]
 	public Guid EventId { get; set; }
-	
+
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
 	[Column("key")]
 	public string Key { get; set; }
-	
+
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.None)]
 	[Column("value")]

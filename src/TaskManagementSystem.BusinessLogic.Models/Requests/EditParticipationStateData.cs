@@ -4,7 +4,10 @@ namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
 public class EditParticipationStateData
 {
-	public EditParticipationStateData(Guid userId, Guid eventId, CalendarEventParticipantState state, TimeSpan? notifyBefore)
+	public EditParticipationStateData(Guid userId,
+		Guid eventId,
+		CalendarEventParticipantState state,
+		TimeSpan? notifyBefore)
 	{
 		UserId = userId;
 		State = state;
@@ -12,11 +15,11 @@ public class EditParticipationStateData
 		EventId = eventId;
 	}
 
-	public Guid UserId { get;}
-	
-	public Guid EventId { get;}
-	
-	public CalendarEventParticipantState State { get;}
+	public Guid UserId { get; }
 
-	public TimeSpan? NotifyBefore { get;}
+	public Guid EventId { get; }
+
+	public CalendarEventParticipantState State { get; }
+
+	public TimeSpan? NotifyBefore { get; }
 }

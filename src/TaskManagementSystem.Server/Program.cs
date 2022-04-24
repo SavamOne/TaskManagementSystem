@@ -9,7 +9,7 @@ using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureLogging(loggingBuilder => loggingBuilder.AddSimpleConsole());
-builder.Configuration.AddEnvironmentVariables(prefix: "TMS_");
+builder.Configuration.AddEnvironmentVariables("TMS_");
 
 //TODO: Придумать, как передавать секцию без установки дополнительного нугета.
 builder.Services.Configure<PostgresOptions>(builder.Configuration.GetSection(nameof(PostgresOptions)));

@@ -93,15 +93,15 @@ public class EventInfo
 	/// </summary>
 	[Required]
 	public DateTimeOffset CreationTime { get; }
-	
+
 	/// <summary>
-	///      Флаг, что для события заданы настройки повторения.
+	///     Флаг, что для события заданы настройки повторения.
 	/// </summary>
 	[Required]
 	public bool IsRepeated { get; }
-	
+
 	/// <summary>
-	///      Номер повторения. Для события без повтора значение будет 0.
+	///     Номер повторения. Для события без повтора значение будет 0.
 	/// </summary>
 	[Required]
 	public uint RepeatNum { get; }
