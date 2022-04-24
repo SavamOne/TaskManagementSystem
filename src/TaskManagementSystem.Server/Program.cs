@@ -9,6 +9,8 @@ using TaskManagementSystem.Shared.Models.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Host.ConfigureLogging(loggingBuilder => loggingBuilder.AddSimpleConsole());
+
 builder.Configuration.AddEnvironmentVariables(prefix: "TMS_");
 
 //TODO: Придумать, как передавать секцию без установки дополнительного нугета.
