@@ -2,9 +2,9 @@ using TaskManagementSystem.BusinessLogic.Models.Models;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class ChangeCalendarParticipantRoleData
+public class EditCalendarParticipantData
 {
-	public ChangeCalendarParticipantRoleData(Guid participantId, CalendarRole? role, bool delete)
+	public EditCalendarParticipantData(Guid participantId, CalendarRole? role, bool delete)
 	{
 		ParticipantId = participantId;
 		Role = role;

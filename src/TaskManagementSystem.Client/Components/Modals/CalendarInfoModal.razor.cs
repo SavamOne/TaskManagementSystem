@@ -109,12 +109,12 @@ public partial class CalendarInfoModal
 
 		await TryEditCalendarInfo();
 		await TryAddToParticipants();
-		await TryChangeRoleOrDelete();
+		await TryEditParticipants();
 
 		Changed = false;
 	}
 
-	private async Task<bool> TryChangeRoleOrDelete()
+	private async Task<bool> TryEditParticipants()
 	{
 		var participantsWithChangedRole = participants.Values
 		   .Where(x => x.RoleChanged)
@@ -125,7 +125,7 @@ public partial class CalendarInfoModal
 			return false;
 		}
 
-		CalendarWithParticipantUsers? newParticipantsList = await TryChangeRole(participantsWithChangedRole);
+		CalendarWithParticipantUsers? newParticipantsList = await TryEdit(participantsWithChangedRole);
 
 		if (newParticipantsList is null)
 		{
@@ -139,18 +139,18 @@ public partial class CalendarInfoModal
 		return true;
 	}
 	
-	private async Task<CalendarWithParticipantUsers?> TryChangeRole(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
+	private async Task<CalendarWithParticipantUsers?> TryEdit(IEnumerable<CalendarParticipantViewModel> participantsWithChangedRole)
 	{
-		var toChangeRoleRequests = participantsWithChangedRole
+		var toEditRoleParticipants = participantsWithChangedRole
 		   .Select(x => x.GetChangeRoleRequest())
 		   .ToList();
 
-		if (!toChangeRoleRequests.Any())
+		if (!toEditRoleParticipants.Any())
 		{
 			return null;
 		}
 
-		var changeRoleResult = await ServerProxy!.ChangeCalendarParticipantsRole(new ChangeCalendarParticipantsRoleRequest(CalendarId, toChangeRoleRequests));
+		var changeRoleResult = await ServerProxy!.EditCalendarParticipants(new EditCalendarParticipantsRequest(CalendarId, toEditRoleParticipants));
 
 		if (!changeRoleResult.IsSuccess)
 		{

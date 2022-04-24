@@ -32,9 +32,9 @@ public partial class UserInfoComponent
 		userInfoViewModel = new UserInfoViewModel(result.Value!);
 	}
 
-	private async Task ChangeInfo()
+	private async Task EditInfoAsync()
 	{
-		var result = await ServerProxy!.ChangeUserInfoAsync(userInfoViewModel.GetChangeInfoRequest());
+		var result = await ServerProxy!.EditUserInfoAsync(userInfoViewModel.GetEditInfoRequest());
 
 		if (result.IsSuccess)
 		{

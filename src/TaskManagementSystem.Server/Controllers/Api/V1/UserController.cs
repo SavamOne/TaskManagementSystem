@@ -151,7 +151,7 @@ public class UserController : ControllerBase
 	/// <summary>
 	///     Изменить информацию о себе.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeUserInfoRequest" />.</param>
+	/// <param name="request"><see cref="EditUserInfoRequest" />.</param>
 	/// <returns><see cref="UserInfo" />.</returns>
 	/// <response code="200">Возвращает <see cref="UserInfo" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
@@ -159,13 +159,13 @@ public class UserController : ControllerBase
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	[Authorize]
-	[HttpPost("ChangeInfo")]
-	public async Task<IActionResult> ChangeInfoAsync([Required] ChangeUserInfoRequest request)
+	[HttpPost("EditInfo")]
+	public async Task<IActionResult> EditInfoAsync([Required] EditUserInfoRequest request)
 	{
 		request.AssertNotNull();
 
 		Guid id = tokenService.GetUserIdFromClaims(User);
-		User user = await userService.ChangeUserInfoAsync(new ChangeUserInfoData(id, request.Name, request.Email));
+		User user = await userService.EditUserInfoAsync(new EditUserInfoData(id, request.Name, request.Email));
 
 		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
 	}

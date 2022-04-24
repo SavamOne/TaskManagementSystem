@@ -5,11 +5,11 @@ using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
-public class CalendarComponentWithCalendarEvents : CalendarComponent
+public class CalendarEventWithCalendarEventsComponent : CalendarEventComponent
 {
 	protected override async Task OnLoadAsync()
 	{
-		var result = await ServerProxy!.GetCalendarName(new GetCalendarNameRequest(new HashSet<Guid>
+		var result = await ServerProxy!.GetCalendarName(new GetCalendarNamesRequest(new HashSet<Guid>
 		{
 			CalendarId
 		}));

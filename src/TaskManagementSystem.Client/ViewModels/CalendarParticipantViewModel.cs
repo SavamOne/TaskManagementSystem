@@ -46,14 +46,14 @@ public class CalendarParticipantViewModel
 		}
 	}
 
-	public ChangeCalendarParticipantRoleRequest GetChangeRoleRequest()
+	public EditCalendarParticipantRequest GetChangeRoleRequest()
 	{
 		if (!RoleChanged)
 		{
 			throw new Exception();
 		}
 
-		return new ChangeCalendarParticipantRoleRequest(CalendarParticipantId, 
+		return new EditCalendarParticipantRequest(CalendarParticipantId, 
 			Role is not CalendarParticipantRole.NotSet ? Role : null, 
 			Role is CalendarParticipantRole.NotSet);
 	}

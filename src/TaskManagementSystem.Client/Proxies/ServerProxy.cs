@@ -97,10 +97,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<UserInfo>> ChangeUserInfoAsync(ChangeUserInfoRequest request)
+	public async Task<Result<UserInfo>> EditUserInfoAsync(EditUserInfoRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeUserInfoRequest, UserInfo>(new Uri("Api/V1/User/ChangeInfo", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditUserInfoRequest, UserInfo>(new Uri("Api/V1/User/EditInfo", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -108,7 +108,7 @@ public class ServerProxy : BaseProxy
 	public async Task<Result<IEnumerable<CalendarInfo>>> GetUserCalendars()
 	{
 		var result =
-			await SendRequestAsync<IEnumerable<CalendarInfo>>(new Uri("Api/V1/Calendar/GetMyList", UriKind.Relative), HttpMethod.Post);
+			await SendRequestAsync<IEnumerable<CalendarInfo>>(new Uri("Api/V1/Calendar/GetMyCalendars", UriKind.Relative), HttpMethod.Post);
 
 		return result;
 	}
@@ -145,10 +145,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<CalendarWithParticipantUsers>> ChangeCalendarParticipantsRole(ChangeCalendarParticipantsRoleRequest request)
+	public async Task<Result<CalendarWithParticipantUsers>> EditCalendarParticipants(EditCalendarParticipantsRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeCalendarParticipantsRoleRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/ChangeParticipantsRole", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditCalendarParticipantsRequest, CalendarWithParticipantUsers>(new Uri("Api/V1/Calendar/EditParticipants", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -163,10 +163,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 	
-	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNameRequest request)
+	public async Task<Result<ICollection<CalendarNameResponse>>> GetCalendarName(GetCalendarNamesRequest request)
 	{
 		var result =
-			await SendRequestAsync<GetCalendarNameRequest, ICollection<CalendarNameResponse>>(new Uri("Api/V1/Calendar/GetCalendarName", UriKind.Relative),
+			await SendRequestAsync<GetCalendarNamesRequest, ICollection<CalendarNameResponse>>(new Uri("Api/V1/Calendar/GetNames", UriKind.Relative),
 				HttpMethod.Post,
 				request);
 
@@ -205,10 +205,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 
-	public async Task<Result<EventWithParticipants>> ChangeEventParticipants(ChangeEventParticipantsRequest request)
+	public async Task<Result<EventWithParticipants>> EditEventParticipants(EditEventParticipantsRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeParticipants", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditEventParticipantsRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/EditParticipants", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}
@@ -237,10 +237,10 @@ public class ServerProxy : BaseProxy
 		return result;
 	}
 	
-	public async Task<Result<EventWithParticipants>> ChangeMyEventParticipationState(ChangeMyEventParticipationStateRequest request)
+	public async Task<Result<EventWithParticipants>> EditMyEventParticipationState(EditMyEventParticipationStateRequest request)
 	{
 		var result =
-			await SendRequestAsync<ChangeMyEventParticipationStateRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/ChangeMyParticipationState", UriKind.Relative), HttpMethod.Post, request);
+			await SendRequestAsync<EditMyEventParticipationStateRequest, EventWithParticipants>(new Uri("Api/V1/CalendarEvent/EditMyParticipationState", UriKind.Relative), HttpMethod.Post, request);
 
 		return result;
 	}

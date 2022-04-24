@@ -200,7 +200,7 @@ public record EventViewModel
 	public EditEventRequest GetEditRequest()
 	{
 		RecurrentSettings? recurrentSettings = repeatType is not EventRepeatType.None
-			? new RecurrentSettings(repeatType, dayOfWeeks, UInt32.MaxValue, DateTimeOffset.MaxValue)
+			? new RecurrentSettings(repeatType, dayOfWeeks, uint.MaxValue, DateTimeOffset.MaxValue)
 			: null;
 		
 		return new EditEventRequest(Id,

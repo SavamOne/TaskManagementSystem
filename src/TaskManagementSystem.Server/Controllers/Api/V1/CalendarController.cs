@@ -33,7 +33,7 @@ public class CalendarController : ControllerBase
 	/// <returns>Коллекция <see cref="CalendarInfo" />.</returns>
 	/// <response code="200">Возвращает коллекцию <see cref="CalendarInfo" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
-	[HttpPost("GetMyList")]
+	[HttpPost("GetMyCalendars")]
 	[ProducesResponseType(typeof(IEnumerable<CalendarInfo>), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 	public async Task<IActionResult> GetUserCalendarListAsync()
@@ -106,31 +106,31 @@ public class CalendarController : ControllerBase
 			   .Select(x => new AddCalendarParticipantData(x.UserId, (CalendarRole)x.Role))
 			   .ToHashSet()));
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
-	///     Изменить роль участников календаря.
+	///     Изменить роль/удалить участников календаря.
 	/// </summary>
-	/// <param name="request"><see cref="ChangeCalendarParticipantsRoleRequest" />.</param>
+	/// <param name="request"><see cref="EditCalendarParticipantsRequest" />.</param>
 	/// <returns><see cref="CalendarWithParticipantUsers" />.</returns>
 	/// <response code="200">Возвращает <see cref="CalendarWithParticipantUsers" />.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(CalendarWithParticipantUsers), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[HttpPost("ChangeParticipantsRole")]
-	public async Task<IActionResult> ChangeParticipantsRoleAsync([Required] ChangeCalendarParticipantsRoleRequest request)
+	[HttpPost("EditParticipants")]
+	public async Task<IActionResult> ChangeParticipantsRoleAsync([Required] EditCalendarParticipantsRequest request)
 	{
 		Guid userId = tokenService.GetUserIdFromClaims(User);
 
-		CalendarWithParticipants result = await calendarService.ChangeParticipantRoleAsync(new ChangeCalendarParticipantsRoleData(userId,
+		CalendarWithParticipants result = await calendarService.EditParticipantsAsync(new EditCalendarParticipantsData(userId,
 			request.CalendarId,
 			request.Participants
-			   .Select(x => new ChangeCalendarParticipantRoleData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
+			   .Select(x => new EditCalendarParticipantData(x.ParticipantId, (CalendarRole?)x.Role, x.Delete))
 			   .ToHashSet()));
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
@@ -148,7 +148,7 @@ public class CalendarController : ControllerBase
 	{
 		CalendarWithParticipants result = await calendarService.GetCalendarInfoAsync(request.CalendarId);
 
-		return Ok(await ConvertAsync(result));
+		return Ok(Convert(result));
 	}
 
 	/// <summary>
@@ -184,17 +184,17 @@ public class CalendarController : ControllerBase
 	}
 
 	/// <summary>
-	///     Получить имя календаря по его идентификатору.
+	///     Получить имена календарей по их идентификаторам.
 	/// </summary>
-	/// <param name="request"><see cref="GetCalendarNameRequest" />.</param>
+	/// <param name="request"><see cref="GetCalendarNamesRequest" />.</param>
 	/// <returns>Коллекция <see cref="CalendarNameResponse" />.</returns>
 	/// <response code="200">Возвращает коллекцию <see cref="CalendarNameResponse"/>.</response>
 	/// <response code="400">Возвращает <see cref="ErrorObject" />.</response>
 	[ProducesResponseType(typeof(IEnumerable<CalendarNameResponse>), StatusCodes.Status200OK, "application/json")]
 	[ProducesResponseType(typeof(ErrorObject), StatusCodes.Status400BadRequest, "application/json")]
 	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-	[HttpPost("GetCalendarName")]
-	public async Task<IActionResult> GetCalendarNameAsync([Required] GetCalendarNameRequest request)
+	[HttpPost("GetNames")]
+	public async Task<IActionResult> GetCalendarNamesAsync([Required] GetCalendarNamesRequest request)
 	{
 		request.AssertNotNull();
 
@@ -203,7 +203,7 @@ public class CalendarController : ControllerBase
 		return Ok(names.Select(x=> new CalendarNameResponse(x.CalendarId, x.Name)));
 	}
 
-	private async Task<CalendarWithParticipantUsers> ConvertAsync([Required] CalendarWithParticipants request)
+	private static CalendarWithParticipantUsers Convert(CalendarWithParticipants request)
 	{
 		var participantsUsers = request.Participants.Select(participant => new CalendarParticipantUser(participant.Id,
 			participant.CalendarId,

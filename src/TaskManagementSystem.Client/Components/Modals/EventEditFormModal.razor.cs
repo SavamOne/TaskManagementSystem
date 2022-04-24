@@ -147,7 +147,7 @@ public partial class EventEditFormModal
 		if (CanUserChangeParticipants && participantsChanged)
 		{
 			eventWithParticipants = await AddParticipantsAsync();
-			eventWithParticipants = await ChangeParticipantsAsync() ?? eventWithParticipants;
+			eventWithParticipants = await EditParticipantsAsync() ?? eventWithParticipants;
 
 			participantsChanged = false;
 		}
@@ -166,7 +166,7 @@ public partial class EventEditFormModal
 		}
 	}
 
-	private async Task<EventWithParticipants?> ChangeParticipantsAsync()
+	private async Task<EventWithParticipants?> EditParticipantsAsync()
 	{
 		if (!CanUserChangeParticipants)
 		{
@@ -175,7 +175,7 @@ public partial class EventEditFormModal
 
 		var changeRequests = participants
 		   .Where(x => x.RoleChanged)
-		   .Select(x => x.GetChangeRequest())
+		   .Select(x => x.GetEditRequest())
 		   .ToList();
 
 		if (!changeRequests.Any())
@@ -183,16 +183,16 @@ public partial class EventEditFormModal
 			return null;
 		}
 
-		var changeResult = await ServerProxy!.ChangeEventParticipants(new ChangeEventParticipantsRequest(Event.Id, changeRequests));
-		if (!changeResult.IsSuccess)
+		var editResut = await ServerProxy!.EditEventParticipants(new EditEventParticipantsRequest(Event.Id, changeRequests));
+		if (!editResut.IsSuccess)
 		{
-			ToastService!.AddSystemErrorToast(changeResult.ErrorDescription!);
+			ToastService!.AddSystemErrorToast(editResut.ErrorDescription!);
 			return null;
 		}
 
 		ToastService!.AddSystemToast(Modal.Title!, "Успешно изменены участники события");
 
-		return changeResult.Value;
+		return editResut.Value;
 	}
 
 	private async Task<EventWithParticipants?> AddParticipantsAsync()
@@ -334,7 +334,7 @@ public partial class EventEditFormModal
 			notifyMinutes = timespan;
 		}
 
-		var result = await ServerProxy!.ChangeMyEventParticipationState(new ChangeMyEventParticipationStateRequest(Event.Id, participationState ?? EventParticipantState.Unknown, notifyMinutes));
+		var result = await ServerProxy!.EditMyEventParticipationState(new EditMyEventParticipationStateRequest(Event.Id, participationState ?? EventParticipantState.Unknown, notifyMinutes));
 		if (!result.IsSuccess)
 		{
 			ToastService!.AddSystemErrorToast(result.ErrorDescription!);

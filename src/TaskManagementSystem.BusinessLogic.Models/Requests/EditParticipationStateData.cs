@@ -2,9 +2,9 @@ using TaskManagementSystem.BusinessLogic.Models.Models;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class ChangeParticipantStateData
+public class EditParticipationStateData
 {
-	public ChangeParticipantStateData(Guid userId, Guid eventId, CalendarEventParticipantState state, TimeSpan? notifyBefore)
+	public EditParticipationStateData(Guid userId, Guid eventId, CalendarEventParticipantState state, TimeSpan? notifyBefore)
 	{
 		UserId = userId;
 		State = state;

@@ -2,9 +2,9 @@ using TaskManagementSystem.Shared.Helpers;
 
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class ChangeEventParticipantsData
+public class EditEventParticipantsData
 {
-	public ChangeEventParticipantsData(Guid userId, Guid eventId, ICollection<ChangeEventParticipantData> eventParticipants)
+	public EditEventParticipantsData(Guid userId, Guid eventId, ICollection<EditEventParticipantData> eventParticipants)
 	{
 		UserId = userId;
 		EventId = eventId;
@@ -15,5 +15,5 @@ public class ChangeEventParticipantsData
 
 	public Guid EventId { get; }
 
-	public ICollection<ChangeEventParticipantData> EventParticipants { get; }
+	public ICollection<EditEventParticipantData> EventParticipants { get; }
 }

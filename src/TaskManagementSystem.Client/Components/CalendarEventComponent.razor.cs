@@ -8,7 +8,7 @@ using TaskManagementSystem.Client.ViewModels;
 
 namespace TaskManagementSystem.Client.Components;
 
-public abstract partial class CalendarComponent
+public abstract partial class CalendarEventComponent
 {
 	[Parameter]
 	public DateOnly WorkingDate { get; set; } = GetDefaultWorkingDate();

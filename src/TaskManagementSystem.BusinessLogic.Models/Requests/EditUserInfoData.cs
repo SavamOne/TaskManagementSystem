@@ -1,8 +1,8 @@
 namespace TaskManagementSystem.BusinessLogic.Models.Requests;
 
-public class ChangeUserInfoData
+public class EditUserInfoData
 {
-	public ChangeUserInfoData(Guid userId, string name, string email)
+	public EditUserInfoData(Guid userId, string name, string email)
 	{
 		UserId = userId;
 		Name = name;

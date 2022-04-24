@@ -13,7 +13,7 @@ public interface ICalendarService
 
 	Task<CalendarWithParticipants> AddParticipantsAsync(AddCalendarParticipantsData data);
 
-	Task<CalendarWithParticipants> ChangeParticipantRoleAsync(ChangeCalendarParticipantsRoleData data);
+	Task<CalendarWithParticipants> EditParticipantsAsync(EditCalendarParticipantsData data);
 
 	Task<CalendarWithParticipants> GetCalendarInfoAsync(Guid id);
 

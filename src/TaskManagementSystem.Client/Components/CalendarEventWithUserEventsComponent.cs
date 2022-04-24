@@ -5,7 +5,7 @@ using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
-public class CalendarComponentWithUserEvents : CalendarComponent
+public class CalendarEventWithUserEventsComponent : CalendarEventComponent
 {
 	protected override Task OnLoadAsync()
 	{
@@ -29,7 +29,7 @@ public class CalendarComponentWithUserEvents : CalendarComponent
 		var unknownNames = EventInfoViewModel.GetUnknownCalendarNames(eventResult.Value!);
 		if (unknownNames.Any())
 		{
-			var calendarNamesResult = await ServerProxy!.GetCalendarName(new GetCalendarNameRequest(unknownNames));
+			var calendarNamesResult = await ServerProxy!.GetCalendarName(new GetCalendarNamesRequest(unknownNames));
 
 			if (!calendarNamesResult.IsSuccess)
 			{

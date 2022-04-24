@@ -21,7 +21,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 
 	public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
-		string token = await storageService.GetAccessTokenAsync();
+		string? token = await storageService.GetAccessTokenAsync();
 
 		return CurrentState = !string.IsNullOrWhiteSpace(token) ? AuthorizedState : AnonymousState;
 	}

@@ -1,13 +1,15 @@
 @page "/Events/{CalendarId:guid}"
 @page "/Events"
 
+<PageTitle>TMS - События</PageTitle>
+
 @if (CalendarId != default)
 {
-    <CalendarComponentWithCalendarEvents CalendarId="CalendarId"/>
+    <CalendarEventWithCalendarEventsComponent CalendarId="CalendarId"/>
 }
 else
 {
-    <CalendarComponentWithUserEvents/>
+    <CalendarEventWithUserEventsComponent/>
 }
 
 @code

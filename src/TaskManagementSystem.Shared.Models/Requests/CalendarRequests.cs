@@ -5,7 +5,7 @@ namespace TaskManagementSystem.Shared.Models.Requests;
 /// <summary>
 ///     Запрос на создание календаря.
 /// </summary>
-public class CreateCalendarRequest
+public record CreateCalendarRequest
 {
 	public CreateCalendarRequest(string name, string description)
 	{
@@ -29,7 +29,7 @@ public class CreateCalendarRequest
 /// <summary>
 ///     Запрос на редактирование календаря.
 /// </summary>
-public class EditCalendarRequest
+public record EditCalendarRequest
 {
 	public EditCalendarRequest(Guid calendarId, string? name, string? description)
 	{
@@ -58,7 +58,7 @@ public class EditCalendarRequest
 /// <summary>
 ///     Запрос на добавление участника календаря.
 /// </summary>
-public class AddCalendarParticipantRequest
+public record AddCalendarParticipantRequest
 {
 	public AddCalendarParticipantRequest(Guid userId, CalendarParticipantRole role)
 	{
@@ -82,7 +82,7 @@ public class AddCalendarParticipantRequest
 /// <summary>
 ///     Запрос на добавление участников календаря.
 /// </summary>
-public class AddCalendarParticipantsRequest
+public record AddCalendarParticipantsRequest
 {
 	public AddCalendarParticipantsRequest(Guid calendarId, IEnumerable<AddCalendarParticipantRequest> users)
 	{
@@ -105,9 +105,9 @@ public class AddCalendarParticipantsRequest
 /// <summary>
 ///     Запрос на изменение роли/удаление участника календаря.
 /// </summary>
-public class ChangeCalendarParticipantRoleRequest
+public record EditCalendarParticipantRequest
 {
-	public ChangeCalendarParticipantRoleRequest(Guid participantId, CalendarParticipantRole? role, bool delete)
+	public EditCalendarParticipantRequest(Guid participantId, CalendarParticipantRole? role, bool delete)
 	{
 		ParticipantId = participantId;
 		Role = role;
@@ -135,9 +135,9 @@ public class ChangeCalendarParticipantRoleRequest
 /// <summary>
 ///     Запрос на изменение роли/удаление участников календаря.
 /// </summary>
-public class ChangeCalendarParticipantsRoleRequest
+public record EditCalendarParticipantsRequest
 {
-	public ChangeCalendarParticipantsRoleRequest(Guid calendarId, IEnumerable<ChangeCalendarParticipantRoleRequest> participants)
+	public EditCalendarParticipantsRequest(Guid calendarId, IEnumerable<EditCalendarParticipantRequest> participants)
 	{
 		CalendarId = calendarId;
 		Participants = participants;
@@ -150,16 +150,16 @@ public class ChangeCalendarParticipantsRoleRequest
 	public Guid CalendarId { get; }
 
 	/// <summary>
-	///     Коллекция <see cref="ChangeCalendarParticipantRoleRequest" />.
+	///     Коллекция <see cref="EditCalendarParticipantRequest" />.
 	/// </summary>
 	[Required]
-	public IEnumerable<ChangeCalendarParticipantRoleRequest> Participants { get; }
+	public IEnumerable<EditCalendarParticipantRequest> Participants { get; }
 }
 
 /// <summary>
 ///     Запрос на получение полной информации о календаре.
 /// </summary>
-public class GetCalendarInfoRequest
+public record GetCalendarInfoRequest
 {
 	public GetCalendarInfoRequest(Guid calendarId)
 	{
@@ -176,7 +176,7 @@ public class GetCalendarInfoRequest
 /// <summary>
 ///     Запрос на получение участников календаря по фильтру.
 /// </summary>
-public class GetCalendarParticipantsByFilterRequest
+public record GetCalendarParticipantsByFilterRequest
 {
 	public GetCalendarParticipantsByFilterRequest(Guid calendarId, string filter)
 	{
@@ -200,9 +200,9 @@ public class GetCalendarParticipantsByFilterRequest
 /// <summary>
 ///		Запрос на получение имен календарей.
 /// </summary>
-public record GetCalendarNameRequest
+public record GetCalendarNamesRequest
 {
-	public GetCalendarNameRequest(ISet<Guid> calendarIds) 
+	public GetCalendarNamesRequest(ISet<Guid> calendarIds) 
 	{
 		CalendarIds = calendarIds;
 	}
