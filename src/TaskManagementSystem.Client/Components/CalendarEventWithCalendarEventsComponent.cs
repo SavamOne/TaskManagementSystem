@@ -5,7 +5,7 @@ using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.Components;
 
-public class CalendarEventComponentWithCalendarEvents : CalendarEventComponent
+public class CalendarEventWithCalendarEventsComponent : CalendarEventComponent
 {
 	protected override async Task OnLoadAsync()
 	{
