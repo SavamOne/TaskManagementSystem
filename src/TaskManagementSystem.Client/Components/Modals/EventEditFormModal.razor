@@ -72,7 +72,7 @@
             @if (notifyRepeatChanged)
             {
                 <div class="d-flex flex-row align-items-baseline mb-2 text-danger">
-                    <span style="wmin-idth: 60px" class="d-flex justify-content-center">
+                    <span style="min-width: 35px" class="d-flex justify-content-center">
                         <span class="oi oi-warning"></span>
                     </span>
                     <h6>Отображается дата исходного события. Для просмотра конкретного повтора закройте это окно и выберите событие.</h6>
@@ -100,7 +100,7 @@
                     </div>
                 }
             }
-            @if (participationState.HasValue)
+            @if (CanUserChangeEvent && participationState.HasValue)
             {
                 <div class="mb-2 d-flex flex-row align-items-baseline">
                     <span style="min-width: 35px" class="d-flex justify-content-center">
@@ -122,17 +122,20 @@
             }
         </div>
         <div class="col-sm-6">
-            <div class="row mb-1">
-                <div class="col col-sm-10">
-                    <input type="text" class="form-control" @bind="filter" disabled="@(!CanUserChangeParticipants)">
+            @if (CanUserChangeParticipants)
+            {
+                <div class="row mb-1">
+                    <div class="col col-sm-10">
+                        <input type="text" class="form-control" @bind="filter">
+                    </div>
+                    <div class="col col-sm-2">
+                        <button type="button" class="btn btn-outline-primary w-100" @onclick="FilterParticipantsAsync">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </button>
+                    </div>
                 </div>
-                <div class="col col-sm-2">
-                    <button type="button" class="btn btn-outline-primary w-100" @onclick="FilterParticipantsAsync" disabled="@(!CanUserChangeParticipants)">
-                        <span class="oi oi-magnifying-glass"></span>
-                    </button>
-                </div>
-            </div>
-
+            }
+            
             @foreach (UserInfoWithEventRoleViewModel user in possibleParticipants)
             {
                 <div class="row mb-1">
@@ -150,7 +153,7 @@
                         <div class="h-100 d-flex align-items-center">
                             <DropdownComponent Items="roles" SelectedItem="user.Role"
                                                Disabled="!CanUserChangeParticipants"
-                                               ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
+                                               ItemToStringFunc="x=> x.GetDescription(Event.EventType)"
                                                ItemSelectedFunc="role => { user.Role = role; ParticipantsChanged = true; }"/>
                         </div>
                     </div>
@@ -176,7 +179,7 @@
                         <div class="h-100 d-flex align-items-center">
                             <DropdownComponent Items="roles" SelectedItem="participant.Role"
                                                Disabled="!CanUserChangeParticipants || participant.Role == EventParticipantRole.Creator"
-                                               ItemToStringFunc="EventParticipantRoleExtensions.GetDescription"
+                                               ItemToStringFunc="x=> x.GetDescription(Event.EventType)"
                                                ItemSelectedFunc="role => {participant.Role = role; ParticipantsChanged = true; }"/>
                         </div>
                     </div>

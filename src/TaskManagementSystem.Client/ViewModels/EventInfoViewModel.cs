@@ -12,7 +12,7 @@ public class EventInfoViewModel
 	{
 		this.Data = data;
 	}
-
+	
 	public string Name => Data.Name;
 
 	public DateTime StartTime => Data.StartTime.LocalDateTime;
@@ -25,7 +25,17 @@ public class EventInfoViewModel
 
 	public string Color => CalendarNames.TryGetValue(Data.CalendarId, out string? name) ? StringHelper.GetHexColorForText(name) : string.Empty;
 
-	public string Opacity => EndTime >= DateTime.Now ? "1.0" : "0.85";
+	public string Opacity => EndTime >= DateTime.Now ? "1.0" : "0.5";
+
+	public string GetTimeAndName(DateOnly forDay)
+	{
+		if (DateOnly.FromDateTime(StartTime) == forDay)
+		{
+			return $"{StartTime:HH:mm} - {Name}";
+		}
+
+		return Name;
+	}
 
 	public EventInfo Data { get; }
 

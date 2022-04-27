@@ -179,9 +179,9 @@ public class CalendarEventService : ICalendarEventService
 		{
 			throw new BusinessLogicException("События и/или Участника события с таким Id не существует или этот пользователь не участвует в этом событии.");
 		}
-		if (!participant.IsCreator())
+		if (!participant.IsParticipantOrCreator())
 		{
-			throw new BusinessLogicException("Изменять событие может только создатель события.");
+			throw new BusinessLogicException("Изменять событие может только создатель или участники события.");
 		}
 		if (data.IsRepeated && data.RecurrentSettingsData is null)
 		{
@@ -460,8 +460,8 @@ public class CalendarEventService : ICalendarEventService
 		var participants = await eventParticipantRepository.GetByEventId(eventId);
 
 		CalendarEventParticipant? userIdParticipant = participants.FirstOrDefault(x => x.CalendarParticipant!.User!.Id == userId);
-		bool canUserEditEvent = userIdParticipant?.IsCreator() ?? false;
-		bool canUserEditParticipants = userIdParticipant?.IsParticipantOrCreator() ?? false;
+		bool canUserEditEvent = userIdParticipant?.IsParticipantOrCreator() ?? false;
+		bool canUserEditParticipants = userIdParticipant?.IsCreator() ?? false;
 		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
 		var state = userIdParticipant?.State;
 		var notifyBefore = canUserEditParticipants ? userIdParticipant?.NotifyBefore : null;
