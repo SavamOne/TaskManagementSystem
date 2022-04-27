@@ -20,6 +20,22 @@ public class DayViewModel
 
 	public bool IsHidden { get; }
 
+	public string Style
+	{
+		get
+		{
+			if (IsTodayDay)
+			{
+				return "fw-bold text-danger";
+			}
+			if (IsHidden)
+			{
+				return "outside";
+			}
+			return string.Empty;
+		}
+	}
+
 	public bool IsWeekEndDay => DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday;
 
 	public bool IsTodayDay => Date == DateOnly.FromDateTime(DateTime.Today);
