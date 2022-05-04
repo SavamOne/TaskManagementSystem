@@ -14,6 +14,12 @@ public class DalUser
 
 	[Column("email")]
 	public string Email { get; set; }
+	
+	[Column("position")]
+	public string? Position { get; set; }
+	
+	[Column("department")]
+	public string? Department { get; set; }
 
 	[Column("register_date")]
 	public DateTime RegisterDate { get; set; }

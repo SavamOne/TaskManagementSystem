@@ -102,7 +102,7 @@ public class UserController : ControllerBase
 
 		User user = await userService.GetUserAsync(id);
 
-		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+		return Ok(Convert(user));
 	}
 
 	/// <summary>
@@ -123,7 +123,7 @@ public class UserController : ControllerBase
 
 		User user = await userService.GetUserAsync(request.UserId);
 
-		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+		return Ok(Convert(user));
 	}
 
 	/// <summary>
@@ -145,7 +145,7 @@ public class UserController : ControllerBase
 		Guid id = tokenService.GetUserIdFromClaims(User);
 		User user = await userService.ChangePasswordAsync(new ChangePasswordData(id, request.OldPassword, request.NewPassword));
 
-		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+		return Ok(Convert(user));
 	}
 
 	/// <summary>
@@ -165,9 +165,9 @@ public class UserController : ControllerBase
 		request.AssertNotNull();
 
 		Guid id = tokenService.GetUserIdFromClaims(User);
-		User user = await userService.EditUserInfoAsync(new EditUserInfoData(id, request.Name, request.Email));
+		User user = await userService.EditUserInfoAsync(new EditUserInfoData(id, request.Name, request.Email, request.Position, request.Department));
 
-		return Ok(new UserInfo(user.Id, user.Name, user.Email, user.DateJoinedUtc));
+		return Ok(Convert(user));
 	}
 
 	/// <summary>
@@ -188,6 +188,16 @@ public class UserController : ControllerBase
 
 		var result = await userService.GetUsersByFilter(request.Filter);
 
-		return Ok(result.Select(x => new UserInfo(x.Id, x.Name, x.Email, x.DateJoinedUtc)).ToArray());
+		return Ok(result.Select(Convert));
+	}
+
+	private static UserInfo Convert(User user)
+	{
+		return new UserInfo(user.Id,
+			user.Name,
+			user.Email,
+			user.RegisterDateUtc,
+			user.Position,
+			user.Department);
 	}
 }

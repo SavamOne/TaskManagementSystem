@@ -59,11 +59,13 @@ public class CalendarService : ICalendarService
 
 		CalendarWithParticipants calendarInfo = await GetCalendarInfoAsync(data.CalendarId);
 		CheckRequestInitiatorIsAdminOrCreator(data.EditorId, calendarInfo.Participants);
-
+		
 		string name = calendarInfo.Calendar.Name;
 		string description = calendarInfo.Calendar.Description;
+		
 		if (!string.IsNullOrWhiteSpace(data.Name))
 		{
+			await CheckCalendarExistenceByName(data.Name);
 			name = data.Name;
 		}
 		if (!string.IsNullOrWhiteSpace(data.Description))

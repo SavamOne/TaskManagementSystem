@@ -3,7 +3,7 @@ using TaskManagementSystem.Shared.Models.Requests;
 
 namespace TaskManagementSystem.Client.ViewModels;
 
-public class UpdateUserPasswordViewModel
+public class ChangeUserPasswordViewModel
 {
 	[MinLength(5)]
 	public string? OldPassword { get; set; }

@@ -8,13 +8,17 @@ public class User
 	public User(Guid id,
 		string name,
 		string email,
-		DateTime dateJoinedUtc,
+		string? position,
+		string? department,
+		DateTime registerDateUtc,
 		byte[] passwordHash)
 	{
 		Name = name.AssertNotNullOrWhiteSpace();
 		Email = email.AssertNotNullOrWhiteSpace();
 		Id = id;
-		DateJoinedUtc = dateJoinedUtc;
+		Position = position;
+		Department = department;
+		RegisterDateUtc = registerDateUtc;
 		PasswordHash = passwordHash.AssertNotNull();
 	}
 
@@ -24,7 +28,11 @@ public class User
 
 	public Guid Id { get; }
 
-	public DateTime DateJoinedUtc { get; }
+	public string? Position { get; }
+
+	public string? Department { get; }
+
+	public DateTime RegisterDateUtc { get; }
 
 	public byte[] PasswordHash { get; }
 }

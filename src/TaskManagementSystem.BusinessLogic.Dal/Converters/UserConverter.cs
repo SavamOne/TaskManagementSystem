@@ -15,7 +15,9 @@ public static class UserConverter
 			Name = user.Name,
 			IsDeleted = false,
 			PasswordHash = user.PasswordHash,
-			RegisterDate = user.DateJoinedUtc
+			RegisterDate = user.RegisterDateUtc,
+			Department = user.Department,
+			Position = user.Position
 		};
 	}
 
@@ -29,6 +31,8 @@ public static class UserConverter
 		return new User(user.Id,
 			user.Name,
 			user.Email,
+			user.Position,
+			user.Department,
 			user.RegisterDate,
 			user.PasswordHash);
 	}

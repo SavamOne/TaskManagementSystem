@@ -12,12 +12,18 @@ public class UserInfoViewModel
 		UserId = userInfo.Id;
 		Name = userInfo.Name;
 		Email = userInfo.Email;
+		Position = userInfo.Position;
+		Department = userInfo.Department;
 		RegisterDate = userInfo.DateJoined.ToLocalTime().ToString("d");
 	}
 
 	public Guid UserId { get; }
 
 	public string? Name { get; set; }
+	
+	public string? Position { get; set; }
+	
+	public string? Department { get; set; }
 
 	public string? Email { get; set; }
 
@@ -25,6 +31,6 @@ public class UserInfoViewModel
 
 	public EditUserInfoRequest GetEditInfoRequest()
 	{
-		return new EditUserInfoRequest(Name!, Email!);
+		return new EditUserInfoRequest(Name, Email, Position, Department);
 	}
 }

@@ -45,6 +45,7 @@ public class DayViewModel
 	public void InterceptDateEvents(IEnumerable<EventInfoViewModel> allEvents)
 	{
 		Events = allEvents.Where(x => DateRangeHelper.IsEventInCalendarDay(x.StartTime, x.EndTime, Date))
+		   .OrderBy(x=> x.StartTime)
 		   .ToList();
 	}
 
