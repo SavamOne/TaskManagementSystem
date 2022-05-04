@@ -1,4 +1,4 @@
-﻿using Dommel;
+﻿using Dapper;
 using TaskManagementSystem.BusinessLogic.Dal.Converters;
 using TaskManagementSystem.BusinessLogic.Dal.DataAccessModels;
 using TaskManagementSystem.BusinessLogic.Models.Models;
@@ -39,14 +39,21 @@ public class UserRepository : Repository<DalUser>, IUserRepository
 	}
 	public async Task<ISet<User>> GetByFilter(string filter, int limit)
 	{
+		const string filterSql = "SELECT * FROM \"user\" u "
+							   + "WHERE (upper(u.name) like concat(upper(@Filter), '%') "
+							   + "OR upper(u.email) like concat(upper(@Filter), '%')) "
+							   + "and u.is_deleted = false "
+							   + "limit @Limit";
 		filter.AssertNotNull();
 
 		//TODO: CaseSensitive 
 		var dalUsers = await GetConnection()
-		   .FromAsync<DalUser>(sql =>
-				sql.Select()
-				   .Where(x => ( x.Name.StartsWith(filter) || x.Email.StartsWith(filter) ) && !x.IsDeleted)
-				   .Page(1, limit));
+		   .QueryAsync<DalUser>(filterSql,
+				new
+				{
+					Filter = filter,
+					Limit = limit
+				});
 
 		return dalUsers.Select(x => x.ToUser()).ToHashSet();
 	}
