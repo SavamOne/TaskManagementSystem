@@ -15,6 +15,8 @@ CREATE TABLE "user"
     Id            UUID                    NOT NULL PRIMARY KEY,
     Name          VARCHAR(50)             NOT NULL,
     Email         VARCHAR(50)             NOT NULL,
+    Position      VARCHAR(50),
+    Department    VARCHAR(50),
     Register_Date TIMESTAMP DEFAULT now() NOT NULL,
     Password_Hash BYTEA                   NOT NULL,
     Is_Deleted    BOOL      DEFAULT FALSE NOT NULL
@@ -63,14 +65,16 @@ CREATE TABLE Event
     Id            UUID                    NOT NULL PRIMARY KEY,
     Calendar_Id   UUID                    NOT NULL REFERENCES Calendar ON DELETE CASCADE,
     Event_Type    INT                     NOT NULL,
+    Priority      INT       DEFAULT 0     NOT NULL,
     Name          VARCHAR(100)            NOT NULL,
-    Place         VARCHAR(200),
     Description   TEXT,
+    Place         VARCHAR(200),
     Start_Time    TIMESTAMP               NOT NULL,
     End_Time      TIMESTAMP               NOT NULL,
     Is_Private    BOOL                    NOT NULL,
-    Creation_Time TIMESTAMP DEFAULT now() NOT NULL,
-    Is_Repeated   BOOL      DEFAULT FALSE NOT NULL
+    Is_Repeated   BOOL      DEFAULT FALSE NOT NULL,
+    Is_Completed  BOOL      DEFAULT FALSE NOT NULL,
+    Creation_Time TIMESTAMP DEFAULT now() NOT NULL
 );
 
 CREATE TABLE Event_Participant
@@ -103,13 +107,13 @@ CREATE TABLE Completed_Event
 );
 
 -- Будущий функционал.
-CREATE TABLE Event_Question
+CREATE TABLE Event_Chat
 (
     Id             UUID    NOT NULL PRIMARY KEY,
     Event_Id       UUID    NOT NULL REFERENCES Event ON DELETE CASCADE,
-    Participant_Id UUID    NOT NULL REFERENCES Event_Participant ON DELETE CASCADE,
+    Event_Participant_Id  UUID    NOT NULL REFERENCES Event_Participant ON DELETE CASCADE,
     Value          VARCHAR NOT NULL,
-    Parent_Id      UUID    NOT NULL REFERENCES Event_Question ON DELETE CASCADE
+    Parent_Id      UUID    REFERENCES Event_Question ON DELETE CASCADE
 );
 
 -- Будущий функционал.

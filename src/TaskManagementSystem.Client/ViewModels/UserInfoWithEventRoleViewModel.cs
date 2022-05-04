@@ -6,7 +6,8 @@ namespace TaskManagementSystem.Client.ViewModels;
 public class UserInfoWithEventRoleViewModel : UserInfoViewModel
 {
 	public UserInfoWithEventRoleViewModel(CalendarParticipantUser user)
-		: base(new UserInfo(user.UserId, user.Username, user.Email, user.RegisterDate))
+		// HACK
+		: base(new UserInfo(user.UserId, user.Username, user.Email, user.RegisterDate, string.Empty, string.Empty))
 	{
 		Role = EventParticipantRole.NotSet;
 		CalendarParticipantId = user.Id;

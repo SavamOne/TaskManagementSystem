@@ -8,7 +8,7 @@ namespace TaskManagementSystem.Client.Components;
 
 public partial class ChangePasswordComponent : ComponentBase
 {
-	private readonly UpdateUserPasswordViewModel passwordViewModel = new();
+	private readonly ChangeUserPasswordViewModel passwordViewModel = new();
 
 	[Inject]
 	public ServerProxy? ServerProxy { get; set; }

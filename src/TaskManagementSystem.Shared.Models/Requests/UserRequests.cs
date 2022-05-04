@@ -103,23 +103,33 @@ public class ChangePasswordRequest
 /// </summary>
 public class EditUserInfoRequest
 {
-	public EditUserInfoRequest(string name, string email)
+	public EditUserInfoRequest(string? name, string? email, string? position, string? department)
 	{
 		Name = name;
 		Email = email;
+		Position = position;
+		Department = department;
 	}
 
 	/// <summary>
 	///     Имя.
 	/// </summary>
-	[Required]
-	public string Name { get; }
+	public string? Name { get; }
 
 	/// <summary>
 	///     Email.
 	/// </summary>
-	[Required]
-	public string Email { get; }
+	public string? Email { get; }
+
+	/// <summary>
+	///		Должность.
+	/// </summary>
+	public string? Position { get; }
+
+	/// <summary>
+	///		Отдел.
+	/// </summary>
+	public string? Department { get; }
 }
 
 /// <summary>

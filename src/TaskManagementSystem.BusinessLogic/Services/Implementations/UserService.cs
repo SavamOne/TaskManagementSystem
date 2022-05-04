@@ -36,6 +36,8 @@ public class UserService : IUserService
 		User user = new(Guid.NewGuid(),
 			data.Name,
 			data.Email,
+			null,
+			null,
 			DateTime.UtcNow,
 			PasswordHelper.GetHash(data.Password));
 
@@ -109,6 +111,8 @@ public class UserService : IUserService
 
 		string email = user.Email;
 		string name = user.Name;
+		string? department = user.Department;
+		string? position = user.Position;
 		if (!string.IsNullOrWhiteSpace(data.Email))
 		{
 			email = data.Email;
@@ -117,11 +121,21 @@ public class UserService : IUserService
 		{
 			name = data.Name;
 		}
+		if (!string.IsNullOrWhiteSpace(data.Position))
+		{
+			position = data.Position;
+		}
+		if (!string.IsNullOrWhiteSpace(data.Department))
+		{
+			department = data.Department;
+		}
 
 		User updatedUser = new(data.UserId,
 			name,
 			email,
-			user.DateJoinedUtc,
+			position,
+			department,
+			user.RegisterDateUtc,
 			user.PasswordHash);
 
 		await userRepository.UpdateAsync(updatedUser);
@@ -154,7 +168,9 @@ public class UserService : IUserService
 		User updatedUser = new(data.UserId,
 			user.Name,
 			user.Email,
-			user.DateJoinedUtc,
+			user.Position,
+			user.Department,
+			user.RegisterDateUtc,
 			newHash);
 
 		await userRepository.UpdateAsync(updatedUser);

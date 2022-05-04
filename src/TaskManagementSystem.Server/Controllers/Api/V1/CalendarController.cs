@@ -177,7 +177,7 @@ public class CalendarController : ControllerBase
 				(CalendarParticipantRole)participant.Role,
 				participant.User!.Name,
 				participant.User.Email,
-				participant.User.DateJoinedUtc))
+				participant.User.RegisterDateUtc))
 		   .ToList();
 
 		return Ok(participantsUsers);
@@ -212,7 +212,7 @@ public class CalendarController : ControllerBase
 			(CalendarParticipantRole)participant.Role,
 			participant.User!.Name,
 			participant.User.Email,
-			participant.User.DateJoinedUtc));
+			participant.User.RegisterDateUtc));
 
 		return new CalendarWithParticipantUsers(new CalendarInfo(request.Calendar.Id,
 				request.Calendar.Name,
