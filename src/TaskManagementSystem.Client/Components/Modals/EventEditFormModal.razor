@@ -141,7 +141,7 @@
                 <div class="row mb-1">
                     <div class="col col-sm-5">
                         <div class="d-flex flex-row align-items-center">
-                            <span style="width: 25px"></span>
+                            <span style="min-width: 25px"></span>
                             <ProfilePicComponent Username="@user.Name" Size="40"/>
                             <p class="h-100 m-lg-2">@user.Name</p>
                         </div>
@@ -165,7 +165,7 @@
                 <div class="row mb-1">
                     <div class="col col-sm-5">
                         <div class="d-flex flex-row align-items-center">
-                            <span style="width: 25px">
+                            <span style="min-width: 25px">
                                 <span class="m-lg-1 oi @participant.State.GetIcon()"></span>
                             </span>
                             <ProfilePicComponent Username="@participant.Name" Size="40"/>
@@ -189,7 +189,10 @@
     </div>
     </Body>
     <Footer>
-        <button class="btn btn-outline-danger" type="button" @onclick="DeleteEventAsync" disabled="@(!CanUserDeleteEvent)">Удалить событие</button>
+        @if (CanUserDeleteEvent)
+        {
+            <button class="btn btn-outline-danger" type="button" @onclick="DeleteEventAsync">Удалить событие</button>
+        }
         <button class="btn btn-primary" type="submit" disabled="@(!Event.Changed && !ParticipantsChanged)">Сохранить</button>
     </Footer>
 </EditFormModal>
