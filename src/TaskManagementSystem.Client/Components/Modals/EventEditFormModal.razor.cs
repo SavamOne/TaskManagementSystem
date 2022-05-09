@@ -88,7 +88,6 @@ public partial class EventEditFormModal
 		calendarId = eventInfo.CalendarId;
 
 		isEditMode = true;
-		Modal.Title = "Редактирование события";
 		participantsChanged = false;
 
 		isRepeated = eventInfo.IsRepeated;
@@ -104,6 +103,7 @@ public partial class EventEditFormModal
 		}
 
 		Fill(result);
+		Modal.Title = Event.CanEditEvent ? "Редактирование события" : "Просмотр события";
 		Modal.Open();
 	}
 
@@ -130,12 +130,11 @@ public partial class EventEditFormModal
 
 	private async Task SubmitAsync()
 	{
-		Guid eventId = default;
+		Guid eventId = Event.Id;
 
 		if (CanUserChangeEvent && Event.Changed)
 		{
 			EventInfo? eventInfo = await CreateOrEditEventAsync();
-
 			if (eventInfo is not null)
 			{
 				eventId = eventInfo.Id;
@@ -146,8 +145,8 @@ public partial class EventEditFormModal
 		EventWithParticipants? eventWithParticipants = null;
 		if (CanUserChangeParticipants && participantsChanged)
 		{
-			eventWithParticipants = await AddParticipantsAsync();
-			eventWithParticipants = await EditParticipantsAsync() ?? eventWithParticipants;
+			eventWithParticipants = await AddParticipantsAsync(eventId);
+			eventWithParticipants = await EditParticipantsAsync(eventId) ?? eventWithParticipants;
 
 			participantsChanged = false;
 		}
@@ -166,7 +165,7 @@ public partial class EventEditFormModal
 		}
 	}
 
-	private async Task<EventWithParticipants?> EditParticipantsAsync()
+	private async Task<EventWithParticipants?> EditParticipantsAsync(Guid eventId)
 	{
 		if (!CanUserChangeParticipants)
 		{
@@ -183,7 +182,7 @@ public partial class EventEditFormModal
 			return null;
 		}
 
-		var editResult = await ServerProxy!.EditEventParticipants(new EditEventParticipantsRequest(Event.Id, changeRequests));
+		var editResult = await ServerProxy!.EditEventParticipants(new EditEventParticipantsRequest(eventId, changeRequests));
 		if (!editResult.IsSuccess)
 		{
 			ToastService!.AddSystemErrorToast(editResult.ErrorDescription!);
@@ -195,7 +194,7 @@ public partial class EventEditFormModal
 		return editResult.Value;
 	}
 
-	private async Task<EventWithParticipants?> AddParticipantsAsync()
+	private async Task<EventWithParticipants?> AddParticipantsAsync(Guid eventId)
 	{
 		if (!CanUserChangeParticipants)
 		{
@@ -212,7 +211,7 @@ public partial class EventEditFormModal
 			return null;
 		}
 
-		var addResult = await ServerProxy!.AddEventParticipants(new AddEventParticipantsRequest(Event.Id, addRequests));
+		var addResult = await ServerProxy!.AddEventParticipants(new AddEventParticipantsRequest(eventId, addRequests));
 		if (!addResult.IsSuccess)
 		{
 			ToastService!.AddSystemErrorToast(addResult.ErrorDescription!);

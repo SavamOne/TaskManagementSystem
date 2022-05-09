@@ -462,7 +462,7 @@ public class CalendarEventService : ICalendarEventService
 		CalendarEventParticipant? userIdParticipant = participants.FirstOrDefault(x => x.CalendarParticipant!.User!.Id == userId);
 		bool canUserEditEvent = userIdParticipant?.IsParticipantOrCreator() ?? false;
 		bool canUserEditParticipants = userIdParticipant?.IsCreator() ?? false;
-		bool canUserDeleteEvent = calendarParticipant.IsAdminOrCreator();
+		bool canUserDeleteEvent = userIdParticipant.IsCreator() || calendarParticipant.IsAdminOrCreator();
 		var state = userIdParticipant?.State;
 		var notifyBefore = canUserEditParticipants ? userIdParticipant?.NotifyBefore : null;
 
