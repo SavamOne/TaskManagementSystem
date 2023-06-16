@@ -7,7 +7,7 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Create and publish a Docker image
+name: Publish Docker image to Github Registry
 
 on:
   push:
@@ -15,7 +15,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }} image
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
